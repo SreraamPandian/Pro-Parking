@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Search, Filter, Calendar, Clock, Car, X, Eye, Plus, QrCode, Check, Printer, CreditCard, DollarSign, FileText, Ticket } from 'lucide-react'; // Added Ticket icon
+import { Search, Filter, Calendar, Clock, Car, X, Eye, Plus, QrCode, Check, Printer, CreditCard, DollarSign, FileText, Ticket, Wallet, ShieldCheck, Smartphone } from 'lucide-react'; // Added Smartphone icon
 import { mockSlotData, mockTieredPricingData } from '../data/mockData';
 import { motion, AnimatePresence } from 'framer-motion'; // For modal animation
 
@@ -16,6 +16,7 @@ const VehicleDetails = () => {
   const [scannedVehicleData, setScannedVehicleData] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('Cash');
   const [paymentStep, setPaymentStep] = useState('initial');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [waiverRemarks, setWaiverRemarks] = useState('');
   const [addFormState, setAddFormState] = useState({ vehicleNumber: '', entryTime: '', type: 'Visitor', department: 'Visitor', plateImage: '/assets/plates/AB12XYZ.png' });
   const [slotData, setSlotData] = useState(mockSlotData);
@@ -72,9 +73,9 @@ const VehicleDetails = () => {
   };
 
   const calculateParkingFee = (vehicle) => {
-    if (!vehicle || !vehicle.entryTime || vehicle.type === 'Staff') return '0.000';
+    if (!vehicle || !vehicle.entryTime || vehicle.type === 'Staff') return '0.00';
     const pricingTierData = mockTieredPricingData.find(p => p.isActive && p.name.includes('Standard Car Parking')) || mockTieredPricingData[0];
-    if (!pricingTierData || !pricingTierData.tiers) return '0.000';
+    if (!pricingTierData || !pricingTierData.tiers) return '0.00';
     const entryTime = new Date(vehicle.entryTime); const currentTime = new Date();
     const durationMs = currentTime - entryTime;
     const durationHours = Math.ceil(durationMs / (1000 * 60 * 60));
@@ -92,7 +93,7 @@ const VehicleDetails = () => {
       totalFee += hoursInThisTier * parseFloat(tier.priceUSD);
       remainingHours -= hoursInThisTier;
     }
-    return totalFee > 0 ? totalFee.toFixed(3) : '0.500';
+    return totalFee > 0 ? totalFee.toFixed(2) : '0.50';
   };
 
   const processVehicleExitAndUpdateGlobal = (vehicleId, exitData) => {
@@ -111,16 +112,43 @@ const VehicleDetails = () => {
 
   const handleProcessPayment = () => {
     if (!scannedVehicleData) return;
-    const exitTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
-    const paymentData = {
-      exitTime: exitTime,
-      paymentMethod: paymentMethod,
-      paymentAmount: scannedVehicleData.calculatedFee,
-      paymentTime: new Date().toISOString(),
-      waiverReason: null
-    };
-    setScannedVehicleData(prev => ({ ...prev, ...paymentData }));
-    processVehicleExitAndUpdateGlobal(scannedVehicleData.id, paymentData);
+
+    if (paymentMethod === 'Waiver') {
+      setPaymentStep('waiverReasonInput');
+      return;
+    }
+
+    if (paymentMethod === 'Card') {
+      setPaymentStep('cardInput');
+      return;
+    }
+
+    if (paymentMethod === 'Apple Pay' || paymentMethod === 'Google Pay') {
+      setPaymentStep('qrData');
+      return;
+    }
+
+    // Cash or direct processing
+    initiateProcessing();
+  };
+
+  const initiateProcessing = () => {
+    setIsProcessingPayment(true);
+    setPaymentStep('processing'); // New step for UI feedback
+
+    setTimeout(() => {
+      const exitTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
+      const paymentData = {
+        exitTime: exitTime,
+        paymentMethod: paymentMethod,
+        paymentAmount: scannedVehicleData.calculatedFee,
+        paymentTime: new Date().toISOString(),
+        waiverReason: null
+      };
+      setScannedVehicleData(prev => ({ ...prev, ...paymentData }));
+      processVehicleExitAndUpdateGlobal(scannedVehicleData.id, paymentData);
+      setIsProcessingPayment(false);
+    }, 2000); // 2 second delay to simulate processing
   };
 
   const handleConfirmWaiver = () => {
@@ -276,7 +304,7 @@ const VehicleDetails = () => {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto"><table className="min-w-full divide-y divide-gray-200"><thead className="bg-gray-50"><tr><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle Number</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Time</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ANPR Image</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th></tr></thead><tbody className="bg-white divide-y divide-gray-200">{filteredVehiclesToDisplay.map((vehicle) => (<tr key={vehicle.id} className="hover:bg-gray-50"><td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Car size={16} className="mr-2 text-gray-500" /><span className="font-medium">{vehicle.vehicleNumber}</span></div></td><td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Clock size={16} className="mr-2 text-gray-500" /><span>{formatDateTimeForDisplay(vehicle.entryTime)}</span></div></td><td className="px-6 py-4 whitespace-nowrap">{getTypeBadge(vehicle.type)}</td><td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td><td className="px-6 py-4 whitespace-nowrap"><div className="w-32 h-12 bg-gray-100 rounded overflow-hidden"><img src={vehicle.plateImage} alt={`License plate ${vehicle.vehicleNumber}`} className="w-full h-full object-cover" /></div></td><td className="px-6 py-4 whitespace-nowrap"><button className="flex items-center text-primary-blue hover:text-blue-700 focus:outline-none focus:ring-1 focus:ring-primary-blue" onClick={() => handlePreview(vehicle)}><Eye size={16} className="mr-1" />Preview</button></td></tr>))}</tbody></table>{filteredVehiclesToDisplay.length === 0 && <div className="text-center py-8 text-gray-500">No vehicles currently inside parking or matching search.</div>}</div>
+        <div className="overflow-x-auto"><table className="min-w-full divide-y divide-gray-200"><thead className="bg-gray-50"><tr><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle Number</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Time</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ANPR Image</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th></tr></thead><tbody className="bg-white divide-y divide-gray-200">{filteredVehiclesToDisplay.map((vehicle) => (<tr key={vehicle.id} className="hover:bg-gray-50"><td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Car size={16} className="mr-2 text-gray-500" /><span className="font-medium">{vehicle.vehicleNumber}</span></div></td><td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td><td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Clock size={16} className="mr-2 text-gray-500" /><span>{formatDateTimeForDisplay(vehicle.entryTime)}</span></div></td><td className="px-6 py-4 whitespace-nowrap">{getTypeBadge(vehicle.type)}</td><td className="px-6 py-4 whitespace-nowrap"><div className="w-32 h-12 bg-gray-100 rounded overflow-hidden"><img src={vehicle.plateImage} alt={`License plate ${vehicle.vehicleNumber}`} className="w-full h-full object-cover" /></div></td><td className="px-6 py-4 whitespace-nowrap"><button className="flex items-center text-primary-blue hover:text-blue-700 focus:outline-none focus:ring-1 focus:ring-primary-blue" onClick={() => handlePreview(vehicle)}><Eye size={16} className="mr-1" />Preview</button></td></tr>))}</tbody></table>{filteredVehiclesToDisplay.length === 0 && <div className="text-center py-8 text-gray-500">No vehicles currently inside parking or matching search.</div>}</div>
       </div>
 
 
@@ -293,16 +321,122 @@ const VehicleDetails = () => {
                 {paymentStep === 'methodOrWaiverSelection' && 'Process Exit'}
                 {paymentStep === 'paymentMethodSelection' && 'Select Payment Method'}
                 {paymentStep === 'waiverReasonInput' && 'Apply Waiver'}
+                {paymentStep === 'processing' && 'Processing Transaction...'}
                 {paymentStep === 'receipt' && (scannedVehicleData?.paymentMethod === 'Waiver' ? 'Waiver Applied' : 'Payment Successful')}
               </h3>
-              <button className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary-blue" onClick={() => { setShowScanModal(false); setScannedVehicleData(null); setPaymentStep('initial'); setWaiverRemarks(''); }}> <X size={20} /> </button>
+              {paymentStep !== 'processing' && (
+                <button className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary-blue" onClick={() => { setShowScanModal(false); setScannedVehicleData(null); setPaymentStep('initial'); setWaiverRemarks(''); }}> <X size={20} /> </button>
+              )}
             </div>
 
             {paymentStep === 'initial' && (<div className="flex flex-col items-center py-8"> <div className="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center mb-4 relative"><QrCode size={100} className="text-gray-400" /><div className="absolute inset-0 border-2 border-primary-blue animate-pulse rounded-lg"></div></div> <p className="text-gray-600">Scanning ticket... Please wait.</p> </div>)}
             {paymentStep === 'methodOrWaiverSelection' && scannedVehicleData && (<div className="py-4"> <div className="w-full bg-blue-50 p-4 rounded-lg mb-4 flex items-center"><div className="bg-blue-100 rounded-full p-2 mr-3"><Car size={20} className="text-primary-blue" /></div><div><h4 className="font-medium text-primary-blue">Vehicle Details</h4><p className="text-sm text-blue-600">Confirm details and choose an action.</p></div></div> <div className="grid grid-cols-2 gap-4 mb-4"> <div><p className="text-sm text-gray-500">Vehicle Number</p><p className="font-medium">{scannedVehicleData.vehicleNumber}</p></div> <div><p className="text-sm text-gray-500">Type</p><p className="font-medium">{scannedVehicleData.type}</p></div> <div><p className="text-sm text-gray-500">Entry Time</p><p className="font-medium">{formatDateTimeForDisplay(scannedVehicleData.entryTime)}</p></div> <div><p className="text-sm text-gray-500">Duration</p><p className="font-medium">{(() => { const entryTime = new Date(scannedVehicleData.entryTime); const now = new Date(); const diffMs = now - entryTime; const diffHrs = Math.floor(diffMs / (1000 * 60 * 60)); const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)); return `${diffHrs}h ${diffMins}m`; })()}</p></div> </div> <div className="bg-red-50 p-4 rounded-lg mb-6"><div className="flex justify-between items-center"><span className="font-medium text-primary-red">Parking Fee Due:</span><span className="text-2xl font-bold text-primary-red">${scannedVehicleData.calculatedFee}</span></div></div> <div className="flex flex-col space-y-3"> <button className="w-full px-4 py-3 bg-primary-red text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red" onClick={() => handleSelectPaymentOrWaiver('payment')}>Process Payment</button> <button className="w-full px-4 py-3 bg-primary-blue text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-blue" onClick={() => handleSelectPaymentOrWaiver('waiver')}>Apply Waiver</button> </div> </div>)}
-            {paymentStep === 'paymentMethodSelection' && scannedVehicleData && (<div className="py-4"> <div className="bg-red-50 p-4 rounded-lg mb-6"><div className="flex justify-between items-center"><span className="font-medium text-primary-red">Parking Fee Due:</span><span className="text-2xl font-bold text-primary-red">${scannedVehicleData.calculatedFee}</span></div></div> <h4 className="font-medium text-gray-800 mb-2">Select Payment Method</h4> <div className="grid grid-cols-2 gap-3"> <button className={`p-4 rounded-lg border ${paymentMethod === 'Cash' ? 'border-primary-blue bg-blue-50' : 'border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-blue'}`} onClick={() => setPaymentMethod('Cash')}><div className="font-medium mb-1 flex items-center"><DollarSign size={16} className="mr-1" />Cash</div><div className="text-sm text-gray-500">Collect cash payment</div></button> <button className={`p-4 rounded-lg border ${paymentMethod === 'Card' ? 'border-primary-blue bg-blue-50' : 'border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-blue'}`} onClick={() => setPaymentMethod('Card')}><div className="font-medium mb-1 flex items-center"><CreditCard size={16} className="mr-1" />Card</div><div className="text-sm text-gray-500">Process card payment</div></button> </div> <div className="mt-6 flex justify-end"> <button className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red" onClick={handleProcessPayment}>Complete Payment ({paymentMethod})</button> </div> </div>)}
+            {paymentStep === 'paymentMethodSelection' && scannedVehicleData && (
+              <div className="py-4">
+                <div className="bg-red-50 p-4 rounded-lg mb-6 flex justify-between items-center shadow-sm">
+                  <span className="font-medium text-primary-red">Total Fee Due:</span>
+                  <span className="text-3xl font-bold text-primary-red">${scannedVehicleData.calculatedFee}</span>
+                </div>
+                <h4 className="font-medium text-gray-800 mb-3">Select Payment Method</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <button
+                    className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Cash' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                    onClick={() => setPaymentMethod('Cash')}
+                  >
+                    <DollarSign size={24} className="mb-2 text-green-600" />
+                    <span className="font-medium text-sm">Cash</span>
+                  </button>
+                  {scannedVehicleData.type === 'Visitor' && (
+                    <>
+                      <button
+                        className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Card' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                        onClick={() => setPaymentMethod('Card')}
+                      >
+                        <CreditCard size={24} className="mb-2 text-blue-600" />
+                        <span className="font-medium text-sm">Card</span>
+                      </button>
+                      <button
+                        className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Apple Pay' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                        onClick={() => setPaymentMethod('Apple Pay')}
+                      >
+                        <Smartphone size={24} className="mb-2 text-gray-800" />
+                        <span className="font-medium text-sm">Apple Pay</span>
+                      </button>
+                      <button
+                        className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Google Pay' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                        onClick={() => setPaymentMethod('Google Pay')}
+                      >
+                        <Smartphone size={24} className="mb-2 text-green-600" />
+                        <span className="font-medium text-sm">Google Pay</span>
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Waiver' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                    onClick={() => setPaymentMethod('Waiver')}
+                  >
+                    <FileText size={24} className="mb-2 text-purple-600" />
+                    <span className="font-medium text-sm">Waiver</span>
+                  </button>
+                </div>
+                <div className="mt-8 flex justify-end">
+                  <button className="w-full sm:w-auto px-6 py-3 bg-primary-red text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red shadow-md transition-colors" onClick={handleProcessPayment}>
+                    {paymentMethod === 'Waiver' ? 'Proceed to Waiver' : `Proceed with ${paymentMethod}`}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {paymentStep === 'cardInput' && (
+              <div className="py-4">
+                <h4 className="font-medium text-gray-800 mb-4">Enter Card Details</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                    <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="0000 0000 0000 0000" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                      <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="MM/YY" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">CVC</label>
+                      <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="123" />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-8 flex justify-end">
+                  <button className="w-full px-6 py-3 bg-primary-red text-white font-medium rounded-md hover:bg-red-700" onClick={initiateProcessing}>
+                    Pay ${scannedVehicleData.calculatedFee}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {paymentStep === 'qrData' && (
+              <div className="py-8 flex flex-col items-center">
+                <h4 className="font-medium text-gray-800 mb-2">Scan to Pay with {paymentMethod}</h4>
+                <p className="text-sm text-gray-500 mb-6">Please scan the QR code below using your device.</p>
+                <div className="w-64 h-64 bg-white p-4 rounded-lg shadow-inner border border-gray-200 mb-6 flex items-center justify-center">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PAY-${paymentMethod}-${scannedVehicleData.calculatedFee}`} alt="Payment QR" className="w-full h-full" />
+                </div>
+                <button className="px-6 py-3 bg-primary-blue text-white font-medium rounded-md hover:bg-blue-700 animate-pulse" onClick={initiateProcessing}>
+                  Simulate Payment Confirmation
+                </button>
+              </div>
+            )}
+
+            {paymentStep === 'processing' && (
+              <div className="flex flex-col items-center justify-center py-10">
+                <div className="w-16 h-16 border-4 border-gray-200 border-t-primary-blue rounded-full animate-spin mb-4"></div>
+                <h4 className="text-lg font-medium text-gray-800">Processing Payment...</h4>
+                <p className="text-gray-500 text-sm mt-2">Connecting to {paymentMethod} gateway securely.</p>
+              </div>
+            )}
+
             {paymentStep === 'waiverReasonInput' && scannedVehicleData && (<div className="py-4"> <h4 className="font-medium text-gray-800 mb-2">Waiver Reason/Remarks</h4> <textarea value={waiverRemarks} onChange={(e) => setWaiverRemarks(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" rows="3" placeholder="Enter reason for waiving the parking fee..." /> <div className="mt-6 flex justify-end"> <button className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-blue" onClick={handleConfirmWaiver}>Confirm Waiver</button> </div> </div>)}
-            {paymentStep === 'receipt' && scannedVehicleData && (<div className="py-4"> <div className={`w-full p-4 rounded-lg mb-4 flex items-center ${scannedVehicleData.paymentMethod === 'Waiver' ? 'bg-blue-50' : 'bg-green-50'}`}> <div className={`${scannedVehicleData.paymentMethod === 'Waiver' ? 'bg-blue-100' : 'bg-green-100'} rounded-full p-2 mr-3`}><Check size={20} className={`${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-primary-blue' : 'text-green-600'}`} /></div> <div><h4 className={`font-medium ${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-primary-blue' : 'text-green-800'}`}>{scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Applied Successfully!' : 'Payment Successful!'}</h4><p className={`text-sm ${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-blue-600' : 'text-green-600'}`}>Receipt generated below.</p></div> </div> <div ref={receiptRef} className="border border-gray-300 p-4 rounded-md bg-white"> <div className="text-center mb-4"> <img src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" alt="Pro-Parking Logo" className="w-20 h-auto mx-auto mb-2" /> <h3 className="text-lg font-semibold text-primary-blue">Pro-Parking - {scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Confirmation' : 'Payment Receipt'}</h3> <p className="text-xs text-gray-500">ID: {scannedVehicleData.paymentMethod === 'Waiver' ? 'WAIV-' : 'RCPT-'}{Date.now()}</p> </div> <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3"> <div><strong className="text-gray-600">Vehicle Number:</strong> {scannedVehicleData.vehicleNumber}</div> <div><strong className="text-gray-600">Payment Mode:</strong> {scannedVehicleData.paymentMethod?.toUpperCase()}</div> <div><strong className="text-gray-600">Entry Time:</strong> {formatDateTimeForDisplay(scannedVehicleData.entryTime)}</div> <div><strong className="text-gray-600">Exit Time:</strong> {formatDateTimeForDisplay(scannedVehicleData.exitTime)}</div> <div><strong className="text-gray-600">Duration:</strong> {(() => { const entryTime = new Date(scannedVehicleData.entryTime); const exitTime = new Date(scannedVehicleData.exitTime); const diffMs = exitTime - entryTime; const diffHrs = Math.floor(diffMs / (1000 * 60 * 60)); const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)); return `${diffHrs}h ${diffMins}m`; })()}</div> <div><strong className="text-gray-600">{scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Time:' : 'Payment Time:'}</strong> {formatDateTimeForDisplay(scannedVehicleData.paymentTime)}</div> </div> {scannedVehicleData.paymentMethod === 'Waiver' && scannedVehicleData.waiverReason && (<div className="text-sm mb-3"><strong className="text-gray-600">Waiver Reason:</strong> {scannedVehicleData.waiverReason}</div>)} <div className="border-t border-gray-200 pt-3 mt-3"> <div className="flex justify-between items-center text-lg font-bold"> <span className="text-gray-700">{scannedVehicleData.paymentMethod === 'Waiver' ? 'Fee Waived:' : 'Total Amount Paid:'}</span> <span className="text-primary-red">${scannedVehicleData.paymentAmount}</span> </div> </div> <p className="text-xs text-gray-500 mt-4 text-center">Thank you for using Pro-Parking. Drive Safe!</p> </div> <div className="mt-6 flex justify-end space-x-3"> <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue" onClick={handlePrintReceipt}><Printer size={16} className="mr-1.5" />Print</button> <button className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-red" onClick={() => { setShowScanModal(false); setScannedVehicleData(null); setPaymentStep('initial'); setWaiverRemarks(''); }}>Close</button> </div> </div>)}
+            {paymentStep === 'receipt' && scannedVehicleData && (<div className="py-4"> <div className={`w-full p-4 rounded-lg mb-4 flex items-center ${scannedVehicleData.paymentMethod === 'Waiver' ? 'bg-blue-50' : 'bg-green-50'}`}> <div className={`${scannedVehicleData.paymentMethod === 'Waiver' ? 'bg-blue-100' : 'bg-green-100'} rounded-full p-2 mr-3`}><Check size={20} className={`${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-primary-blue' : 'text-green-600'}`} /></div> <div><h4 className={`font-medium ${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-primary-blue' : 'text-green-800'}`}>{scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Applied Successfully!' : 'Payment Successful!'}</h4><p className={`text-sm ${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-blue-600' : 'text-green-600'}`}>Receipt generated below.</p></div> </div> <div ref={receiptRef} className="border border-gray-300 p-4 rounded-md bg-white"> <div className="text-center mb-4"> <img src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" alt="Pro-Parking Logo" className="w-20 h-auto mx-auto mb-2" /> <h3 className="text-lg font-semibold text-primary-blue">Pro-Parking - {scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Confirmation' : 'Payment Receipt'}</h3> <p className="text-xs text-gray-500">ID: {scannedVehicleData.paymentMethod === 'Waiver' ? 'WAIV-' : 'RCPT-'}{Date.now()}</p> </div> <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3"> <div><strong className="text-gray-600">Vehicle Number:</strong> {scannedVehicleData.vehicleNumber}</div> <div><strong className="text-gray-600">Department:</strong> {scannedVehicleData.department || 'Visitor'}</div> <div><strong className="text-gray-600">Payment Mode:</strong> {scannedVehicleData.paymentMethod?.toUpperCase()}</div> <div><strong className="text-gray-600">Entry Time:</strong> {formatDateTimeForDisplay(scannedVehicleData.entryTime)}</div> <div><strong className="text-gray-600">Exit Time:</strong> {formatDateTimeForDisplay(scannedVehicleData.exitTime)}</div> <div><strong className="text-gray-600">Duration:</strong> {(() => { const entryTime = new Date(scannedVehicleData.entryTime); const exitTime = new Date(scannedVehicleData.exitTime); const diffMs = exitTime - entryTime; const diffHrs = Math.floor(diffMs / (1000 * 60 * 60)); const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)); return `${diffHrs}h ${diffMins}m`; })()}</div> <div><strong className="text-gray-600">{scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Time:' : 'Payment Time:'}</strong> {formatDateTimeForDisplay(scannedVehicleData.paymentTime)}</div> </div> {scannedVehicleData.paymentMethod === 'Waiver' && scannedVehicleData.waiverReason && (<div className="text-sm mb-3"><strong className="text-gray-600">Waiver Reason:</strong> {scannedVehicleData.waiverReason}</div>)} <div className="border-t border-gray-200 pt-3 mt-3"> <div className="flex justify-between items-center text-lg font-bold"> <span className="text-gray-700">{scannedVehicleData.paymentMethod === 'Waiver' ? 'Fee Waived:' : 'Total Amount Paid:'}</span> <span className="text-primary-red">${scannedVehicleData.paymentAmount}</span> </div> </div> <p className="text-xs text-gray-500 mt-4 text-center">Thank you for using Pro-Parking. Drive Safe!</p> </div> <div className="mt-6 flex justify-end space-x-3"> <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue" onClick={handlePrintReceipt}><Printer size={16} className="mr-1.5" />Print</button> <button className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-red" onClick={() => { setShowScanModal(false); setScannedVehicleData(null); setPaymentStep('initial'); setWaiverRemarks(''); }}>Close</button> </div> </div>)}
           </div>
         </div>
       )}

@@ -8,6 +8,7 @@ const Passes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedStaffPass, setSelectedStaffPass] = useState(null);
+  const [departmentFilter, setDepartmentFilter] = useState('All');
   const passDetailsRef = useRef(null);
 
   const initialVehicle = { id: Date.now(), number: '', type: 'Car' };
@@ -35,9 +36,10 @@ const Passes = () => {
   }, [waiverReasons]);
 
   const filteredStaffPasses = staffPasses.filter(pass =>
-    pass.staffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (pass.vehicles && pass.vehicles.some(v => v.number.toLowerCase().includes(searchTerm.toLowerCase()))) ||
-    pass.department.toLowerCase().includes(searchTerm.toLowerCase())
+    (departmentFilter === 'All' || pass.department === departmentFilter) &&
+    (pass.staffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (pass.vehicles && pass.vehicles.some(v => v.number.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+      pass.department.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleAddVehicleToForm = () => {
@@ -147,6 +149,17 @@ const Passes = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      // Create date object, setting time to noon to avoid timezone shift issues with date-only strings
+      const date = new Date(dateString + 'T12:00:00');
+      return date.toLocaleDateString('en-US', {
+        month: '2-digit', day: '2-digit', year: 'numeric'
+      });
+    } catch (e) { return dateString; }
+  };
+
   const handlePrintPass = () => {
     const printContent = passDetailsRef.current;
     if (printContent) {
@@ -221,9 +234,25 @@ const Passes = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 no-print">
         <div className="lg:col-span-1 bg-white rounded-lg shadow-md p-6">
           <div className="mb-4">
-            <div className="relative">
+            <div className="relative mb-3">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div>
               <input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="Search by staff name or vehicle..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            </div>
+
+            <div className="relative">
+              <select
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white text-gray-700"
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+              >
+                <option value="All">All Departments</option>
+                <option value="Administration">Administration</option>
+                <option value="Security">Security</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Customer Service">Customer Service</option>
+                <option value="Operations">Operations</option>
+                <option value="Visitor">Visitor</option>
+              </select>
             </div>
           </div>
           <div className="space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto">
@@ -290,7 +319,7 @@ const Passes = () => {
                       <div><p className="text-sm text-gray-500">Staff Name</p><p className="font-medium">{selectedStaffPass.staffName}</p></div>
                       <div><p className="text-sm text-gray-500">Department</p><p className="font-medium">{selectedStaffPass.department}</p></div>
                       <div><p className="text-sm text-gray-500">Mobile Number</p><p className="font-medium">{selectedStaffPass.mobileNumber || 'Not provided'}</p></div>
-                      <div><p className="text-sm text-gray-500">Valid Until</p><p className="font-medium">{selectedStaffPass.validUntil}</p></div>
+                      <div><p className="text-sm text-gray-500">Valid Until</p><p className="font-medium">{formatDate(selectedStaffPass.validUntil)}</p></div>
                     </div>
                     <div className="mt-3">
                       <p className="text-sm text-gray-500 mb-1">Registered Vehicles ({selectedStaffPass.vehicles?.length || 0}/3)</p>
@@ -390,7 +419,7 @@ const Passes = () => {
                       )}
                     </select>
                   </div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })} placeholder="e.g. +968 1234 5678" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })} placeholder="e.g. (555) 123-4567" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid From</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validFrom} onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })} required /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid Until</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validUntil} onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })} required /></div>
                   <div>

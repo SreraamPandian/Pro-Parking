@@ -9,192 +9,54 @@ export const mockDashboardData = {
     exits: [1, 2, 1, 0, 0, 1, 3, 8, 15, 12, 10, 8, 12, 15, 10, 8, 5, 3, 2, 1, 0, 0, 0, 0]
   },
   parkingZones: [
-    { id: '1', name: 'Main Parking Zone', total: 200, occupied: 127, isFull: false ,
-    department: 'Administration'}
+    {
+      id: '1', name: 'Main Parking Zone', total: 200, occupied: 127, isFull: false,
+      department: 'Administration'
+    }
   ]
 };
 
-// Mock data for vehicle details
-export const mockVehicleData = [
-  {
-    id: '1',
-    vehicleNumber: 'AB12 XYZ',
-    entryTime: '2025-05-10 08:15:22',
-    exitTime: '2025-05-10 16:45:10',
-    type: 'Staff',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=AB12+XYZ',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
-    paymentMethod: 'Waiver',
-    paymentAmount: '0.000',
-    waiverId: 'WAIV-S001',
-    waiverReason: 'Official Duty',
-    paymentProcessedTime: '2025-05-10 16:40:00', // Example
-    department: 'Administration'
-  },
-  {
-    id: '2',
-    vehicleNumber: 'CD34 WXY',
-    entryTime: '2025-05-10 08:30:45',
-    exitTime: null,
-    type: 'Staff',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=CD34+WXY',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Security'},
-  {
-    id: '3',
-    vehicleNumber: 'EF56 VUT',
-    entryTime: '2025-05-10 09:12:33',
-    exitTime: '2025-05-10 11:20:15',
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=EF56+VUT',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
-    paymentMethod: 'Cash',
-    paymentAmount: '1.000',
-    paymentProcessedTime: '2025-05-10 11:18:00', // Example
-    department: 'Visitor'
-  },
-  {
-    id: '4',
-    vehicleNumber: 'GH78 SRQ',
-    entryTime: '2025-05-11 10:00:00',
-    exitTime: null,
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=GH78+SRQ',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Visitor'},
-  {
-    id: '5',
-    vehicleNumber: 'IJ90 PON',
-    entryTime: '2025-05-11 11:30:00',
-    exitTime: '2025-05-11 14:00:00',
-    type: 'Staff',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=IJ90+PON',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
-    paymentMethod: 'Waiver',
-    paymentAmount: '0.000',
-    waiverId: 'WAIV-S002',
-    waiverReason: 'Dept Head',
-    paymentProcessedTime: '2025-05-11 13:55:00', // Example
-    department: 'Maintenance'
-  },
-  {
-    id: '6',
-    vehicleNumber: 'KL12 MLK',
-    entryTime: '2025-05-11 12:15:00',
-    exitTime: null,
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=KL12+MLK',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Visitor'},
-  {
-    id: '7',
-    vehicleNumber: 'MN34 JIH',
-    entryTime: '2025-05-12 07:50:00',
-    exitTime: '2025-05-12 09:55:00',
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=MN34+JIH',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
-    paymentMethod: 'Card',
-    paymentAmount: '1.500',
-    paymentProcessedTime: '2025-05-12 09:50:00', // Example
-    department: 'Visitor'
-  },
-  {
-    id: '8',
-    vehicleNumber: 'OP56 GFE',
-    entryTime: '2025-05-12 09:05:00',
-    exitTime: null,
-    type: 'Staff',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=OP56+GFE',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Customer Service'},
-  {
-    id: '9',
-    vehicleNumber: 'QR78 DCB',
-    entryTime: '2025-05-12 13:20:00',
-    exitTime: '2025-05-12 13:50:00',
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=QR78+DCB',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
-    paymentMethod: 'Waiver',
-    paymentAmount: '0.000',
-    waiverReason: 'Drop-off',
-    paymentProcessedTime: '2025-05-12 13:48:00', // Example
-    department: 'Visitor'
-  },
-  {
-    id: '10',
-    vehicleNumber: 'ST90 AZY',
-    entryTime: '2025-05-10 15:25:42',
-    exitTime: null,
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=ST90+AZY',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Visitor'},
-  {
-    id: '11',
-    vehicleNumber: 'UV12 CBA',
-    entryTime: '2025-05-13 09:00:00',
-    exitTime: null,
-    type: 'Staff',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=UV12+CBA',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Operations'},
-  {
-    id: '12',
-    vehicleNumber: 'WX34 DEF',
-    entryTime: '2025-05-13 10:30:00',
-    exitTime: '2025-05-13 18:00:00',
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=WX34+DEF',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
-    paymentMethod: 'Card',
-    paymentAmount: '3.500',
-    paymentProcessedTime: '2025-05-13 17:58:00', // Example
-    department: 'Visitor'
-  },
-  {
-    id: '13',
-    vehicleNumber: 'YZ56 GHI',
-    entryTime: '2025-05-13 11:15:00',
-    exitTime: null,
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=YZ56+GHI',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Visitor'},
-  {
-    id: '14',
-    vehicleNumber: 'AA78 JKL',
-    entryTime: '2025-05-14 08:45:00',
-    exitTime: '2025-05-14 12:30:00',
-    type: 'Staff',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=AA78+JKL',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
-    paymentMethod: 'Waiver',
-    paymentAmount: '0.000',
-    waiverId: 'WAIV-S003',
-    waiverReason: 'Hospital Biz',
-    paymentProcessedTime: '2025-05-14 12:25:00', // Example
-    department: 'Administration'
-  },
-  {
-    id: '15',
-    vehicleNumber: 'BB90 MNO',
-    entryTime: '2025-05-14 14:00:00',
-    exitTime: null,
-    type: 'Visitor',
-    plateImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/300x100/333/white?text=BB90+MNO',
-    vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image'
-  ,
-    department: 'Visitor'}
-];
+// Helper to generate mock vehicles
+const generateMockVehicles = () => {
+  const departments = ['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor'];
+  let vehicles = [];
+  let idCounter = 1;
+
+  departments.forEach(dept => {
+    // 5 Live Parking (Inside)
+    for (let i = 0; i < 5; i++) {
+      vehicles.push({
+        id: String(idCounter++),
+        vehicleNumber: `${dept.substring(0, 3).toUpperCase()}${i}0 ${Math.floor(Math.random() * 900) + 100}`,
+        entryTime: '2025-05-14T10:00:00', // Recent
+        exitTime: null, // Inside
+        type: dept === 'Visitor' ? 'Visitor' : 'Staff',
+        department: dept,
+        vehicleImage: 'https://placehold.co/400x300/333/white?text=Vehicle+Image',
+        plateImage: `https://placehold.co/300x100/333/white?text=${dept.substring(0, 3).toUpperCase()}`
+      });
+    }
+    // 5 Reports (Exited)
+    for (let i = 0; i < 5; i++) {
+      vehicles.push({
+        id: String(idCounter++),
+        vehicleNumber: `${dept.substring(0, 3).toUpperCase()}${i}1 ${Math.floor(Math.random() * 900) + 100}`,
+        entryTime: '2025-05-13T08:00:00',
+        exitTime: '2025-05-13T17:00:00', // Exited
+        type: dept === 'Visitor' ? 'Visitor' : 'Staff',
+        department: dept,
+        paymentMethod: dept === 'Visitor' ? 'Card' : 'Waiver',
+        paymentAmount: dept === 'Visitor' ? '15.00' : '0.00',
+        paymentProcessedTime: '2025-05-13T16:55:00',
+        vehicleImage: 'https://placehold.co/400x300/333/white?text=Vehicle+Image',
+        plateImage: `https://placehold.co/300x100/333/white?text=${dept.substring(0, 3).toUpperCase()}`
+      });
+    }
+  });
+  return vehicles;
+};
+
+export const mockVehicleData = generateMockVehicles();
 
 // Mock data for device configuration (renamed from cameraData)
 export const availableDeviceTypes = ["ANPR Camera", "Boom Barrier Controller", "Kiosk Display", "Payment Terminal"];
@@ -241,7 +103,7 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2025-12-31',
     isActive: true,
-    mobileNumber: '+968 9123 4567'
+    mobileNumber: '(555) 123-4567'
   },
   {
     id: '2',
@@ -253,7 +115,7 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2025-05-15', // Expiring soon
     isActive: true,
-    mobileNumber: '+968 9234 5678'
+    mobileNumber: '(555) 234-5678'
   },
   {
     id: '3',
@@ -265,7 +127,7 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2025-04-30', // Expired
     isActive: false,
-    mobileNumber: '+968 9345 6789'
+    mobileNumber: '(555) 345-6789'
   },
   {
     id: '4',
@@ -279,19 +141,7 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2026-01-01',
     isActive: true,
-    mobileNumber: '+968 9456 7890'
-  },
-  {
-    id: '5',
-    staffName: 'Mr. Salim Al Maskari',
-    department: 'Security',
-    vehicles: [
-      { id: 'v5_1', number: 'KK66 LLL', type: 'Car' }
-    ],
-    validFrom: '2025-01-01',
-    validUntil: '2025-12-31',
-    isActive: false,
-    mobileNumber: '+968 9567 8901'
+    mobileNumber: '(555) 456-7890'
   }
 ];
 
@@ -317,25 +167,27 @@ export const mockTieredPricingData = [
     id: '1',
     vehicleType: '4-Wheeler',
     name: 'Standard Car Parking',
+    department: 'All',
     description: 'Regular pricing for visitor cars with progressive rates',
     isActive: true,
     tiers: [
-      { id: '1-1', duration: 1, unit: 'hour', priceOMR: '0.500' },
-      { id: '1-2', duration: 2, unit: 'hour', priceOMR: '0.300' },
-      { id: '1-3', duration: 4, unit: 'hour', priceOMR: '0.200' },
-      { id: '1-4', duration: 1, unit: 'day', priceOMR: '3.000' }
+      { id: '1-1', duration: 1, unit: 'hour', priceUSD: '1.50' },
+      { id: '1-2', duration: 2, unit: 'hour', priceUSD: '1.00' },
+      { id: '1-3', duration: 4, unit: 'hour', priceUSD: '0.75' },
+      { id: '1-4', duration: 1, unit: 'day', priceUSD: '15.00' }
     ]
   },
   {
     id: '3', // New ID for another 4-wheeler option
     vehicleType: '4-Wheeler',
     name: 'Premium Car Parking',
+    department: 'All',
     description: 'Covered parking with slightly higher rates',
     isActive: true,
     tiers: [
-      { id: '3-1', duration: 1, unit: 'hour', priceOMR: '0.700' },
-      { id: '3-2', duration: 3, unit: 'hour', priceOMR: '0.500' },
-      { id: '3-3', duration: 1, unit: 'day', priceOMR: '5.000' }
+      { id: '3-1', duration: 1, unit: 'hour', priceUSD: '2.50' },
+      { id: '3-2', duration: 3, unit: 'hour', priceUSD: '2.00' },
+      { id: '3-3', duration: 1, unit: 'day', priceUSD: '25.00' }
     ]
   }
 ];

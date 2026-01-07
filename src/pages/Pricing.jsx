@@ -11,6 +11,7 @@ const Pricing = () => {
   const [formData, setFormData] = useState({
     vehicleType: '4-Wheeler', // Default to 4-Wheeler and only option
     name: '',
+    department: 'All', // Default department
     description: '',
     isActive: true,
     tiers: [
@@ -23,6 +24,7 @@ const Pricing = () => {
     setFormData({
       vehicleType: '4-Wheeler', // Always 4-Wheeler
       name: item.name,
+      department: item.department || 'All',
       description: item.description,
       isActive: item.isActive,
       tiers: [...item.tiers]
@@ -39,6 +41,7 @@ const Pricing = () => {
     setFormData({
       vehicleType: '4-Wheeler', // Default to 4-Wheeler
       name: '',
+      department: 'All',
       description: '',
       isActive: true,
       tiers: [
@@ -213,6 +216,23 @@ const Pricing = () => {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <select
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white"
+                  value={formData.department}
+                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                >
+                  <option value="All">All / General</option>
+                  <option value="Administration">Administration</option>
+                  <option value="Security">Security</option>
+                  <option value="Maintenance">Maintenance</option>
+                  <option value="Customer Service">Customer Service</option>
+                  <option value="Operations">Operations</option>
+                  <option value="Visitor">Visitor</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pricing Name</label>
                 <input
                   type="text"
@@ -371,6 +391,9 @@ const Pricing = () => {
                     Pricing Name
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Department
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Base Price
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -390,6 +413,11 @@ const Pricing = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-gray-900">{item.name}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                          {item.department || 'All'}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-gray-900 font-medium">

@@ -7,7 +7,7 @@ const Settings = ({ onLogout, onUser1Login }) => { // Added onUser1Login prop
   const [accountData, setAccountData] = useState({
     name: 'Life Line Admin',
     email: 'admin@lifeline.com',
-    phone: '+968 1234 5678',
+    phone: '(555) 123-4567',
     organization: 'Pro-Parking System',
     position: 'Parking Administrator'
   });

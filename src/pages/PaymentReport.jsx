@@ -28,7 +28,7 @@ const PaymentReport = () => {
         paymentStatus: vehicle.paymentMethod === 'waiver' ? 'Waiver' : paymentStatus,
         paymentMode: vehicle.paymentMethod ? vehicle.paymentMethod.charAt(0).toUpperCase() + vehicle.paymentMethod.slice(1) : paymentModes[Math.floor(Math.random() * paymentModes.length)],
         collectedBy: staffMembers[Math.floor(Math.random() * staffMembers.length)],
-        paymentAmount: vehicle.paymentAmount || (vehicle.type === 'Staff' ? '0.000' : (Math.random() * 5).toFixed(3))
+        paymentAmount: vehicle.paymentAmount || (vehicle.type === 'Staff' ? '0.00' : (Math.random() * 5).toFixed(2))
       };
     }
     return { ...vehicle, serialNumber: index + 1, paymentStatus: 'Pending', paymentMode: '-', collectedBy: '-', paymentAmount: '-' };
@@ -67,7 +67,7 @@ const PaymentReport = () => {
   });
 
   const totalTransactions = filteredData.filter(v => v.paymentStatus !== 'Pending').length;
-  const totalCollected = filteredData.filter(v => v.paymentAmount !== '-').reduce((sum, v) => sum + parseFloat(v.paymentAmount || 0), 0).toFixed(3);
+  const totalCollected = filteredData.filter(v => v.paymentAmount !== '-').reduce((sum, v) => sum + parseFloat(v.paymentAmount || 0), 0).toFixed(2);
 
   const uniquePaymentStatuses = ['all', ...new Set(enhancedMockData.map(v => v.paymentStatus))];
   const uniquePaymentModes = ['all', ...new Set(enhancedMockData.map(v => v.paymentMode).filter(mode => mode !== '-'))];
@@ -127,6 +127,16 @@ const PaymentReport = () => {
     if (mode === '-') return '-';
     const colors = { 'Cash': 'bg-green-100 text-green-800', 'Card': 'bg-blue-100 text-primary-blue', 'UPI': 'bg-purple-100 text-purple-800', 'Wallet': 'bg-orange-100 text-orange-800', 'Waiver': 'bg-gray-100 text-gray-800' };
     return <span className={`px-2 py-1 text-xs rounded-full ${colors[mode] || 'bg-gray-100 text-gray-800'}`}>{mode}</span>;
+  };
+
+  const formatDateTime = (isoString) => {
+    if (!isoString) return '-';
+    try {
+      return new Date(isoString).toLocaleString('en-US', {
+        month: '2-digit', day: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', hour12: true
+      });
+    } catch (e) { return isoString; }
   };
 
   return (
@@ -203,15 +213,32 @@ const PaymentReport = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {['serialNumber', 'vehicleNumber', 'entryTime', 'exitTime', 'paymentAmount', 'paymentStatus', 'paymentMode', 'collectedBy'].map(field => (
-                  <th key={field} scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort(field)}>
-                    <div className="flex items-center">
-                      {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                      {sortField === field && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}
-                    </div>
-                  </th>
-                ))}<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('serialNumber')}>
+                  <div className="flex items-center">Serial Number{sortField === 'serialNumber' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('vehicleNumber')}>
+                  <div className="flex items-center">Vehicle Number{sortField === 'vehicleNumber' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('entryTime')}>
+                  <div className="flex items-center">Entry Time{sortField === 'entryTime' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('exitTime')}>
+                  <div className="flex items-center">Exit Time{sortField === 'exitTime' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('paymentAmount')}>
+                  <div className="flex items-center">Payment Amount{sortField === 'paymentAmount' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('paymentStatus')}>
+                  <div className="flex items-center">Payment Status{sortField === 'paymentStatus' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('paymentMode')}>
+                  <div className="flex items-center">Payment Mode{sortField === 'paymentMode' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('collectedBy')}>
+                  <div className="flex items-center">Collected By{sortField === 'collectedBy' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -227,14 +254,14 @@ const PaymentReport = () => {
                   <tr key={v.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.serialNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">{v.vehicleNumber}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.entryTime}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.exitTime || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{v.department || 'N/A'}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDateTime(v.entryTime)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDateTime(v.exitTime)}</td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">{v.paymentAmount === '-' ? '-' : `$${v.paymentAmount}`}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{getPaymentStatusBadge(v.paymentStatus)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{getPaymentModeBadge(v.paymentMode)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.collectedBy}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{duration}</td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{v.department || 'N/A'}</span></td>
                   </tr>
                 )
               })}

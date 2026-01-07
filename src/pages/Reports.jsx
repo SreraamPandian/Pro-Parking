@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Calendar, FileText, Filter, Search, ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Download, Calendar, FileText, Filter, Search, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Car, Clock } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom'; // Import useOutletContext
 
 const Reports = () => {
@@ -55,6 +55,12 @@ const Reports = () => {
     }
     return sortDirection === 'asc' ? (valueA > valueB ? 1 : -1) : (valueA < valueB ? 1 : -1);
   });
+
+
+  const totalAmount = filteredData.reduce((sum, vehicle) => {
+    if (!vehicle.exitTime || vehicle.paymentMethod === 'Waiver' || !vehicle.paymentAmount) return sum;
+    return sum + parseFloat(vehicle.paymentAmount);
+  }, 0).toFixed(2);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -143,6 +149,16 @@ const Reports = () => {
   const getTypeBadge = (type) => type === 'Staff' ?
     <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-primary-blue">Staff</span> :
     <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Visitor</span>;
+
+  const formatDateTime = (isoString) => {
+    if (!isoString) return '-';
+    try {
+      return new Date(isoString).toLocaleString('en-US', {
+        month: '2-digit', day: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', hour12: true
+      });
+    } catch (e) { return isoString; }
+  };
 
   const getPaymentMethodBadge = (method) => {
     if (!method || method === 'N/A') return <span className="text-gray-500">-</span>;
@@ -242,18 +258,35 @@ const Reports = () => {
           </div>
         </div>
 
+        {/* Total Amount Summary */}
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-md mb-4 flex justify-between items-center shadow-sm">
+          <div>
+            <h3 className="text-lg font-semibold text-primary-blue">Report Summary</h3>
+            <p className="text-sm text-blue-600">Total revenue based on current filters</p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-gray-500">Total Amount</p>
+            <p className="text-2xl font-bold text-gray-800">${totalAmount}</p>
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {['vehicleNumber', 'entryTime', 'exitTime', 'type'].map(field => (
-                  <th key={field} scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort(field)}>
-                    <div className="flex items-center">
-                      {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                      {sortField === field && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}
-                    </div>
-                  </th>
-                ))}
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('vehicleNumber')}>
+                  <div className="flex items-center">Vehicle Number{sortField === 'vehicleNumber' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('entryTime')}>
+                  <div className="flex items-center">Entry Time{sortField === 'entryTime' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('exitTime')}>
+                  <div className="flex items-center">Exit Time{sortField === 'exitTime' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('type')}>
+                  <div className="flex items-center">Type{sortField === 'type' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('paymentMethod')}>
@@ -268,7 +301,6 @@ const Reports = () => {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('waiverReason')}>
                   <div className="flex items-center">Waiver Reason{sortField === 'waiverReason' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -285,17 +317,27 @@ const Reports = () => {
                 const showWaiverDetails = vehicle.type === 'Staff' && vehicle.paymentMethod === 'Waiver' && vehicle.exitTime;
                 return (
                   <tr key={vehicle.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap"><div className="font-medium">{vehicle.vehicleNumber}</div></td>
-                    <td className="px-6 py-4 whitespace-nowrap">{vehicle.entryTime}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Car size={16} className="mr-2 text-gray-500" />
+                        <span className="font-medium">{vehicle.vehicleNumber}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Clock size={16} className="mr-2 text-gray-500" />
+                        <span>{formatDateTime(vehicle.entryTime)}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{formatDateTime(vehicle.exitTime)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{getTypeBadge(vehicle.type)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(vehicle.exitTime)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{duration}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime ? getPaymentMethodBadge(vehicle.paymentMethod) : '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime ? (showWaiverDetails ? <span className="text-gray-500">N/A (Waiver)</span> : <span className="font-medium">{vehicle.paymentAmount || '0.000'}</span>) : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime ? (showWaiverDetails ? <span className="text-gray-500">N/A (Waiver)</span> : <span className="font-medium">{vehicle.paymentAmount || '0.00'}</span>) : '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{showWaiverDetails ? vehicle.waiverId || 'N/A' : '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{showWaiverDetails ? vehicle.waiverReason || 'N/A' : '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td>
                   </tr>
                 );
               })}
