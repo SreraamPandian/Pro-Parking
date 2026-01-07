@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  Home, 
-  Car, 
+import {
+  Home,
+  Car,
   Settings as SettingsIcon, // Renamed from Camera to SettingsIcon to avoid conflict
-  CreditCard, 
+  CreditCard,
   DollarSign,
   ParkingSquare,
   FileText,
@@ -14,11 +14,12 @@ import {
   MonitorPlay,
   Bell,
   ChevronsUpDown, // Icon for Boom Barrier
-  HardDrive // Icon for Device Configuration
+  HardDrive, // Icon for Device Configuration
+  Building2 // Icon for Departments
 } from 'lucide-react';
-import NotificationModal from './NotificationModal'; 
+import NotificationModal from './NotificationModal';
 
-const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onClearAll }) => { 
+const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onClearAll }) => {
   const navigate = useNavigate();
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
@@ -34,6 +35,7 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
     { path: '/kiosk-management', icon: <MonitorPlay size={20} />, label: 'Kiosk Management' },
     { path: '/boom-barrier-control', icon: <ChevronsUpDown size={20} />, label: 'Boom Barrier Control' },
     { path: '/add-user', icon: <UserPlus size={20} />, label: 'Add User' },
+    { path: '/departments', icon: <Building2 size={20} />, label: 'Departments' },
     { path: '/settings', icon: <SettingsIcon size={20} />, label: 'Settings' }
   ];
 
@@ -49,17 +51,17 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
   return (
     <>
       <div className="w-64 bg-white shadow-md h-full flex flex-col">
-        <div className="p-4 border-b flex items-center justify-between"> 
+        <div className="p-4 border-b flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img 
-              src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" 
-              alt="Life Line Hospital Logo" 
-              className="w-10 h-auto" 
+            <img
+              src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+              alt="Pro-Parking Logo"
+              className="w-10 h-auto"
             />
             <h1 className="text-lg font-bold text-primary-blue">Pro - Parking</h1>
           </div>
-          <button 
-            onClick={() => setShowNotificationModal(true)} 
+          <button
+            onClick={() => setShowNotificationModal(true)}
             className="relative p-1.5 rounded-full text-gray-500 hover:bg-gray-100 hover:text-primary-blue focus:outline-none focus:ring-2 focus:ring-primary-blue"
             title="View Notifications"
           >
@@ -76,10 +78,9 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
                 <NavLink
                   to={item.path}
                   className={({ isActive }) =>
-                    `flex items-center px-4 py-3 transition-colors duration-150 ${
-                      isActive
-                        ? 'bg-blue-50 text-primary-blue border-r-4 border-primary-blue font-semibold'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-primary-blue'
+                    `flex items-center px-4 py-3 transition-colors duration-150 ${isActive
+                      ? 'bg-blue-50 text-primary-blue border-r-4 border-primary-blue font-semibold'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-primary-blue'
                     }`
                   }
                 >
@@ -92,14 +93,14 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
         </nav>
         <div className="p-4 mt-auto border-t">
           <button
-              onClick={handleLogoutClick}
-              className="w-full flex items-center justify-center px-4 py-2 bg-red-50 text-primary-red rounded-md hover:bg-red-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-red"
-            >
-              <LogOut size={18} className="mr-2" />
-              <span>Logout</span>
-            </button>
+            onClick={handleLogoutClick}
+            className="w-full flex items-center justify-center px-4 py-2 bg-red-50 text-primary-red rounded-md hover:bg-red-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-red"
+          >
+            <LogOut size={18} className="mr-2" />
+            <span>Logout</span>
+          </button>
           <p className="mt-4 text-xs text-gray-500 text-center">
-            &copy; {new Date().getFullYear()} Life Line Hospital
+            &copy; {new Date().getFullYear()} Pro-Parking
           </p>
         </div>
       </div>

@@ -102,7 +102,7 @@ const KioskManagement = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Kiosk Management</h1>
-          <p className="text-gray-600">Manage video content for display kiosks at Life Line Hospital Parking</p>
+          <p className="text-gray-600">Manage video content for display kiosks</p>
         </div>
         <button
           className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red"
@@ -176,35 +176,35 @@ const KioskManagement = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="videoTitle" className="block text-sm font-medium text-gray-700 mb-1">Video Title (Optional)</label>
-                <input 
-                  type="text" 
-                  name="title" 
-                  id="videoTitle" 
-                  value={formData.title} 
-                  onChange={handleInputChange} 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" 
-                  placeholder="e.g., Welcome Video, Safety Instructions" 
+                <input
+                  type="text"
+                  name="title"
+                  id="videoTitle"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                  placeholder="e.g., Welcome Video, Safety Instructions"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Upload Video File</label>
                 <div className="mt-1 flex items-center space-x-4">
-                  <button 
-                    type="button" 
-                    onClick={triggerVideoUpload} 
+                  <button
+                    type="button"
+                    onClick={triggerVideoUpload}
                     className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue flex items-center"
                   >
                     <Video size={16} className="mr-2" />
                     {formData.videoFile ? 'Change Video' : 'Select Video'}
                   </button>
-                  <input 
-                    type="file" 
-                    name="videoFile" 
-                    id="videoFile" 
-                    ref={fileInputRef} 
-                    onChange={handleVideoFileChange} 
-                    className="hidden" 
-                    accept="video/*" 
+                  <input
+                    type="file"
+                    name="videoFile"
+                    id="videoFile"
+                    ref={fileInputRef}
+                    onChange={handleVideoFileChange}
+                    className="hidden"
+                    accept="video/*"
                   />
                   {formData.videoFile && <span className="text-sm text-gray-600 truncate max-w-xs" title={formData.videoFile.name}>{formData.videoFile.name}</span>}
                 </div>
@@ -223,15 +223,15 @@ const KioskManagement = () => {
               )}
 
               <div className="pt-4 flex justify-end space-x-3 sticky bottom-0 bg-white py-3 border-t">
-                <button 
-                  type="button" 
-                  onClick={handleCloseFormModal} 
+                <button
+                  type="button"
+                  onClick={handleCloseFormModal}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red"
                   disabled={!formData.videoFile}
                 >

@@ -6,13 +6,14 @@ const Reports = () => {
   const { vehiclesData } = useOutletContext(); // Get vehiclesData from context
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('All');
   const [sortField, setSortField] = useState('entryTime');
   const [sortDirection, setSortDirection] = useState('desc');
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const filteredByTypeData = vehiclesData.filter(vehicle => 
+  const filteredByTypeData = vehiclesData.filter(vehicle =>
     vehicle.type === 'Staff' || vehicle.type === 'Visitor'
   );
 
@@ -36,6 +37,7 @@ const Reports = () => {
       endDate.setHours(23, 59, 59, 999); // Ensure end date includes the whole day
       if (entryDate < startDate || entryDate > endDate) return false;
     }
+    if (departmentFilter !== 'All' && vehicle.department !== departmentFilter) return false;
     return true;
   }).sort((a, b) => {
     let valueA, valueB;
@@ -46,10 +48,10 @@ const Reports = () => {
       valueA = a[sortField];
       valueB = b[sortField];
     }
-     // For waiverId and waiverReason, handle cases where they might be undefined or null
+    // For waiverId and waiverReason, handle cases where they might be undefined or null
     if (sortField === 'waiverId' || sortField === 'waiverReason') {
-        valueA = a[sortField] || ''; // Default to empty string if undefined/null
-        valueB = b[sortField] || ''; // Default to empty string if undefined/null
+      valueA = a[sortField] || ''; // Default to empty string if undefined/null
+      valueB = b[sortField] || ''; // Default to empty string if undefined/null
     }
     return sortDirection === 'asc' ? (valueA > valueB ? 1 : -1) : (valueA < valueB ? 1 : -1);
   });
@@ -72,8 +74,8 @@ const Reports = () => {
     let filename = `vehicle_report_${new Date().toISOString().slice(0, 10)}`;
     let mimeType = "";
 
-    const header = "Vehicle Number,Entry Time,Exit Time,Type,Status,Duration,Payment Method,Payment Amount (OMR),Waiver ID,Waiver Reason\n";
-    
+    const header = "Vehicle Number,Entry Time,Exit Time,Type,Status,Duration,Payment Method,Payment Amount (USD),Waiver ID,Waiver Reason\n";
+
     const dataToExport = filteredData.map(vehicle => {
       let duration = '-';
       if (vehicle.entryTime) {
@@ -89,7 +91,7 @@ const Reports = () => {
       const paymentAmount = vehicle.exitTime ? (vehicle.type === 'Staff' && vehicle.paymentMethod === 'Waiver' ? 'N/A (Waiver)' : (vehicle.paymentAmount || '0.000')) : '-';
       const waiverId = (vehicle.type === 'Staff' && vehicle.paymentMethod === 'Waiver' && vehicle.exitTime) ? (vehicle.waiverId || 'N/A') : '-';
       const waiverReason = (vehicle.type === 'Staff' && vehicle.paymentMethod === 'Waiver' && vehicle.exitTime) ? (vehicle.waiverReason || 'N/A') : '-';
-      
+
       return [
         vehicle.vehicleNumber,
         vehicle.entryTime,
@@ -104,7 +106,7 @@ const Reports = () => {
       ];
     });
 
-    if (format === 'pdf') { 
+    if (format === 'pdf') {
       // Simplified PDF to text for browser compatibility without heavy libraries
       content = "Vehicle Report\nDate: " + new Date().toLocaleDateString() + "\n\n";
       content += header.replace(/,/g, " | ");
@@ -134,8 +136,8 @@ const Reports = () => {
     URL.revokeObjectURL(url);
   };
 
-  const getStatusBadge = (exitTime) => exitTime ? 
-    <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Exited</span> : 
+  const getStatusBadge = (exitTime) => exitTime ?
+    <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Exited</span> :
     <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Inside</span>;
 
   const getTypeBadge = (type) => type === 'Staff' ?
@@ -157,7 +159,7 @@ const Reports = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Reports</h1>
-          <p className="text-gray-600">Generate and download Life Line Hospital Parking vehicle reports</p>
+          <p className="text-gray-600">Generate and download parking vehicle reports</p>
         </div>
         <div className="flex space-x-2">
           <button
@@ -196,7 +198,7 @@ const Reports = () => {
 
         {/* Filters */}
         <div className="bg-gray-50 p-4 rounded-md mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
               <div className="flex items-center space-x-2">
@@ -204,19 +206,35 @@ const Reports = () => {
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Calendar size={16} className="text-gray-400" />
                   </div>
-                  <input type="date" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.start} onChange={(e) => setDateRange({...dateRange, start: e.target.value})}/>
+                  <input type="date" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.start} onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })} />
                 </div>
                 <span className="flex-shrink-0">to</span>
                 <div className="relative flex-1">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Calendar size={16} className="text-gray-400" />
                   </div>
-                  <input type="date" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.end} onChange={(e) => setDateRange({...dateRange, end: e.target.value})}/>
+                  <input type="date" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.end} onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })} />
                 </div>
               </div>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+              <select
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue bg-white"
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+              >
+                <option value="All">All Departments</option>
+                <option value="Administration">Administration</option>
+                <option value="Security">Security</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Customer Service">Customer Service</option>
+                <option value="Operations">Operations</option>
+                <option value="Visitor">Visitor</option>
+              </select>
+            </div>
             <div className="flex items-end">
-              <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); }}>
+              <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setDepartmentFilter('All'); }}>
                 <Filter size={18} className="mr-2" />
                 Reset Filters
               </button>
@@ -239,17 +257,18 @@ const Reports = () => {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('paymentMethod')}>
-                    <div className="flex items-center">Payment Method{sortField === 'paymentMethod' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                  <div className="flex items-center">Payment Method{sortField === 'paymentMethod' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('paymentAmount')}>
-                    <div className="flex items-center">Amount (OMR){sortField === 'paymentAmount' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                  <div className="flex items-center">Amount (USD){sortField === 'paymentAmount' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('waiverId')}>
-                    <div className="flex items-center">Waiver ID{sortField === 'waiverId' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                  <div className="flex items-center">Waiver ID{sortField === 'waiverId' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('waiverReason')}>
-                    <div className="flex items-center">Waiver Reason{sortField === 'waiverReason' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
+                  <div className="flex items-center">Waiver Reason{sortField === 'waiverReason' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -276,6 +295,7 @@ const Reports = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime ? (showWaiverDetails ? <span className="text-gray-500">N/A (Waiver)</span> : <span className="font-medium">{vehicle.paymentAmount || '0.000'}</span>) : '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{showWaiverDetails ? vehicle.waiverId || 'N/A' : '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{showWaiverDetails ? vehicle.waiverReason || 'N/A' : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td>
                   </tr>
                 );
               })}
@@ -299,8 +319,8 @@ const Reports = () => {
                   else pageNumber = currentPage - 2 + i;
 
                   return (
-                    <button 
-                      key={i} 
+                    <button
+                      key={i}
                       className={`px-3 py-1 rounded-md ${currentPage === pageNumber ? 'bg-primary-blue text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                       onClick={() => paginate(pageNumber)}
                     >
@@ -313,9 +333,9 @@ const Reports = () => {
             </div>
             <div className="mt-2 md:mt-0 flex items-center space-x-2">
               <span className="text-xs">Items per page:</span>
-              <select 
-                className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary-blue" 
-                value={itemsPerPage} 
+              <select
+                className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
+                value={itemsPerPage}
                 onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
               >
                 {[5, 10, 20, 50].map(val => <option key={val} value={val}>{val}</option>)}

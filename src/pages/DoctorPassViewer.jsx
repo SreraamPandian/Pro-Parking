@@ -17,7 +17,7 @@ const DoctorPassViewer = () => {
     }
   }, []);
 
-  const filteredDoctors = doctors.filter(doctor => 
+  const filteredDoctors = doctors.filter(doctor =>
     doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     doctor.vehicleNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
     doctor.department.toLowerCase().includes(searchTerm.toLowerCase())
@@ -26,34 +26,34 @@ const DoctorPassViewer = () => {
   const getStatusClass = (validUntil) => {
     const today = new Date();
     const expiryDate = new Date(validUntil);
-    
+
     if (expiryDate < today) {
       return "text-red-600 border-red-300 bg-red-50";
     }
-    
+
     const daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-    
+
     if (daysLeft <= 7) {
       return "text-yellow-600 border-yellow-300 bg-yellow-50";
     }
-    
+
     return "text-green-600 border-green-300 bg-green-50";
   };
 
   const getStatusText = (validUntil) => {
     const today = new Date();
     const expiryDate = new Date(validUntil);
-    
+
     if (expiryDate < today) {
       return "Expired";
     }
-    
+
     const daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-    
+
     if (daysLeft <= 7) {
       return `Expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`;
     }
-    
+
     return "Active";
   };
 
@@ -93,9 +93,8 @@ const DoctorPassViewer = () => {
             {filteredDoctors.map((doctor) => (
               <div
                 key={doctor.id}
-                className={`p-3 border rounded-md cursor-pointer ${
-                  selectedDoctor?.id === doctor.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
-                }`}
+                className={`p-3 border rounded-md cursor-pointer ${selectedDoctor?.id === doctor.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+                  }`}
                 onClick={() => setSelectedDoctor(doctor)}
               >
                 <div className="font-medium">{doctor.name}</div>
@@ -105,7 +104,7 @@ const DoctorPassViewer = () => {
                 </div>
               </div>
             ))}
-            
+
             {filteredDoctors.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No doctor vehicles found matching your search criteria.
@@ -120,14 +119,14 @@ const DoctorPassViewer = () => {
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold">Parking Pass</h3>
                 <div className="flex space-x-2">
-                  <button 
+                  <button
                     className="p-2 bg-gray-100 rounded-md hover:bg-gray-200 flex items-center"
                     onClick={handlePrintPass}
                   >
                     <Printer size={20} className="text-gray-600 mr-2" />
                     <span>Print</span>
                   </button>
-                  <button 
+                  <button
                     className="p-2 bg-gray-100 rounded-md hover:bg-gray-200 flex items-center"
                     onClick={handleDownloadPass}
                   >
@@ -136,19 +135,19 @@ const DoctorPassViewer = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
                 <div className="flex flex-col md:flex-row items-center">
                   <div className="mb-4 md:mb-0 md:mr-6">
                     <div className="bg-white p-3 border border-gray-200 rounded-md">
-                      <img 
-                        src="https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/120x120/333/white?text=QR+Code" 
-                        alt="QR Code" 
+                      <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=PRO-PARKING-DOCTOR-PASS"
+                        alt="QR Code"
                         className="w-28 h-28"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex-1">
                     <div className="text-center md:text-left mb-4">
                       <h2 className="text-xl font-bold text-blue-800">Hospital Parking Pass</h2>
@@ -156,7 +155,7 @@ const DoctorPassViewer = () => {
                         {getStatusText(selectedDoctor.validUntil)}
                       </p>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">Doctor Name</p>
@@ -185,7 +184,7 @@ const DoctorPassViewer = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mt-6 pt-4 border-t border-gray-200">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center text-blue-800">

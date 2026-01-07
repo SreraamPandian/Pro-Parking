@@ -23,8 +23,8 @@ const ForgotPasswordPage = () => {
     // Simulate API call for sending temporary password
     console.log('Forgot password request for identifier:', identifier);
     setMessage(`A temporary password has been sent to your registered email. Please use it to log in and reset your password immediately.`);
-    
-    setIdentifier(''); 
+
+    setIdentifier('');
     // User would then (conceptually) use this temporary password to log in, 
     // and then be prompted to change it, possibly via the ResetPasswordPage.
   };
@@ -33,10 +33,10 @@ const ForgotPasswordPage = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-xl rounded-lg">
         <div className="flex flex-col items-center">
-          <img 
-            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" 
-            alt="Life Line Hospital Logo" 
-            className="w-24 h-auto mb-4" 
+          <img
+            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+            alt="Pro-Parking Logo"
+            className="w-24 h-auto mb-4"
           />
           <h2 className="text-xl font-bold text-center text-gray-800">
             Forgot Your Password?
@@ -45,7 +45,7 @@ const ForgotPasswordPage = () => {
             Enter your username or email address below. We'll send a temporary password to your registered email.
           </p>
         </div>
-        
+
         <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="identifier-forgot" className="block text-sm font-medium text-gray-700 mb-1">
@@ -86,7 +86,7 @@ const ForgotPasswordPage = () => {
             </button>
           </div>
         </form>
-        
+
         <div className="text-sm text-center mt-6">
           <Link to="/login" className="font-medium text-primary-blue hover:text-blue-700 flex items-center justify-center">
             <ArrowLeft size={16} className="mr-1" />
@@ -94,9 +94,9 @@ const ForgotPasswordPage = () => {
           </Link>
         </div>
 
-         <p className="mt-8 text-xs text-center text-gray-500">
-            &copy; {new Date().getFullYear()} Life Line Hospital Parking.
-          </p>
+        <p className="mt-8 text-xs text-center text-gray-500">
+          &copy; {new Date().getFullYear()} Pro-Parking.
+        </p>
       </div>
     </div>
   );

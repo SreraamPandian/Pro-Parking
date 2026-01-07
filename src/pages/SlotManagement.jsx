@@ -28,25 +28,25 @@ const SlotManagement = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const total = parseInt(formData.totalSlots);
     const available = parseInt(formData.availableSlots);
     const reserved = parseInt(formData.reservedSlots);
     const occupied = parseInt(formData.occupiedSlots);
-    
+
     if (available + reserved + occupied !== total) {
       alert('Error: Available + Reserved + Occupied slots must equal Total slots');
       return;
     }
-    
+
     const isNearlyFull = available <= total * 0.1;
-    
-    setSlot({ 
-      ...slot, 
+
+    setSlot({
+      ...slot,
       ...formData,
       isNearlyFull
     });
-    
+
     setShowModal(false);
   };
 
@@ -54,11 +54,11 @@ const SlotManagement = () => {
     if (status === 'full') {
       return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-primary-red">Full</span>;
     }
-    
+
     if (isNearlyFull) {
       return <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Nearly Full</span>;
     }
-    
+
     return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Available</span>;
   };
 
@@ -67,7 +67,7 @@ const SlotManagement = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Slot Management</h1>
-          <p className="text-gray-600">Manage parking slots and availability for Life Line Hospital Parking</p> {/* Updated text */}
+          <p className="text-gray-600">Manage parking slots and availability</p> {/* Updated text */}
         </div>
         <button
           className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red" // Changed to primary-red
@@ -83,7 +83,7 @@ const SlotManagement = () => {
           <h3 className="font-semibold text-lg">{slot.name}</h3>
           {getStatusBadge(slot.status, slot.isNearlyFull)}
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <div className="bg-blue-50 p-4 rounded-md">
             <p className="text-sm text-primary-blue mb-1">Total Slots</p>
@@ -102,15 +102,14 @@ const SlotManagement = () => {
             <p className="text-2xl font-bold text-primary-red">{slot.occupiedSlots}</p>
           </div>
         </div>
-        
+
         <div className="mb-6">
           <p className="text-sm text-gray-500 mb-2">Occupancy Rate</p>
           <div className="w-full bg-gray-200 rounded-full h-4">
-            <div 
-              className={`h-4 rounded-full ${
-                slot.status === 'full' ? 'bg-primary-red' : 
-                slot.isNearlyFull ? 'bg-yellow-500' : 'bg-green-600'
-              }`}
+            <div
+              className={`h-4 rounded-full ${slot.status === 'full' ? 'bg-primary-red' :
+                  slot.isNearlyFull ? 'bg-yellow-500' : 'bg-green-600'
+                }`}
               style={{ width: `${((slot.occupiedSlots + slot.reservedSlots) / slot.totalSlots) * 100}%` }}
             ></div>
           </div>
@@ -120,7 +119,7 @@ const SlotManagement = () => {
             <span>100%</span>
           </div>
         </div>
-        
+
         {slot.isNearlyFull && (
           <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md flex items-start">
             <AlertTriangle size={20} className="text-yellow-500 mr-3 flex-shrink-0 mt-0.5" />
@@ -133,7 +132,7 @@ const SlotManagement = () => {
             </div>
           </div>
         )}
-        
+
         {slot.status === 'full' && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md flex items-start">
             <AlertTriangle size={20} className="text-primary-red mr-3 flex-shrink-0 mt-0.5" />
@@ -147,75 +146,75 @@ const SlotManagement = () => {
           </div>
         )}
       </div>
-      
+
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-md p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Update Parking Slots</h3>
-              <button 
+              <button
                 className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary-blue"
                 onClick={() => setShowModal(false)}
               >
                 <X size={20} />
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Zone Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Total Slots</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.totalSlots}
-                  onChange={(e) => setFormData({...formData, totalSlots: parseInt(e.target.value) || 0})}
+                  onChange={(e) => setFormData({ ...formData, totalSlots: parseInt(e.target.value) || 0 })}
                   required
                   min="1"
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Available Slots</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.availableSlots}
-                  onChange={(e) => setFormData({...formData, availableSlots: parseInt(e.target.value) || 0})}
+                  onChange={(e) => setFormData({ ...formData, availableSlots: parseInt(e.target.value) || 0 })}
                   required
                   min="0"
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Reserved Slots</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.reservedSlots}
-                  onChange={(e) => setFormData({...formData, reservedSlots: parseInt(e.target.value) || 0})}
+                  onChange={(e) => setFormData({ ...formData, reservedSlots: parseInt(e.target.value) || 0 })}
                   required
                   min="0"
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Occupied Slots</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.occupiedSlots}
-                  onChange={(e) => setFormData({...formData, occupiedSlots: parseInt(e.target.value) || 0})}
+                  onChange={(e) => setFormData({ ...formData, occupiedSlots: parseInt(e.target.value) || 0 })}
                   required
                   min="0"
                 />
@@ -223,20 +222,20 @@ const SlotManagement = () => {
                   Note: Available + Reserved + Occupied slots must equal Total slots
                 </p>
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select 
+                <select
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 >
                   <option value="active">Active</option>
                   <option value="full">Full</option>
                   <option value="maintenance">Maintenance</option>
                 </select>
               </div>
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"

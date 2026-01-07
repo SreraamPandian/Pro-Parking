@@ -30,9 +30,9 @@ const BoomBarrierControl = () => {
         // Clear timer if barrier is no longer open or autoCloseTime is removed
         clearInterval(activeTimers[barrier.id]);
         setTimers(prev => {
-            const newTimers = {...prev};
-            delete newTimers[barrier.id];
-            return newTimers;
+          const newTimers = { ...prev };
+          delete newTimers[barrier.id];
+          return newTimers;
         });
       }
     });
@@ -79,7 +79,7 @@ const BoomBarrierControl = () => {
     <div className="p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Boom Barrier Control</h1>
-        <p className="text-gray-600 mt-1">Remotely operate and monitor parking boom barriers for Life Line Hospital Parking.</p>
+        <p className="text-gray-600 mt-1">Remotely operate and monitor parking boom barriers.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -106,14 +106,14 @@ const BoomBarrierControl = () => {
                   <span className={statusInfo.color}>{statusInfo.icon}</span>
                 </div>
                 <p className={`text-lg font-medium ${statusInfo.color}`}>{statusInfo.text}</p>
-                
+
                 {isOpen && timers[barrier.id] > 0 && (
                   <div className="flex items-center text-sm text-primary-blue">
                     <Timer size={16} className="mr-1.5 animate-pulse" />
                     <span>Auto-closing in {timers[barrier.id]}s</span>
                   </div>
                 )}
-                
+
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden relative my-2">
                   <motion.div
                     className={`h-full absolute top-0 left-0 ${isOpen ? 'bg-green-500' : barrier.status === 'closed' ? 'bg-primary-red' : 'bg-primary-blue'}`}
@@ -121,14 +121,14 @@ const BoomBarrierControl = () => {
                     animate={{ width: barrier.status === 'closed' ? '0%' : isOpen ? '100%' : '50%' }}
                     transition={{ duration: 0.5, type: "spring" }}
                   />
-                   {isOperating && (
-                     <motion.div
-                        className={`h-full absolute top-0 ${barrier.status === 'opening' ? 'left-0' : 'right-0'} w-1/2 ${barrier.status === 'opening' ? 'bg-green-400' : 'bg-red-400'}`}
-                        initial={{ width: '0%'}}
-                        animate={{ width: '100%'}}
-                        transition={{ duration: 2.5, ease: "linear" }}
-                     />
-                   )}
+                  {isOperating && (
+                    <motion.div
+                      className={`h-full absolute top-0 ${barrier.status === 'opening' ? 'left-0' : 'right-0'} w-1/2 ${barrier.status === 'opening' ? 'bg-green-400' : 'bg-red-400'}`}
+                      initial={{ width: '0%' }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: 2.5, ease: "linear" }}
+                    />
+                  )}
                 </div>
                 <p className="text-xs text-gray-400">Barrier Status Indicator</p>
               </div>

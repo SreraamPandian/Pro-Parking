@@ -14,7 +14,7 @@ const Pricing = () => {
     description: '',
     isActive: true,
     tiers: [
-      { id: Date.now(), duration: 1, unit: 'hour', priceOMR: '0.500' }
+      { id: Date.now(), duration: 1, unit: 'hour', priceUSD: '1.30' }
     ]
   });
   const [showSampleBillModal, setShowSampleBillModal] = useState(false);
@@ -42,7 +42,7 @@ const Pricing = () => {
       description: '',
       isActive: true,
       tiers: [
-        { id: Date.now(), duration: 1, unit: 'hour', priceOMR: '0.500' }
+        { id: Date.now(), duration: 1, unit: 'hour', priceUSD: '1.30' }
       ]
     });
     setEditingId(null);
@@ -51,26 +51,26 @@ const Pricing = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (editingId) {
-      setPricingData(pricingData.map(item => 
-        item.id === editingId ? { ...item, ...formData, vehicleType: '4-Wheeler' } : item 
+      setPricingData(pricingData.map(item =>
+        item.id === editingId ? { ...item, ...formData, vehicleType: '4-Wheeler' } : item
       ));
     } else {
       const newPricing = {
         id: Date.now().toString(),
         ...formData,
-        vehicleType: '4-Wheeler' 
+        vehicleType: '4-Wheeler'
       };
       setPricingData([...pricingData, newPricing]);
     }
-    
+
     setShowForm(false);
     setEditingId(null);
   };
 
   const toggleStatus = (id) => {
-    setPricingData(pricingData.map(item => 
+    setPricingData(pricingData.map(item =>
       item.id === id ? { ...item, isActive: !item.isActive } : item
     ));
   };
@@ -85,7 +85,7 @@ const Pricing = () => {
       id: Date.now(),
       duration: lastTier.duration + 1,
       unit: lastTier.unit,
-      priceOMR: lastTier.priceOMR
+      priceUSD: lastTier.priceUSD
     };
     setFormData({
       ...formData,
@@ -104,7 +104,7 @@ const Pricing = () => {
   const updateTier = (tierId, field, value) => {
     setFormData({
       ...formData,
-      tiers: formData.tiers.map(tier => 
+      tiers: formData.tiers.map(tier =>
         tier.id === tierId ? { ...tier, [field]: value } : tier
       )
     });
@@ -119,43 +119,43 @@ const Pricing = () => {
     return (
       <div className="font-mono text-xs text-black bg-white p-4 max-w-xs mx-auto border border-dashed border-black">
         <div className="text-center mb-2">
-          <img 
-              src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" 
-              alt="Life Line Hospital Logo" 
-              className="w-16 h-auto mx-auto mb-1" 
-            />
-          <p className="font-bold">LIFE LINE HOSPITAL PARKING</p>
+          <img
+            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+            alt="Pro-Parking Logo"
+            className="w-16 h-auto mx-auto mb-1"
+          />
+          <p className="font-bold">PRO-PARKING</p>
           <p>Salalah, Oman</p>
         </div>
-        <hr className="border-dashed border-black my-1"/>
+        <hr className="border-dashed border-black my-1" />
         <p>Receipt No : RCPT-{Math.floor(Math.random() * 90000) + 10000}</p>
         <p>Date       : {currentDate}</p>
         <p>Time       : {currentTime}</p>
-        <hr className="border-dashed border-black my-1"/>
+        <hr className="border-dashed border-black my-1" />
         <p>Vehicle No : RNO 1234</p>
         <p>Entry Time : {entryTime}</p>
         <p>Exit Time  : {exitTime}</p>
         <p>Duration   : 2h 0m</p>
-        <hr className="border-dashed border-black my-1"/>
+        <hr className="border-dashed border-black my-1" />
         <div className="flex justify-between">
           <span>Particulars</span>
-          <span>Amount (OMR)</span>
+          <span>Amount (USD)</span>
         </div>
-        <hr className="border-dashed border-black my-1"/>
+        <hr className="border-dashed border-black my-1" />
         <div className="flex justify-between">
           <span>Parking Fee</span>
           <span>1.000</span>
         </div>
-        <hr className="border-dashed border-black my-1"/>
+        <hr className="border-dashed border-black my-1" />
         <div className="flex justify-between font-bold mt-1">
           <span>Total Amount Paid</span>
-          <span>OMR 1.000</span>
+          <span>$2.60</span>
         </div>
-        <hr className="border-dashed border-black my-1"/>
+        <hr className="border-dashed border-black my-1" />
         <p className="text-center text-[10px] leading-tight mt-2">
           "Thank you for visiting. We wish you and your loved ones good health and a speedy recovery."
         </p>
-        <hr className="border-dashed border-black mt-2"/>
+        <hr className="border-dashed border-black mt-2" />
       </div>
     );
   };
@@ -166,7 +166,7 @@ const Pricing = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Pricing Module</h1>
-          <p className="text-gray-600">Manage tiered parking pricing for Life Line Hospital Parking (4-Wheeler Vehicles)</p>
+          <p className="text-gray-600">Manage tiered parking pricing for 4-Wheeler Vehicles</p>
         </div>
         <div className="flex space-x-2">
           <button
@@ -174,7 +174,7 @@ const Pricing = () => {
             onClick={() => setShowSampleBillModal(true)}
           >
             <Eye size={18} className="mr-2" />
-            View Sample Receipt 
+            View Sample Receipt
           </button>
           <button
             className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red"
@@ -192,14 +192,14 @@ const Pricing = () => {
             <h3 className="text-lg font-semibold">
               {editingId ? 'Edit Pricing Structure' : 'Add New Pricing Structure'}
             </h3>
-            <button 
+            <button
               className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary-blue"
               onClick={() => setShowForm(false)}
             >
               <X size={20} />
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
@@ -211,46 +211,46 @@ const Pricing = () => {
                   readOnly
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pricing Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   placeholder="e.g. Standard Visitor Parking"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.isActive ? "active" : "inactive"}
-                  onChange={(e) => setFormData({...formData, isActive: e.target.value === "active"})}
+                  onChange={(e) => setFormData({ ...formData, isActive: e.target.value === "active" })}
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
-              
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows="2"
                   placeholder="Add any additional details about this pricing structure"
                 ></textarea>
               </div>
-              
+
               <div className="md:col-span-2">
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700">Time-Based Pricing Tiers</label>
-                  <button 
+                  <button
                     type="button"
                     className="text-primary-blue hover:text-blue-700 text-sm flex items-center focus:outline-none focus:ring-1 focus:ring-primary-blue"
                     onClick={addTier}
@@ -259,7 +259,7 @@ const Pricing = () => {
                     Add Tier
                   </button>
                 </div>
-                
+
                 <div className="border border-gray-200 rounded-md overflow-hidden">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -268,7 +268,7 @@ const Pricing = () => {
                           Duration
                         </th>
                         <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Price (OMR)
+                          Price (USD)
                         </th>
                         <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
@@ -311,10 +311,10 @@ const Pricing = () => {
                                 step="0.001"
                                 min="0"
                                 className="w-24 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue"
-                                value={tier.priceOMR}
-                                onChange={(e) => updateTier(tier.id, 'priceOMR', e.target.value)}
+                                value={tier.priceUSD}
+                                onChange={(e) => updateTier(tier.id, 'priceUSD', e.target.value)}
                               />
-                              <span className="ml-2 text-gray-500">OMR</span>
+                              <span className="ml-2 text-gray-500">USD</span>
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-right">
@@ -332,14 +332,14 @@ const Pricing = () => {
                     </tbody>
                   </table>
                 </div>
-                
+
                 <div className="mt-2 text-sm text-gray-500 flex items-center">
                   <Clock size={14} className="mr-1" />
                   <span>Pricing tiers are applied cumulatively based on parking duration</span>
                 </div>
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-3 mt-4">
               <button
                 type="button"
@@ -393,7 +393,7 @@ const Pricing = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-gray-900 font-medium">
-                          {item.tiers[0]?.priceOMR ? parseFloat(item.tiers[0].priceOMR).toFixed(3) : '0.000'} OMR
+                          ${item.tiers[0]?.priceUSD ? parseFloat(item.tiers[0].priceUSD).toFixed(2) : '0.00'}
                           <span className="text-gray-500 ml-1">
                             / {item.tiers[0]?.duration || 1} {item.tiers[0]?.unit || 'hour'}
                           </span>
@@ -402,11 +402,10 @@ const Pricing = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
                           onClick={() => toggleStatus(item.id)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            item.isActive 
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                              : 'bg-red-100 text-primary-red hover:bg-red-200'
-                          }`}
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${item.isActive
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                            : 'bg-red-100 text-primary-red hover:bg-red-200'
+                            }`}
                         >
                           {item.isActive ? 'Active' : 'Inactive'}
                         </button>
@@ -444,7 +443,7 @@ const Pricing = () => {
                                     Duration
                                   </th>
                                   <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Price (OMR)
+                                    Price (USD)
                                   </th>
                                 </tr>
                               </thead>
@@ -459,7 +458,7 @@ const Pricing = () => {
                                       )}
                                     </td>
                                     <td className="px-4 py-2 whitespace-nowrap font-medium">
-                                      {parseFloat(tier.priceOMR).toFixed(3)} OMR
+                                      ${parseFloat(tier.priceUSD).toFixed(2)}
                                     </td>
                                   </tr>
                                 ))}
@@ -473,7 +472,7 @@ const Pricing = () => {
                 ))}
               </tbody>
             </table>
-            
+
             {pricingData.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No pricing data available for 4-Wheeler vehicles. Click "Add Pricing" to create new pricing rules.
@@ -502,16 +501,16 @@ const Pricing = () => {
             >
               <div className="p-4 border-b flex justify-between items-center">
                 <h3 className="text-md font-semibold text-gray-700">Sample Payment Receipt</h3>
-                <button 
-                    onClick={() => setShowSampleBillModal(false)} 
-                    className="text-gray-400 hover:text-gray-600 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                <button
+                  onClick={() => setShowSampleBillModal(false)}
+                  className="text-gray-400 hover:text-gray-600 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-blue"
                 >
-                    <X size={20} />
+                  <X size={20} />
                 </button>
               </div>
               <div className="p-4">
                 <div id="samplePaymentReceiptForPrint">
-                    <SamplePaymentReceiptContent />
+                  <SamplePaymentReceiptContent />
                 </div>
               </div>
               <div className="p-3 bg-gray-50 border-t flex justify-end space-x-2">

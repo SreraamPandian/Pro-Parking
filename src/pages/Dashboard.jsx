@@ -37,36 +37,36 @@ const Dashboard = () => {
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-gray-600">Life Line Hospital Parking Overview</p>
+        <p className="text-gray-600">Parking Management Overview</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div className="md:col-span-2 lg:col-span-2">
-          <StatCard 
-            title="Available Parking Slots" 
-            value={dashboardData.availableSlots} 
-            icon={<ParkingCircle size={32} className="text-white" />} 
+          <StatCard
+            title="Available Parking Slots"
+            value={dashboardData.availableSlots}
+            icon={<ParkingCircle size={32} className="text-white" />}
             color="bg-primary-blue"
             isAlert={dashboardData.availableSlots < 10}
           />
         </div>
         <div className="md:col-span-2 lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard 
-            title="Current Vehicles" 
-            value={dashboardData.currentVehicles} 
-            icon={<Car size={24} className="text-white" />} 
+          <StatCard
+            title="Current Vehicles"
+            value={dashboardData.currentVehicles}
+            icon={<Car size={24} className="text-white" />}
             color="bg-primary-blue"
           />
-          <StatCard 
-            title="Vehicles Entered Today" 
-            value={dashboardData.enteredToday} 
-            icon={<LogIn size={24} className="text-white" />} 
+          <StatCard
+            title="Vehicles Entered Today"
+            value={dashboardData.enteredToday}
+            icon={<LogIn size={24} className="text-white" />}
             color="bg-green-500"
           />
-          <StatCard 
-            title="Vehicles Exited Today" 
-            value={dashboardData.exitedToday} 
-            icon={<LogOut size={24} className="text-white" />} 
+          <StatCard
+            title="Vehicles Exited Today"
+            value={dashboardData.exitedToday}
+            icon={<LogOut size={24} className="text-white" />}
             color="bg-orange-500"
           />
         </div>
@@ -79,7 +79,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-blue-50 p-3 rounded-md">
               <p className="text-sm text-primary-blue mb-1">Today's Revenue</p>
-              <p className="text-xl font-bold text-primary-blue">OMR 125.500</p>
+              <p className="text-xl font-bold text-primary-blue">$326.30</p>
             </div>
             <div className="bg-green-50 p-3 rounded-md">
               <p className="text-sm text-green-500 mb-1">Most Active Time</p>
@@ -115,7 +115,7 @@ const Dashboard = () => {
                 </div>
                 <div className="flex items-center">
                   <DollarSign size={12} className="text-purple-500 mr-1" />
-                  <span className="text-gray-600">Payment received: OMR 2.500</span>
+                  <span className="text-gray-600">Payment received: $6.50</span>
                 </div>
               </div>
             </div>

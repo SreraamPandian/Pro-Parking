@@ -8,7 +8,7 @@ const Settings = ({ onLogout, onUser1Login }) => { // Added onUser1Login prop
     name: 'Life Line Admin',
     email: 'admin@lifeline.com',
     phone: '+968 1234 5678',
-    organization: 'Life Line Hospital Parking',
+    organization: 'Pro-Parking System',
     position: 'Parking Administrator'
   });
   const [changePassword, setChangePassword] = useState({
@@ -64,7 +64,7 @@ const Settings = ({ onLogout, onUser1Login }) => { // Added onUser1Login prop
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
-          <p className="text-gray-600">Manage your account details for Life Line Hospital Parking</p>
+          <p className="text-gray-600">Manage your account details for parking system</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -101,7 +101,7 @@ const Settings = ({ onLogout, onUser1Login }) => { // Added onUser1Login prop
                   <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">{field.icon}</div>
-                    <input type={field.type} name={field.name} className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={accountData[field.name]} onChange={handleAccountChange}/>
+                    <input type={field.type} name={field.name} className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={accountData[field.name]} onChange={handleAccountChange} />
                   </div>
                 </div>
               ))}
@@ -113,7 +113,7 @@ const Settings = ({ onLogout, onUser1Login }) => { // Added onUser1Login prop
             </div>
           </form>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
           <form onSubmit={handleSavePassword}>
@@ -127,7 +127,7 @@ const Settings = ({ onLogout, onUser1Login }) => { // Added onUser1Login prop
                   <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Lock size={16} className="text-gray-400" /></div>
-                    <input type={field.type} name={field.name} className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={changePassword[field.name]} onChange={handlePasswordChange} required minLength={field.name === 'newPassword' ? 8 : undefined}/>
+                    <input type={field.type} name={field.name} className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={changePassword[field.name]} onChange={handlePasswordChange} required minLength={field.name === 'newPassword' ? 8 : undefined} />
                   </div>
                   {field.name === 'newPassword' && <p className="mt-1 text-xs text-gray-500">Password must be at least 8 characters.</p>}
                 </div>

@@ -23,13 +23,13 @@ const User1LoginPage = ({ onUser1Login }) => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white shadow-xl rounded-lg">
         <div className="flex flex-col items-center">
-          <img 
-            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" 
-            alt="Life Line Hospital Logo" 
-            className="w-32 h-auto mb-6" 
+          <img
+            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+            alt="Pro-Parking Logo"
+            className="w-32 h-auto mb-6"
           />
           <h2 className="text-2xl font-bold text-center text-gray-800">
-            Life Line Hospital Parking
+            Pro-Parking System
           </h2>
           <p className="mt-2 text-sm text-center text-gray-600">
             Live Parking Access - Sign In
@@ -58,7 +58,7 @@ const User1LoginPage = ({ onUser1Login }) => {
                 Password
               </label>
               <input
-                id="user1-password" 
+                id="user1-password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
@@ -87,9 +87,9 @@ const User1LoginPage = ({ onUser1Login }) => {
             </button>
           </div>
         </form>
-         <p className="mt-4 text-xs text-center text-gray-500">
-            &copy; {new Date().getFullYear()} Life Line Hospital. All rights reserved.
-          </p>
+        <p className="mt-4 text-xs text-center text-gray-500">
+          &copy; {new Date().getFullYear()} Pro-Parking. All rights reserved.
+        </p>
       </div>
     </div>
   );

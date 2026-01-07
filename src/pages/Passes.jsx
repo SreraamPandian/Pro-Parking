@@ -13,6 +13,7 @@ const Passes = () => {
   const initialVehicle = { id: Date.now(), number: '', type: 'Car' };
   const [formData, setFormData] = useState({
     staffName: '',
+    type: 'Staff',
     department: '',
     vehicles: [initialVehicle],
     validFrom: '',
@@ -33,7 +34,7 @@ const Passes = () => {
     localStorage.setItem('lifeLineParkingWaiverReasons', JSON.stringify(waiverReasons));
   }, [waiverReasons]);
 
-  const filteredStaffPasses = staffPasses.filter(pass => 
+  const filteredStaffPasses = staffPasses.filter(pass =>
     pass.staffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (pass.vehicles && pass.vehicles.some(v => v.number.toLowerCase().includes(searchTerm.toLowerCase()))) ||
     pass.department.toLowerCase().includes(searchTerm.toLowerCase())
@@ -59,7 +60,7 @@ const Passes = () => {
   const handleVehicleInputChange = (vehicleId, field, value) => {
     setFormData(prev => ({
       ...prev,
-      vehicles: prev.vehicles.map(vehicle => 
+      vehicles: prev.vehicles.map(vehicle =>
         vehicle.id === vehicleId ? { ...vehicle, [field]: value } : vehicle
       )
     }));
@@ -67,24 +68,25 @@ const Passes = () => {
 
   const handleAddPass = () => {
     setSelectedStaffPass(null);
-    setFormData({ staffName: '', department: '', vehicles: [{id: Date.now(), number: '', type: 'Car'}], validFrom: '', validUntil: '', mobileNumber: '', isActive: true });
+    setFormData({ staffName: '', type: 'Staff', department: 'Administration', vehicles: [{ id: Date.now(), number: '', type: 'Car' }], validFrom: '', validUntil: '', mobileNumber: '', isActive: true });
     setShowForm(true);
   };
 
   const handleEditPass = (pass) => {
     setSelectedStaffPass(pass);
-    const vehiclesWithIds = (pass.vehicles && pass.vehicles.length > 0 ? 
-      pass.vehicles.map(v => ({...v, id: v.id || Date.now() + Math.random() })) 
-      : 
-      [{id: Date.now(), number: '', type: 'Car'}]
+    const vehiclesWithIds = (pass.vehicles && pass.vehicles.length > 0 ?
+      pass.vehicles.map(v => ({ ...v, id: v.id || Date.now() + Math.random() }))
+      :
+      [{ id: Date.now(), number: '', type: 'Car' }]
     );
 
-    setFormData({ 
-      staffName: pass.staffName, 
-      department: pass.department, 
+    setFormData({
+      staffName: pass.staffName,
+      type: pass.type || 'Staff', // Default to Staff for existing records
+      department: pass.department,
       vehicles: vehiclesWithIds,
-      validFrom: pass.validFrom, 
-      validUntil: pass.validUntil, 
+      validFrom: pass.validFrom,
+      validUntil: pass.validUntil,
       mobileNumber: pass.mobileNumber || '',
       isActive: pass.isActive === undefined ? true : pass.isActive,
     });
@@ -102,10 +104,10 @@ const Passes = () => {
     e.preventDefault();
     const filledVehicles = formData.vehicles.filter(v => v.number.trim() !== '');
     if (filledVehicles.length === 0) {
-        alert("Please add at least one vehicle number.");
-        return;
+      alert("Please add at least one vehicle number.");
+      return;
     }
-    const updatedFormData = {...formData, vehicles: filledVehicles};
+    const updatedFormData = { ...formData, vehicles: filledVehicles };
 
     if (selectedStaffPass) {
       setStaffPasses(staffPasses.map(pass => pass.id === selectedStaffPass.id ? { ...pass, ...updatedFormData } : pass));
@@ -135,8 +137,8 @@ const Passes = () => {
   };
 
   const togglePassActiveStatus = (passId) => {
-    setStaffPasses(prevPasses => 
-      prevPasses.map(pass => 
+    setStaffPasses(prevPasses =>
+      prevPasses.map(pass =>
         pass.id === passId ? { ...pass, isActive: !pass.isActive } : pass
       )
     );
@@ -153,10 +155,10 @@ const Passes = () => {
       document.body.innerHTML = `<div class="print-container">${printableArea}</div>`;
       window.print();
       document.body.innerHTML = originalContents;
-      window.location.reload(); 
+      window.location.reload();
     }
   };
-  
+
   const viewPassDetails = (pass) => { setSelectedStaffPass(pass); };
 
   const handleAddWaiverReason = () => {
@@ -195,8 +197,8 @@ const Passes = () => {
       `}</style>
       <div className="mb-6 flex justify-between items-center no-print">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Staff Parking Passes</h1>
-          <p className="text-gray-600">Manage Life Line Hospital Parking passes for staff</p>
+          <h1 className="text-2xl font-bold text-gray-800">Parking Passes</h1>
+          <p className="text-gray-600">Manage parking passes for staff and visitors</p>
         </div>
         <div className="flex space-x-2">
           <button
@@ -221,7 +223,7 @@ const Passes = () => {
           <div className="mb-4">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div>
-              <input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="Search by staff name or vehicle..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
+              <input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="Search by staff name or vehicle..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
           </div>
           <div className="space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto">
@@ -251,7 +253,7 @@ const Passes = () => {
               <div className="flex justify-between items-center mb-6 no-print">
                 <h3 className="text-lg font-semibold">Parking Pass Details</h3>
                 <div className="flex space-x-2 items-center">
-                   <button 
+                  <button
                     onClick={() => togglePassActiveStatus(selectedStaffPass.id)}
                     title={selectedStaffPass.isActive ? "Deactivate Pass" : "Activate Pass"}
                     className={`p-2 rounded-md flex items-center focus:outline-none focus:ring-2 focus:ring-offset-1 ${selectedStaffPass.isActive ? 'bg-green-100 hover:bg-green-200 focus:ring-green-500' : 'bg-red-100 hover:bg-red-200 focus:ring-primary-red'}`}
@@ -268,14 +270,14 @@ const Passes = () => {
                 <div className="flex flex-col md:flex-row items-center">
                   <div className="mb-4 md:mb-0 md:mr-6">
                     <div className="bg-white p-3 border border-gray-200 rounded-md">
-                      <img src="https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/120x120/004EA8/white?text=QR" alt="QR Code" className="w-28 h-28"/>
+                      <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=PRO-PARKING-STAFF-PASS" alt="QR Code" className="w-28 h-28" />
                     </div>
                   </div>
                   <div className="flex-1">
                     <div className="text-center md:text-left mb-4">
                       <div className="flex items-center justify-center md:justify-start mb-2">
-                        <img src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" alt="Life Line Hospital Logo" className="w-10 h-auto mr-2" />
-                        <h2 className="text-xl font-bold text-primary-blue">Life Line Hospital Parking Pass</h2>
+                        <img src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" alt="Pro-Parking Logo" className="w-10 h-auto mr-2" />
+                        <h2 className="text-xl font-bold text-primary-blue">Pro-Parking Staff Pass</h2>
                       </div>
                       <div className="flex items-center justify-center md:justify-start space-x-2">
                         <p className={`text-sm font-medium ${getValidityStatusClass(selectedStaffPass.validUntil)}`}>{getValidityStatusText(selectedStaffPass.validUntil)}</p>
@@ -308,7 +310,7 @@ const Passes = () => {
                     <div className="flex items-center text-gray-600"><Calendar size={16} className="mr-2" /><span>Issue Date: {selectedStaffPass.validFrom}</span></div>
                   </div>
                   <div className="mt-2 text-center text-xs text-gray-500">
-                    <p>This pass is for authorized Life Line Hospital staff only.</p>
+                    <p>This pass is for authorized staff only.</p>
                     <p className="mt-1">Pass ID: {selectedStaffPass.id}</p>
                   </div>
                 </div>
@@ -347,19 +349,53 @@ const Passes = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4 sticky top-0 bg-white py-2 z-10 border-b">
-                <h3 className="text-lg font-semibold">{selectedStaffPass ? 'Edit Staff Parking Pass' : 'Create New Staff Parking Pass'}</h3>
+                <h3 className="text-lg font-semibold">{selectedStaffPass ? 'Edit Parking Pass' : 'Create New Parking Pass'}</h3>
                 <button className="text-gray-400 hover:text-gray-600" onClick={() => setShowForm(false)}><X size={20} /></button>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Staff Name</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.staffName} onChange={(e) => setFormData({...formData, staffName: e.target.value})} required/></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Department</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.department} onChange={(e) => setFormData({...formData, department: e.target.value})} required/></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => setFormData({...formData, mobileNumber: e.target.value})} placeholder="e.g. +968 1234 5678"/></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid From</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validFrom} onChange={(e) => setFormData({...formData, validFrom: e.target.value})} required/></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid Until</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validUntil} onChange={(e) => setFormData({...formData, validUntil: e.target.value})} required/></div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Pass Type</label>
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                      value={formData.type}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        setFormData({ ...formData, type: newType, department: newType === 'Visitor' ? 'Visitor' : 'Administration' });
+                      }}
+                    >
+                      <option value="Staff">Staff</option>
+                      <option value="Visitor">Visitor</option>
+                    </select>
+                  </div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">{formData.type === 'Visitor' ? 'Visitor Name' : 'Staff Name'}</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.staffName} onChange={(e) => setFormData({ ...formData, staffName: e.target.value })} required /></div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                      value={formData.department}
+                      onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                      disabled={formData.type === 'Visitor'}
+                    >
+                      {formData.type === 'Visitor' ? (
+                        <option value="Visitor">Visitor</option>
+                      ) : (
+                        <>
+                          <option value="Administration">Administration</option>
+                          <option value="Security">Security</option>
+                          <option value="Maintenance">Maintenance</option>
+                          <option value="Customer Service">Customer Service</option>
+                          <option value="Operations">Operations</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })} placeholder="e.g. +968 1234 5678" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid From</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validFrom} onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })} required /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid Until</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validUntil} onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })} required /></div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Pass Status</label>
-                    <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.isActive ? 'active' : 'inactive'} onChange={(e) => setFormData({...formData, isActive: e.target.value === 'active'})}><option value="active">Active</option><option value="inactive">Inactive</option></select>
+                    <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.isActive ? 'active' : 'inactive'} onChange={(e) => setFormData({ ...formData, isActive: e.target.value === 'active' })}><option value="active">Active</option><option value="inactive">Inactive</option></select>
                   </div>
                 </div>
                 <div className="mb-4">
@@ -367,7 +403,7 @@ const Passes = () => {
                   {formData.vehicles.map((vehicle, index) => (
                     <div key={vehicle.id} className="flex items-center gap-2 mb-2 p-3 border border-gray-200 rounded-md bg-gray-50">
                       <div className="flex-shrink-0 text-gray-500 mr-1">{index + 1}.</div>
-                      <input type="text" className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue" value={vehicle.number} onChange={(e) => handleVehicleInputChange(vehicle.id, 'number', e.target.value)} placeholder="Vehicle Number (e.g. AB12 XYZ)" required={index === 0 || vehicle.number.trim() !== ''}/>
+                      <input type="text" className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue" value={vehicle.number} onChange={(e) => handleVehicleInputChange(vehicle.id, 'number', e.target.value)} placeholder="Vehicle Number (e.g. AB12 XYZ)" required={index === 0 || vehicle.number.trim() !== ''} />
                       <select className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue" value={vehicle.type} onChange={(e) => handleVehicleInputChange(vehicle.id, 'type', e.target.value)}><option value="Car">Car</option><option value="Bike">Bike</option></select>
                       {formData.vehicles.length > 1 && (<button type="button" onClick={() => handleRemoveVehicleFromForm(vehicle.id)} className="p-2 text-primary-red hover:text-red-700 focus:outline-none" title="Remove Vehicle"><XCircle size={18} /></button>)}
                     </div>
@@ -407,19 +443,19 @@ const Passes = () => {
               <div className="mb-4">
                 <label htmlFor="newWaiverReason" className="block text-sm font-medium text-gray-700 mb-1">New Waiver Reason (Max 2 words)</label>
                 <div className="flex items-center space-x-2">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="newWaiverReason"
                     value={newWaiverReasonInput}
                     onChange={(e) => setNewWaiverReasonInput(e.target.value)}
                     className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                     placeholder="e.g., Emergency Duty"
                   />
-                  <button 
+                  <button
                     onClick={handleAddWaiverReason}
                     className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-red"
                   >
-                    <Plus size={16} className="mr-1"/> Add
+                    <Plus size={16} className="mr-1" /> Add
                   </button>
                 </div>
                 {waiverReasonError && <p className="text-xs text-red-600 mt-1">{waiverReasonError}</p>}
@@ -431,7 +467,7 @@ const Passes = () => {
                   waiverReasons.map((reason, index) => (
                     <div key={index} className="flex justify-between items-center p-2.5 bg-gray-50 rounded-md border border-gray-200">
                       <span className="text-sm text-gray-700">{reason}</span>
-                      <button 
+                      <button
                         onClick={() => handleDeleteWaiverReason(reason)}
                         className="p-1 text-primary-red hover:text-red-700 focus:outline-none"
                         title="Delete Reason"
@@ -443,9 +479,9 @@ const Passes = () => {
                 )}
               </div>
               <div className="mt-6 flex justify-end sticky bottom-0 bg-white py-3 border-t z-10">
-                <button 
-                  type="button" 
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue" 
+                <button
+                  type="button"
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue"
                   onClick={() => setShowWaiverReasonModal(false)}
                 >
                   Close

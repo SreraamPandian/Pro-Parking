@@ -1,34 +1,70 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash, UserCircle, KeyRound, X, Save } from 'lucide-react';
-import { availableAppModules } from '../data/mockData'; 
+import { Plus, Edit, Trash, UserCircle, KeyRound, X, Save, ChevronDown } from 'lucide-react';
+import { availableAppModules } from '../data/mockData';
 
 const AddUser = () => {
+  // Initial departments/roles
+  const [departments, setDepartments] = useState([
+    { id: 1, name: 'Administration', description: 'Administrative and management staff', employeeCount: 12, isActive: true },
+    { id: 2, name: 'Security', description: 'Security and surveillance personnel', employeeCount: 8, isActive: true },
+    { id: 3, name: 'Maintenance', description: 'Facility maintenance and technical staff', employeeCount: 15, isActive: true },
+    { id: 4, name: 'Customer Service', description: 'Customer support and assistance', employeeCount: 6, isActive: true },
+    { id: 5, name: 'Operations', description: 'Daily operations and logistics', employeeCount: 10, isActive: true }
+  ]);
+
+  // Initialize permissions object for all modules
+  const initializePermissions = () => {
+    const perms = {};
+    availableAppModules.forEach(module => {
+      perms[module] = { view: false, edit: false };
+    });
+    return perms;
+  };
+
   const initialUsers = [
-    { 
-      id: 'sample1', 
-      userName: 'Operator Kiosk', 
-      permissions: ['Kiosk Management', 'Live Parking'],
+    {
+      id: 'sample1',
+      userName: 'Operator Kiosk',
+      role: 'Operations',
+      permissions: {
+        'Kiosk Management': { view: true, edit: true },
+        'Live Parking': { view: true, edit: false }
+      }
     },
-    { 
-      id: 'sample2', 
-      userName: 'Reporting Staff', 
-      permissions: ['Reports', 'Payment Reports'] 
+    {
+      id: 'sample2',
+      userName: 'Reporting Staff',
+      role: 'Administration',
+      permissions: {
+        'Reports': { view: true, edit: false },
+        'Payment Reports': { view: true, edit: false }
+      }
     },
-    { 
-      id: 'sample3', 
-      userName: 'Parking Supervisor', 
-      permissions: ['Dashboard', 'Live Parking', 'Slot Management', 'Add User'] 
+    {
+      id: 'sample3',
+      userName: 'Parking Supervisor',
+      role: 'Operations',
+      permissions: {
+        'Dashboard': { view: true, edit: true },
+        'Live Parking': { view: true, edit: true },
+        'Slot Management': { view: true, edit: true },
+        'Add User': { view: true, edit: false }
+      }
     },
   ];
 
-  const [users, setUsers] = useState(initialUsers); 
+  const [users, setUsers] = useState(initialUsers);
   const [showFormModal, setShowFormModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showCreateRole, setShowCreateRole] = useState(false);
+  const [newRoleData, setNewRoleData] = useState({ name: '', description: '' });
+
   const [formData, setFormData] = useState({
     userName: '',
     password: '',
-    permissions: [], 
+    role: '',
+    permissions: initializePermissions(),
   });
 
   const handleInputChange = (e) => {
@@ -36,185 +72,406 @@ const AddUser = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handlePermissionChange = (moduleName) => {
-    setFormData(prev => {
-      const currentPermissions = prev.permissions || [];
-      if (currentPermissions.includes(moduleName)) {
-        return { ...prev, permissions: currentPermissions.filter(p => p !== moduleName) };
-      } else {
-        return { ...prev, permissions: [...currentPermissions, moduleName] };
+  const handleRoleChange = (e) => {
+    const value = e.target.value;
+    if (value === '__create_new__') {
+      setShowCreateRole(true);
+      setFormData({ ...formData, role: '' });
+    } else {
+      setShowCreateRole(false);
+      setFormData({ ...formData, role: value });
+    }
+  };
+
+  const handleCreateRole = () => {
+    if (newRoleData.name.trim()) {
+      const newRole = {
+        id: Math.max(...departments.map(d => d.id), 0) + 1,
+        name: newRoleData.name,
+        description: newRoleData.description || '',
+        employeeCount: 0,
+        isActive: true
+      };
+      setDepartments([...departments, newRole]);
+      setFormData({ ...formData, role: newRoleData.name });
+      setNewRoleData({ name: '', description: '' });
+      setShowCreateRole(false);
+    }
+  };
+
+  const handleCancelCreateRole = () => {
+    setNewRoleData({ name: '', description: '' });
+    setShowCreateRole(false);
+  };
+
+  const handlePermissionChange = (moduleName, permissionType) => {
+    setFormData(prev => ({
+      ...prev,
+      permissions: {
+        ...prev.permissions,
+        [moduleName]: {
+          ...prev.permissions[moduleName],
+          [permissionType]: !prev.permissions[moduleName][permissionType]
+        }
       }
+    }));
+  };
+
+  const handleSelectAllView = () => {
+    const allSelected = availableAppModules.every(module => formData.permissions[module]?.view);
+    const newPermissions = { ...formData.permissions };
+    availableAppModules.forEach(module => {
+      newPermissions[module] = { ...newPermissions[module], view: !allSelected };
     });
+    setFormData({ ...formData, permissions: newPermissions });
+  };
+
+  const handleSelectAllEdit = () => {
+    const allSelected = availableAppModules.every(module => formData.permissions[module]?.edit);
+    const newPermissions = { ...formData.permissions };
+    availableAppModules.forEach(module => {
+      newPermissions[module] = { ...newPermissions[module], edit: !allSelected };
+    });
+    setFormData({ ...formData, permissions: newPermissions });
   };
 
   const resetForm = () => {
-    setFormData({ userName: '', password: '', permissions: [] });
+    setFormData({ userName: '', password: '', role: '', permissions: initializePermissions() });
     setIsEditing(false);
     setCurrentUser(null);
+    setShowCreateRole(false);
+    setNewRoleData({ name: '', description: '' });
   };
 
   const handleOpenFormModal = (userToEdit = null) => {
-    resetForm(); 
+    resetForm();
     if (userToEdit) {
       setIsEditing(true);
       setCurrentUser(userToEdit);
+      const userPermissions = { ...initializePermissions(), ...userToEdit.permissions };
       setFormData({
         userName: userToEdit.userName || '',
-        password: '', 
-        permissions: userToEdit.permissions || [], 
+        password: '',
+        role: userToEdit.role || '',
+        permissions: userPermissions,
       });
     } else {
       setIsEditing(false);
-      setCurrentUser(null); 
+      setCurrentUser(null);
     }
-    setShowFormModal(true); 
+    setShowFormModal(true);
   };
 
-  const handleCloseFormModal = () => { setShowFormModal(false); };
+  const handleCloseFormModal = () => {
+    setShowFormModal(false);
+    resetForm();
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEditing && currentUser) {
       const updatedUser = {
-        ...currentUser, 
+        ...currentUser,
         userName: formData.userName,
-        permissions: formData.permissions, 
-        ...(formData.password && { password: formData.password }) 
+        role: formData.role,
+        permissions: formData.permissions,
+        ...(formData.password && { password: formData.password })
       };
       setUsers(users.map(user => user.id === currentUser.id ? updatedUser : user));
     } else {
-      const newUser = { 
-        id: Date.now().toString(), 
+      const newUser = {
+        id: Date.now().toString(),
         userName: formData.userName,
-        password: formData.password, 
-        permissions: formData.permissions, 
+        password: formData.password,
+        role: formData.role,
+        permissions: formData.permissions,
       };
-      setUsers(prevUsers => [...prevUsers, newUser]); 
+      setUsers(prevUsers => [...prevUsers, newUser]);
     }
     handleCloseFormModal();
   };
 
   const handleDeleteUser = (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId)); 
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
     }
+  };
+
+  const getPermissionCount = (user) => {
+    if (!user.permissions) return 0;
+    return Object.values(user.permissions).filter(p => p.view || p.edit).length;
   };
 
   return (
     <div className="p-6">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Add User</h1>
-          <p className="text-gray-600">Manage users and permissions for Life Line Hospital Parking</p>
+      <div className="mb-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
+            <p className="text-gray-600">Manage system users and their permissions</p>
+          </div>
+          <button
+            onClick={() => handleOpenFormModal()}
+            className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red"
+          >
+            <Plus size={18} className="mr-2" />
+            Add User
+          </button>
         </div>
-        <button
-          className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red"
-          onClick={() => handleOpenFormModal()}
-        >
-          <Plus size={18} className="mr-2" />
-          Add New User
-        </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
-        {users.length === 0 ? (
-          <div className="text-center py-10 text-gray-500">
-            <UserCircle size={48} className="mx-auto mb-4 text-gray-400" />
-            <p className="text-lg">No users added yet.</p>
-            <p>Click "Add New User" to get started.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Icon</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Name</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permissions</th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <UserCircle size={24} className="text-gray-400" />
+      {/* Users Table */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permissions</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {users.map((user) => (
+              <tr key={user.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10">
+                      <div className="h-10 w-10 rounded-full bg-primary-blue flex items-center justify-center">
+                        <UserCircle size={24} className="text-white" />
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{user.userName || '-'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.permissions && user.permissions.length > 0 ? user.permissions.join(', ') : 'No specific permissions'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleOpenFormModal(user)}
-                        className="text-primary-blue hover:text-blue-700 mr-3 focus:outline-none focus:ring-1 focus:ring-primary-blue p-1 rounded"
-                        title="Edit User"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="text-primary-red hover:text-red-700 focus:outline-none focus:ring-1 focus:ring-primary-red p-1 rounded"
-                        title="Delete User"
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-sm font-medium text-gray-900">{user.userName}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    {user.role || 'No Role'}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900">{getPermissionCount(user)} modules</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    onClick={() => handleOpenFormModal(user)}
+                    className="text-primary-blue hover:text-blue-900 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-blue rounded p-1"
+                    title="Edit User"
+                  >
+                    <Edit size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteUser(user.id)}
+                    className="text-primary-red hover:text-red-900 focus:outline-none focus:ring-2 focus:ring-primary-red rounded p-1"
+                    title="Delete User"
+                  >
+                    <Trash size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
+      {/* Add/Edit User Modal */}
       {showFormModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform transition-all max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6 sticky top-0 bg-white py-2 z-10 border-b">
-              <h3 className="text-xl font-semibold text-gray-800">{isEditing ? 'Edit User' : 'Add New User'}</h3>
-              <button onClick={handleCloseFormModal} className="text-gray-400 hover:text-gray-600 focus:outline-none"><X size={24} /></button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+              <h3 className="text-lg font-semibold">
+                {isEditing ? 'Edit User' : 'Add New User'}
+              </h3>
+              <button
+                onClick={handleCloseFormModal}
+                className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-blue rounded"
+              >
+                <X size={20} />
+              </button>
             </div>
-            {formData && (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">User Name</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><UserCircle size={16} className="text-gray-400" /></div>
-                    <input type="text" name="userName" id="userName" value={formData.userName || ''} onChange={handleInputChange} className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="e.g., John Doe" required />
+
+            <form onSubmit={handleSubmit} className="p-6">
+              <div className="space-y-6">
+                {/* Basic Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Username *
+                    </label>
+                    <input
+                      type="text"
+                      name="userName"
+                      value={formData.userName}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                      required
+                      placeholder="Enter username"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Password {isEditing ? '(leave blank to keep current)' : '*'}
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                      required={!isEditing}
+                      placeholder="Enter password"
+                    />
                   </div>
                 </div>
+
+                {/* Role Selection */}
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><KeyRound size={16} className="text-gray-400" /></div>
-                    <input type="password" name="password" id="password" value={formData.password || ''} onChange={handleInputChange} className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder={isEditing ? "Leave blank to keep current password" : "Enter password"} required={!isEditing} minLength={isEditing && !formData.password ? undefined : 6} />
-                  </div>
-                  {isEditing && <p className="mt-1 text-xs text-gray-500">Leave blank if you don't want to change the password.</p>}
-                  {!isEditing && <p className="mt-1 text-xs text-gray-500">Minimum 6 characters.</p>}
-                </div>
-                
-                <div className="pt-2">
-                  <h4 className="text-md font-medium text-gray-700 mb-2">Module Permissions</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 p-3 border border-gray-200 rounded-md bg-gray-50 max-h-48 overflow-y-auto">
-                    {availableAppModules.map(moduleName => (
-                      <div key={moduleName} className="flex items-center">
-                        <input type="checkbox" id={`perm-${moduleName.replace(/\s+/g, '-')}`} className="h-4 w-4 text-primary-blue border-gray-300 rounded focus:ring-primary-blue" checked={(formData.permissions || []).includes(moduleName)} onChange={() => handlePermissionChange(moduleName)} />
-                        <label htmlFor={`perm-${moduleName.replace(/\s+/g, '-')}`} className="ml-2 text-sm text-gray-700">{moduleName}</label>
-                      </div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Role / Department *
+                  </label>
+                  <select
+                    value={showCreateRole ? '__create_new__' : formData.role}
+                    onChange={handleRoleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                    required={!showCreateRole}
+                  >
+                    <option value="">Select a role...</option>
+                    {departments.filter(d => d.isActive).map(dept => (
+                      <option key={dept.id} value={dept.name}>{dept.name}</option>
                     ))}
+                    <option value="__create_new__">+ Create New Role</option>
+                  </select>
+                </div>
+
+                {/* Inline Create Role Form */}
+                {showCreateRole && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                    <h4 className="text-sm font-semibold text-gray-800 mb-3">Create New Role</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Role Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={newRoleData.name}
+                          onChange={(e) => setNewRoleData({ ...newRoleData, name: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                          placeholder="e.g., IT Support"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Description (optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={newRoleData.description}
+                          onChange={(e) => setNewRoleData({ ...newRoleData, description: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                          placeholder="Brief description"
+                        />
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={handleCreateRole}
+                          className="px-3 py-1.5 bg-primary-blue text-white rounded-md hover:bg-blue-700 text-sm focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                        >
+                          Create Role
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCancelCreateRole}
+                          className="px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Permissions Grid */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Module Permissions
+                    </label>
+                    <div className="flex space-x-4 text-xs">
+                      <button
+                        type="button"
+                        onClick={handleSelectAllView}
+                        className="text-primary-blue hover:underline focus:outline-none"
+                      >
+                        Toggle All View
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSelectAllEdit}
+                        className="text-primary-blue hover:underline focus:outline-none"
+                      >
+                        Toggle All Edit
+                      </button>
+                    </div>
+                  </div>
+                  <div className="border border-gray-300 rounded-md overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Module</th>
+                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase w-20">View</th>
+                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase w-20">Edit</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {availableAppModules.map((module) => (
+                          <tr key={module} className="hover:bg-gray-50">
+                            <td className="px-4 py-2 text-sm text-gray-900">{module}</td>
+                            <td className="px-4 py-2 text-center">
+                              <input
+                                type="checkbox"
+                                checked={formData.permissions[module]?.view || false}
+                                onChange={() => handlePermissionChange(module, 'view')}
+                                className="w-4 h-4 text-primary-blue border-gray-300 rounded focus:ring-primary-blue"
+                              />
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              <input
+                                type="checkbox"
+                                checked={formData.permissions[module]?.edit || false}
+                                onChange={() => handlePermissionChange(module, 'edit')}
+                                className="w-4 h-4 text-primary-blue border-gray-300 rounded focus:ring-primary-blue"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <div className="pt-4 flex justify-end space-x-3 sticky bottom-0 bg-white py-3 border-t">
-                  <button type="button" onClick={handleCloseFormModal} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue">Cancel</button>
-                  <button type="submit" className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red"><Save size={18} className="mr-2" />{isEditing ? 'Save Changes' : 'Add User'}</button>
-                </div>
-              </form>
-            )}
+              </div>
+
+              <div className="mt-6 flex justify-end space-x-3 border-t border-gray-200 pt-4">
+                <button
+                  type="button"
+                  onClick={handleCloseFormModal}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-blue"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red flex items-center"
+                >
+                  <Save size={18} className="mr-2" />
+                  {isEditing ? 'Update User' : 'Add User'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

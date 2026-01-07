@@ -9,10 +9,11 @@ const PaymentReport = () => {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
   const [paymentModeFilter, setPaymentModeFilter] = useState('all');
   const [staffFilter, setStaffFilter] = useState('all');
+  const [departmentFilter, setDepartmentFilter] = useState('all');
   const [sortField, setSortField] = useState('entryTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -44,6 +45,7 @@ const PaymentReport = () => {
     if (paymentStatusFilter !== 'all' && vehicle.paymentStatus !== paymentStatusFilter) return false;
     if (paymentModeFilter !== 'all' && vehicle.paymentMode !== paymentModeFilter) return false;
     if (staffFilter !== 'all' && vehicle.collectedBy !== staffFilter) return false;
+    if (departmentFilter !== 'all' && (vehicle.department || 'Visitor') !== departmentFilter) return false;
     if (dateRange.start && dateRange.end) {
       const entryDate = new Date(vehicle.entryTime);
       const startDate = new Date(dateRange.start);
@@ -80,13 +82,13 @@ const PaymentReport = () => {
   const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
-  useEffect(() => { setCurrentPage(1); }, [searchTerm, dateRange, vehicleNumberFilter, paymentStatusFilter, paymentModeFilter, staffFilter, sortField, sortDirection]);
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, dateRange, vehicleNumberFilter, paymentStatusFilter, paymentModeFilter, staffFilter, departmentFilter, sortField, sortDirection]);
 
   const handleDownload = (format) => {
     let content = "";
     let filename = `payment_report_${new Date().toISOString().slice(0, 10)}`;
     let mimeType = "";
-    const header = "S.No,Vehicle Number,Entry Time,Exit Time,Duration,Amount Paid (OMR),Payment Status,Payment Mode,Collected By\n";
+    const header = "S.No,Vehicle Number,Entry Time,Exit Time,Duration,Amount Paid (USD),Payment Status,Payment Mode,Collected By\n";
     const dataToExport = filteredData.map(v => {
       let duration = '-';
       if (v.entryTime) {
@@ -118,12 +120,12 @@ const PaymentReport = () => {
   const handlePrint = () => window.print();
 
   const getPaymentStatusBadge = (status) => {
-    const colors = {'Paid': 'bg-green-100 text-green-800', 'Unpaid': 'bg-red-100 text-primary-red', 'Pending': 'bg-yellow-100 text-yellow-800', 'Waiver': 'bg-purple-100 text-purple-800'};
+    const colors = { 'Paid': 'bg-green-100 text-green-800', 'Unpaid': 'bg-red-100 text-primary-red', 'Pending': 'bg-yellow-100 text-yellow-800', 'Waiver': 'bg-purple-100 text-purple-800' };
     return <span className={`px-2 py-1 text-xs rounded-full ${colors[status] || 'bg-gray-100 text-gray-800'}`}>{status}</span>;
   };
   const getPaymentModeBadge = (mode) => {
     if (mode === '-') return '-';
-    const colors = {'Cash': 'bg-green-100 text-green-800', 'Card': 'bg-blue-100 text-primary-blue', 'UPI': 'bg-purple-100 text-purple-800', 'Wallet': 'bg-orange-100 text-orange-800', 'Waiver': 'bg-gray-100 text-gray-800'};
+    const colors = { 'Cash': 'bg-green-100 text-green-800', 'Card': 'bg-blue-100 text-primary-blue', 'UPI': 'bg-purple-100 text-purple-800', 'Wallet': 'bg-orange-100 text-orange-800', 'Waiver': 'bg-gray-100 text-gray-800' };
     return <span className={`px-2 py-1 text-xs rounded-full ${colors[mode] || 'bg-gray-100 text-gray-800'}`}>{mode}</span>;
   };
 
@@ -132,7 +134,7 @@ const PaymentReport = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Payment Reports</h1>
-          <p className="text-gray-600">Generate and download Life Line Hospital Parking payment transaction reports</p>
+          <p className="text-gray-600">Generate and download parking payment transaction reports</p>
         </div>
         <div className="flex space-x-2">
           <button className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-blue-700 flex items-center transition duration-150" onClick={handlePrint}><Printer size={18} className="mr-2" />Print</button>
@@ -148,7 +150,7 @@ const PaymentReport = () => {
         </div>
         <div className="bg-white rounded-lg shadow-md p-6 flex items-center">
           <div className="p-3 rounded-full bg-red-100 mr-4"><DollarSign size={24} className="text-primary-red" /></div>
-          <div><p className="text-sm text-gray-500">Total Collected</p><p className="text-2xl font-bold">OMR {totalCollected}</p></div>
+          <div><p className="text-sm text-gray-500">Total Collected</p><p className="text-2xl font-bold">${totalCollected}</p></div>
         </div>
       </div>
 
@@ -156,7 +158,7 @@ const PaymentReport = () => {
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="relative flex-grow">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div>
-            <input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
+            <input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
           <button className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => setShowFilters(!showFilters)}><Filter size={18} className="mr-2" />Advanced Filters</button>
         </div>
@@ -167,21 +169,22 @@ const PaymentReport = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
                 <div className="flex items-center space-x-2">
-                  <input type="date" className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.start} onChange={(e) => setDateRange({...dateRange, start: e.target.value})}/>
+                  <input type="date" className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.start} onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })} />
                   <span className="flex-shrink-0">to</span>
-                  <input type="date" className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.end} onChange={(e) => setDateRange({...dateRange, end: e.target.value})}/>
+                  <input type="date" className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={dateRange.end} onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })} />
                 </div>
               </div>
               {[
-                {label: 'Vehicle Number', value: vehicleNumberFilter, setter: setVehicleNumberFilter, type: 'text', placeholder: 'Enter vehicle number'},
-                {label: 'Payment Status', value: paymentStatusFilter, setter: setPaymentStatusFilter, type: 'select', options: uniquePaymentStatuses, allLabel: 'All Statuses'},
-                {label: 'Payment Mode', value: paymentModeFilter, setter: setPaymentModeFilter, type: 'select', options: uniquePaymentModes, allLabel: 'All Payment Modes'},
-                {label: 'Collected By', value: staffFilter, setter: setStaffFilter, type: 'select', options: uniqueStaffMembers, allLabel: 'All Staff Members'}
+                { label: 'Vehicle Number', value: vehicleNumberFilter, setter: setVehicleNumberFilter, type: 'text', placeholder: 'Enter vehicle number' },
+                { label: 'Payment Status', value: paymentStatusFilter, setter: setPaymentStatusFilter, type: 'select', options: uniquePaymentStatuses, allLabel: 'All Statuses' },
+                { label: 'Payment Mode', value: paymentModeFilter, setter: setPaymentModeFilter, type: 'select', options: uniquePaymentModes, allLabel: 'All Payment Modes' },
+                { label: 'Collected By', value: staffFilter, setter: setStaffFilter, type: 'select', options: uniqueStaffMembers, allLabel: 'All Staff Members' },
+                { label: 'Department', value: departmentFilter, setter: setDepartmentFilter, type: 'select', options: ['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor'], allLabel: 'All Departments' }
               ].map(filter => (
                 <div key={filter.label}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{filter.label}</label>
                   {filter.type === 'text' ?
-                    <input type="text" className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" placeholder={filter.placeholder} value={filter.value} onChange={(e) => filter.setter(e.target.value)}/>
+                    <input type="text" className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" placeholder={filter.placeholder} value={filter.value} onChange={(e) => filter.setter(e.target.value)} />
                     :
                     <select className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={filter.value} onChange={(e) => filter.setter(e.target.value)}>
                       {filter.options.map(opt => <option key={opt} value={opt}>{opt === 'all' ? filter.allLabel : opt}</option>)}
@@ -190,7 +193,7 @@ const PaymentReport = () => {
                 </div>
               ))}
               <div className="flex items-end">
-                <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => {setDateRange({start:'',end:''});setSearchTerm('');setVehicleNumberFilter('');setPaymentStatusFilter('all');setPaymentModeFilter('all');setStaffFilter('all');}}>Reset Filters</button>
+                <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setVehicleNumberFilter(''); setPaymentStatusFilter('all'); setPaymentModeFilter('all'); setStaffFilter('all'); }}>Reset Filters</button>
               </div>
             </div>
           </div>
@@ -207,8 +210,8 @@ const PaymentReport = () => {
                       {sortField === field && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}
                     </div>
                   </th>
-                ))}
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                ))}<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -221,18 +224,20 @@ const PaymentReport = () => {
                   duration = `${Math.floor(diffMs / 36e5)}h ${Math.floor((diffMs % 36e5) / 6e4)}m`;
                 }
                 return (
-                <tr key={v.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.serialNumber}</td>
-                  <td className="px-6 py-4 whitespace-nowrap font-medium">{v.vehicleNumber}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.entryTime}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.exitTime || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap font-medium">{v.paymentAmount === '-' ? '-' : `${v.paymentAmount} OMR`}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{getPaymentStatusBadge(v.paymentStatus)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{getPaymentModeBadge(v.paymentMode)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.collectedBy}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{duration}</td>
-                </tr>
-              )})}
+                  <tr key={v.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.serialNumber}</td>
+                    <td className="px-6 py-4 whitespace-nowrap font-medium">{v.vehicleNumber}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.entryTime}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.exitTime || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap font-medium">{v.paymentAmount === '-' ? '-' : `$${v.paymentAmount}`}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{getPaymentStatusBadge(v.paymentStatus)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{getPaymentModeBadge(v.paymentMode)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.collectedBy}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{duration}</td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{v.department || 'N/A'}</span></td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
           {filteredData.length === 0 && <div className="text-center py-8 text-gray-500">No payment records found.</div>}

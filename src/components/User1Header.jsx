@@ -16,10 +16,10 @@ const User1Header = ({ onLogout }) => {
   const handleGoToUser1LoginAndLogout = () => {
     // First, log the user out
     if (onLogout) {
-      onLogout(); 
+      onLogout();
     }
     // Then, navigate to the User1 login page
-    navigate('/user1'); 
+    navigate('/user1');
   };
 
   return (
@@ -28,10 +28,10 @@ const User1Header = ({ onLogout }) => {
         <div className="flex justify-between items-center h-16">
           {/* Left side: Logo and Module Name */}
           <div className="flex items-center">
-            <img 
-              src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" 
-              alt="Life Line Hospital Logo" 
-              className="w-8 h-auto mr-3" 
+            <img
+              src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+              alt="Pro-Parking Logo"
+              className="w-8 h-auto mr-3"
             />
             <div className="flex items-center text-primary-blue">
               <Car size={20} className="mr-2" />
