@@ -23,11 +23,11 @@ const generateMockVehicles = () => {
   let idCounter = 1;
 
   departments.forEach(dept => {
-    // 5 Live Parking (Inside)
-    for (let i = 0; i < 5; i++) {
+    // 10 Live Parking (Inside)
+    for (let i = 0; i < 10; i++) {
       vehicles.push({
         id: String(idCounter++),
-        vehicleNumber: `${dept.substring(0, 3).toUpperCase()}${i}0 ${Math.floor(Math.random() * 900) + 100}`,
+        vehicleNumber: `${dept.substring(0, 2).toUpperCase()}${i}0 ${Math.floor(Math.random() * 900) + 100}`,
         entryTime: '2025-05-14T10:00:00', // Recent
         exitTime: null, // Inside
         type: dept === 'Visitor' ? 'Visitor' : 'Staff',
@@ -36,17 +36,17 @@ const generateMockVehicles = () => {
         plateImage: `https://placehold.co/300x100/333/white?text=${dept.substring(0, 3).toUpperCase()}`
       });
     }
-    // 5 Reports (Exited)
-    for (let i = 0; i < 5; i++) {
+    // 10 Reports (Exited)
+    for (let i = 0; i < 10; i++) {
       vehicles.push({
         id: String(idCounter++),
-        vehicleNumber: `${dept.substring(0, 3).toUpperCase()}${i}1 ${Math.floor(Math.random() * 900) + 100}`,
+        vehicleNumber: `${dept.substring(0, 2).toUpperCase()}${i}1 ${Math.floor(Math.random() * 900) + 100}`,
         entryTime: '2025-05-13T08:00:00',
         exitTime: '2025-05-13T17:00:00', // Exited
         type: dept === 'Visitor' ? 'Visitor' : 'Staff',
         department: dept,
-        paymentMethod: dept === 'Visitor' ? 'Card' : 'Waiver',
-        paymentAmount: dept === 'Visitor' ? '15.00' : '0.00',
+        paymentMethod: ['Card', 'Cash', 'Waiver', 'Apple Pay', 'Google Pay'][Math.floor(Math.random() * 5)],
+        paymentAmount: (Math.random() * 15 + 1).toFixed(2), // Random $1.00 - $16.00
         paymentProcessedTime: '2025-05-13T16:55:00',
         vehicleImage: 'https://placehold.co/400x300/333/white?text=Vehicle+Image',
         plateImage: `https://placehold.co/300x100/333/white?text=${dept.substring(0, 3).toUpperCase()}`

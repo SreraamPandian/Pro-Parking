@@ -94,7 +94,7 @@ const Reports = () => {
       }
       const status = vehicle.exitTime ? 'Exited' : 'Inside';
       const paymentMethod = vehicle.exitTime ? (vehicle.paymentMethod || 'N/A') : '-';
-      const paymentAmount = vehicle.exitTime ? (vehicle.type === 'Staff' && vehicle.paymentMethod === 'Waiver' ? 'N/A (Waiver)' : (vehicle.paymentAmount || '0.000')) : '-';
+      const paymentAmount = vehicle.exitTime ? (vehicle.paymentAmount || '0.00') : '-';
       const waiverId = (vehicle.type === 'Staff' && vehicle.paymentMethod === 'Waiver' && vehicle.exitTime) ? (vehicle.waiverId || 'N/A') : '-';
       const waiverReason = (vehicle.type === 'Staff' && vehicle.paymentMethod === 'Waiver' && vehicle.exitTime) ? (vehicle.waiverReason || 'N/A') : '-';
 
@@ -335,7 +335,7 @@ const Reports = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(vehicle.exitTime)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{duration}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime ? getPaymentMethodBadge(vehicle.paymentMethod) : '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime ? (showWaiverDetails ? <span className="text-gray-500">N/A (Waiver)</span> : <span className="font-medium">{vehicle.paymentAmount || '0.00'}</span>) : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{vehicle.exitTime ? <span className="font-medium">{vehicle.paymentAmount || '0.00'}</span> : '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{showWaiverDetails ? vehicle.waiverId || 'N/A' : '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{showWaiverDetails ? vehicle.waiverReason || 'N/A' : '-'}</td>
                   </tr>
