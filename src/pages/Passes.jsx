@@ -9,6 +9,7 @@ const Passes = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedStaffPass, setSelectedStaffPass] = useState(null);
   const [departmentFilter, setDepartmentFilter] = useState('All');
+  const [locationFilter, setLocationFilter] = useState('All');
   const passDetailsRef = useRef(null);
 
   const initialVehicle = { id: Date.now(), number: '', type: 'Car' };
@@ -38,6 +39,7 @@ const Passes = () => {
 
   const filteredStaffPasses = staffPasses.filter(pass =>
     (departmentFilter === 'All' || pass.department === departmentFilter) &&
+    (locationFilter === 'All' || (pass.location || 'Location A') === locationFilter) &&
     (pass.staffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (pass.vehicles && pass.vehicles.some(v => v.number.toLowerCase().includes(searchTerm.toLowerCase()))) ||
       pass.department.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -254,6 +256,19 @@ const Passes = () => {
                 <option value="Customer Service">Customer Service</option>
                 <option value="Operations">Operations</option>
                 <option value="Visitor">Visitor</option>
+              </select>
+            </div>
+
+            <div className="relative mt-3">
+              <select
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white text-gray-700"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+              >
+                <option value="All">All Locations</option>
+                <option value="Location A">Location A</option>
+                <option value="Location B">Location B</option>
+                <option value="Location C">Location C</option>
               </select>
             </div>
           </div>

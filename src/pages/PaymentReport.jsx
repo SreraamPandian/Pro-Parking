@@ -10,6 +10,7 @@ const PaymentReport = () => {
   const [paymentModeFilter, setPaymentModeFilter] = useState('all');
   const [staffFilter, setStaffFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [locationFilter, setLocationFilter] = useState('all');
   const [sortField, setSortField] = useState('entryTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [showFilters, setShowFilters] = useState(false);
@@ -46,6 +47,7 @@ const PaymentReport = () => {
     if (paymentModeFilter !== 'all' && vehicle.paymentMode !== paymentModeFilter) return false;
     if (staffFilter !== 'all' && vehicle.collectedBy !== staffFilter) return false;
     if (departmentFilter !== 'all' && (vehicle.department || 'Visitor') !== departmentFilter) return false;
+    if (locationFilter !== 'all' && (vehicle.location || 'Location A') !== locationFilter) return false;
     if (dateRange.start && dateRange.end) {
       const entryDate = new Date(vehicle.entryTime);
       const startDate = new Date(dateRange.start);
@@ -82,7 +84,7 @@ const PaymentReport = () => {
   const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
-  useEffect(() => { setCurrentPage(1); }, [searchTerm, dateRange, vehicleNumberFilter, paymentStatusFilter, paymentModeFilter, staffFilter, departmentFilter, sortField, sortDirection]);
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, dateRange, vehicleNumberFilter, paymentStatusFilter, paymentModeFilter, staffFilter, departmentFilter, locationFilter, sortField, sortDirection]);
 
   const handleDownload = (format) => {
     let content = "";
@@ -189,7 +191,8 @@ const PaymentReport = () => {
                 { label: 'Payment Status', value: paymentStatusFilter, setter: setPaymentStatusFilter, type: 'select', options: uniquePaymentStatuses, allLabel: 'All Statuses' },
                 { label: 'Payment Mode', value: paymentModeFilter, setter: setPaymentModeFilter, type: 'select', options: uniquePaymentModes, allLabel: 'All Payment Modes' },
                 { label: 'Collected By', value: staffFilter, setter: setStaffFilter, type: 'select', options: uniqueStaffMembers, allLabel: 'All Staff Members' },
-                { label: 'Department', value: departmentFilter, setter: setDepartmentFilter, type: 'select', options: ['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor'], allLabel: 'All Departments' }
+                { label: 'Department', value: departmentFilter, setter: setDepartmentFilter, type: 'select', options: ['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor'], allLabel: 'All Departments' },
+                { label: 'Location', value: locationFilter, setter: setLocationFilter, type: 'select', options: ['Location A', 'Location B', 'Location C'], allLabel: 'All Locations' }
               ].map(filter => (
                 <div key={filter.label}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{filter.label}</label>
@@ -203,7 +206,7 @@ const PaymentReport = () => {
                 </div>
               ))}
               <div className="flex items-end">
-                <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setVehicleNumberFilter(''); setPaymentStatusFilter('all'); setPaymentModeFilter('all'); setStaffFilter('all'); }}>Reset Filters</button>
+                <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setVehicleNumberFilter(''); setPaymentStatusFilter('all'); setPaymentModeFilter('all'); setStaffFilter('all'); setDepartmentFilter('all'); setLocationFilter('all'); }}>Reset Filters</button>
               </div>
             </div>
           </div>

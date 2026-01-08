@@ -8,6 +8,7 @@ const Pricing = () => {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [locationFilter, setLocationFilter] = useState('All');
   const [formData, setFormData] = useState({
     vehicleType: '4-Wheeler', // Default to 4-Wheeler and only option
     name: '',
@@ -84,6 +85,10 @@ const Pricing = () => {
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
   };
+
+  const filteredPricingData = pricingData.filter(item =>
+    locationFilter === 'All' || (item.location || 'Location A') === locationFilter
+  );
 
   const addTier = () => {
     const lastTier = formData.tiers[formData.tiers.length - 1];
@@ -396,141 +401,167 @@ const Pricing = () => {
           </form>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Vehicle Type
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Pricing Name
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Department
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Base Price
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {pricingData.map((item) => (
-                  <React.Fragment key={item.id}>
-                    <tr className={`hover:bg-gray-50 ${expandedId === item.id ? 'bg-blue-50' : ''}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">{item.vehicleType}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-900">{item.name}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                          {item.department || 'All'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {item.location || 'Location A'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-900 font-medium">
-                          ${item.tiers[0]?.priceUSD ? parseFloat(item.tiers[0].priceUSD).toFixed(2) : '0.00'}
-                          <span className="text-gray-500 ml-1">
-                            / {item.tiers[0]?.duration || 1} {item.tiers[0]?.unit || 'hour'}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => toggleStatus(item.id)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${item.isActive
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                            : 'bg-red-100 text-primary-red hover:bg-red-200'
-                            }`}
-                        >
-                          {item.isActive ? 'Active' : 'Inactive'}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          className="text-primary-blue hover:text-blue-700 mr-3 focus:outline-none focus:ring-1 focus:ring-primary-blue p-1"
-                          onClick={() => handleEdit(item)}
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          className="text-primary-red hover:text-red-700 mr-3 focus:outline-none focus:ring-1 focus:ring-primary-red p-1"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          <Trash size={16} />
-                        </button>
-                        <button
-                          className="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-1 focus:ring-primary-blue p-1"
-                          onClick={() => toggleExpand(item.id)}
-                        >
-                          {expandedId === item.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                        </button>
-                      </td>
-                    </tr>
-                    {expandedId === item.id && (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-4 bg-gray-50">
-                          <div className="text-sm text-gray-500 mb-2">{item.description}</div>
-                          <div className="border border-gray-200 rounded-md overflow-hidden">
-                            <table className="min-w-full divide-y divide-gray-200">
-                              <thead className="bg-gray-100">
-                                <tr>
-                                  <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Duration
-                                  </th>
-                                  <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Price (USD)
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody className="bg-white divide-y divide-gray-200">
-                                {item.tiers.map((tier, index) => (
-                                  <tr key={tier.id}>
-                                    <td className="px-4 py-2 whitespace-nowrap">
-                                      {index === 0 ? (
-                                        <span>First {tier.duration} {tier.unit}{tier.duration > 1 ? 's' : ''}</span>
-                                      ) : (
-                                        <span>After {tier.duration} {tier.unit}{tier.duration > 1 ? 's' : ''}</span>
-                                      )}
-                                    </td>
-                                    <td className="px-4 py-2 whitespace-nowrap font-medium">
-                                      ${parseFloat(tier.priceUSD).toFixed(2)}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-
-            {pricingData.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No pricing data available for 4-Wheeler vehicles. Click "Add Pricing" to create new pricing rules.
-              </div>
+        <>
+          <div className="bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
+            <label className="text-sm font-medium text-gray-700 mr-3">Filter by Location:</label>
+            <div className="relative">
+              <select
+                className="block w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white text-gray-700"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+              >
+                <option value="All">All Locations</option>
+                <option value="Location A">Location A</option>
+                <option value="Location B">Location B</option>
+                <option value="Location C">Location C</option>
+              </select>
+            </div>
+            {locationFilter !== 'All' && (
+              <button
+                onClick={() => setLocationFilter('All')}
+                className="ml-4 text-sm text-primary-blue hover:underline"
+              >
+                Clear Filter
+              </button>
             )}
           </div>
-        </div>
+
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vehicle Type
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Pricing Name
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Department
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Base Price
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredPricingData.map((item) => (
+                    <React.Fragment key={item.id}>
+                      <tr className={`hover:bg-gray-50 ${expandedId === item.id ? 'bg-blue-50' : ''}`}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="font-medium text-gray-900">{item.vehicleType}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-gray-900">{item.name}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                            {item.department || 'All'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {item.location || 'Location A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-gray-900 font-medium">
+                            ${item.tiers[0]?.priceUSD ? parseFloat(item.tiers[0].priceUSD).toFixed(2) : '0.00'}
+                            <span className="text-gray-500 ml-1">
+                              / {item.tiers[0]?.duration || 1} {item.tiers[0]?.unit || 'hour'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            onClick={() => toggleStatus(item.id)}
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${item.isActive
+                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                              : 'bg-red-100 text-primary-red hover:bg-red-200'
+                              }`}
+                          >
+                            {item.isActive ? 'Active' : 'Inactive'}
+                          </button>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            className="text-primary-blue hover:text-blue-700 mr-3 focus:outline-none focus:ring-1 focus:ring-primary-blue p-1"
+                            onClick={() => handleEdit(item)}
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            className="text-primary-red hover:text-red-700 mr-3 focus:outline-none focus:ring-1 focus:ring-primary-red p-1"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <Trash size={16} />
+                          </button>
+                          <button
+                            className="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-1 focus:ring-primary-blue p-1"
+                            onClick={() => toggleExpand(item.id)}
+                          >
+                            {expandedId === item.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                          </button>
+                        </td>
+                      </tr>
+                      {expandedId === item.id && (
+                        <tr>
+                          <td colSpan={5} className="px-6 py-4 bg-gray-50">
+                            <div className="text-sm text-gray-500 mb-2">{item.description}</div>
+                            <div className="border border-gray-200 rounded-md overflow-hidden">
+                              <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-100">
+                                  <tr>
+                                    <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      Duration
+                                    </th>
+                                    <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      Price (USD)
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                  {item.tiers.map((tier, index) => (
+                                    <tr key={tier.id}>
+                                      <td className="px-4 py-2 whitespace-nowrap">
+                                        {index === 0 ? (
+                                          <span>First {tier.duration} {tier.unit}{tier.duration > 1 ? 's' : ''}</span>
+                                        ) : (
+                                          <span>After {tier.duration} {tier.unit}{tier.duration > 1 ? 's' : ''}</span>
+                                        )}
+                                      </td>
+                                      <td className="px-4 py-2 whitespace-nowrap font-medium">
+                                        ${parseFloat(tier.priceUSD).toFixed(2)}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+
+              {filteredPricingData.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No pricing data available for 4-Wheeler vehicles. Click "Add Pricing" to create new pricing rules.
+                </div>
+              )}
+            </div>
+          </div>
+        </>
       )}
 
       <AnimatePresence>

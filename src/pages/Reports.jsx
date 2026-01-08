@@ -7,6 +7,7 @@ const Reports = () => {
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('All');
+  const [locationFilter, setLocationFilter] = useState('All');
   const [sortField, setSortField] = useState('entryTime');
   const [sortDirection, setSortDirection] = useState('desc');
 
@@ -38,6 +39,7 @@ const Reports = () => {
       if (entryDate < startDate || entryDate > endDate) return false;
     }
     if (departmentFilter !== 'All' && vehicle.department !== departmentFilter) return false;
+    if (locationFilter !== 'All' && (vehicle.location || 'Location A') !== locationFilter) return false;
     return true;
   }).sort((a, b) => {
     let valueA, valueB;
@@ -216,8 +218,8 @@ const Reports = () => {
 
         {/* Filters */}
         <div className="bg-gray-50 p-4 rounded-md mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
               <div className="flex items-center space-x-2">
                 <div className="relative flex-1">
@@ -251,8 +253,21 @@ const Reports = () => {
                 <option value="Visitor">Visitor</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <select
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue bg-white"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+              >
+                <option value="All">All Locations</option>
+                <option value="Location A">Location A</option>
+                <option value="Location B">Location B</option>
+                <option value="Location C">Location C</option>
+              </select>
+            </div>
             <div className="flex items-end">
-              <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setDepartmentFilter('All'); }}>
+              <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setDepartmentFilter('All'); setLocationFilter('All'); }}>
                 <Filter size={18} className="mr-2" />
                 Reset Filters
               </button>

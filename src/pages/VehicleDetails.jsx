@@ -364,48 +364,77 @@ const VehicleDetails = () => {
                   <span className="font-medium text-primary-red">Total Fee Due:</span>
                   <span className="text-3xl font-bold text-primary-red">${scannedVehicleData.calculatedFee}</span>
                 </div>
-                <h4 className="font-medium text-gray-800 mb-3">Select Payment Method</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <button
-                    className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Cash' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
-                    onClick={() => setPaymentMethod('Cash')}
-                  >
-                    <DollarSign size={24} className="mb-2 text-green-600" />
-                    <span className="font-medium text-sm">Cash</span>
-                  </button>
-                  {scannedVehicleData.type === 'Visitor' && (
-                    <>
-                      <button
-                        className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Card' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
-                        onClick={() => setPaymentMethod('Card')}
-                      >
-                        <CreditCard size={24} className="mb-2 text-blue-600" />
-                        <span className="font-medium text-sm">Card</span>
-                      </button>
-                      <button
-                        className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Apple Pay' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
-                        onClick={() => setPaymentMethod('Apple Pay')}
-                      >
-                        <Smartphone size={24} className="mb-2 text-gray-800" />
-                        <span className="font-medium text-sm">Apple Pay</span>
-                      </button>
-                      <button
-                        className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Google Pay' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
-                        onClick={() => setPaymentMethod('Google Pay')}
-                      >
-                        <Smartphone size={24} className="mb-2 text-green-600" />
-                        <span className="font-medium text-sm">Google Pay</span>
-                      </button>
-                    </>
-                  )}
-                  <button
-                    className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${paymentMethod === 'Waiver' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
-                    onClick={() => setPaymentMethod('Waiver')}
-                  >
-                    <FileText size={24} className="mb-2 text-purple-600" />
-                    <span className="font-medium text-sm">Waiver</span>
-                  </button>
+                <h4 className="font-medium text-gray-800 mb-4">Select Payment Method</h4>
+
+                {/* Digital Wallets Section */}
+                <div className="mb-6">
+                  <h5 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Digital Wallets</h5>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      className={`p-4 rounded-xl border-2 flex items-center justify-start transition-all ${paymentMethod === 'Apple Pay' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                      onClick={() => setPaymentMethod('Apple Pay')}
+                    >
+                      <Smartphone size={24} className="mr-3 text-gray-800" />
+                      <span className="font-medium text-sm">Apple Pay</span>
+                    </button>
+                    <button
+                      className={`p-4 rounded-xl border-2 flex items-center justify-start transition-all ${paymentMethod === 'Google Pay' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                      onClick={() => setPaymentMethod('Google Pay')}
+                    >
+                      <Wallet size={24} className="mr-3 text-green-600" />
+                      <span className="font-medium text-sm">Google Pay</span>
+                    </button>
+                  </div>
                 </div>
+
+                {/* Cards & Others Section */}
+                <div className="mb-6">
+                  <h5 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Cards & Others</h5>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      className={`p-4 rounded-xl border-2 flex items-center justify-start transition-all ${paymentMethod === 'Visa' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                      onClick={() => setPaymentMethod('Visa')}
+                    >
+                      <CreditCard size={24} className="mr-3 text-blue-600" />
+                      <span className="font-medium text-sm">Visa</span>
+                    </button>
+                    <button
+                      className={`p-4 rounded-xl border-2 flex items-center justify-start transition-all ${paymentMethod === 'Mastercard' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                      onClick={() => setPaymentMethod('Mastercard')}
+                    >
+                      <CreditCard size={24} className="mr-3 text-orange-600" />
+                      <span className="font-medium text-sm">Mastercard</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Other Payment Methods */}
+                <div className="mb-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      className={`p-4 rounded-xl border-2 flex items-center justify-start transition-all ${paymentMethod === 'PayPal' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                      onClick={() => setPaymentMethod('PayPal')}
+                    >
+                      <DollarSign size={24} className="mr-3 text-blue-500" />
+                      <span className="font-medium text-sm">PayPal</span>
+                    </button>
+                    <button
+                      className={`p-4 rounded-xl border-2 flex items-center justify-start transition-all ${paymentMethod === 'Tap to Pay' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                      onClick={() => setPaymentMethod('Tap to Pay')}
+                    >
+                      <Smartphone size={24} className="mr-3 text-purple-600" />
+                      <span className="font-medium text-sm">Tap to Pay</span>
+                    </button>
+                    <button
+                      className={`p-4 rounded-xl border-2 flex items-center justify-start transition-all ${paymentMethod === 'Waiver' ? 'border-primary-blue bg-blue-50 ring-2 ring-primary-blue ring-opacity-20' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}
+                      onClick={() => setPaymentMethod('Waiver')}
+                    >
+                      <FileText size={24} className="mr-3 text-purple-600" />
+                      <span className="font-medium text-sm">Waiver</span>
+                    </button>
+                  </div>
+                </div>
+
                 <div className="mt-8 flex justify-end">
                   <button className="w-full sm:w-auto px-6 py-3 bg-primary-red text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-red shadow-md transition-colors" onClick={handleProcessPayment}>
                     {paymentMethod === 'Waiver' ? 'Proceed to Waiver' : `Proceed with ${paymentMethod}`}
