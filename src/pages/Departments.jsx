@@ -3,11 +3,11 @@ import { Plus, Edit, Trash, Building2, X } from 'lucide-react';
 
 const Departments = () => {
     const [departments, setDepartments] = useState([
-        { id: 1, name: 'Administration', description: 'Administrative and management staff', employeeCount: 12, isActive: true },
-        { id: 2, name: 'Security', description: 'Security and surveillance personnel', employeeCount: 8, isActive: true },
-        { id: 3, name: 'Maintenance', description: 'Facility maintenance and technical staff', employeeCount: 15, isActive: true },
-        { id: 4, name: 'Customer Service', description: 'Customer support and assistance', employeeCount: 6, isActive: true },
-        { id: 5, name: 'Operations', description: 'Daily operations and logistics', employeeCount: 10, isActive: true }
+        { id: 1, name: 'Administration', description: 'Administrative and management staff', employeeCount: 12, location: 'Location A', isActive: true },
+        { id: 2, name: 'Security', description: 'Security and surveillance personnel', employeeCount: 8, location: 'Location B', isActive: true },
+        { id: 3, name: 'Maintenance', description: 'Facility maintenance and technical staff', employeeCount: 15, location: 'Location C', isActive: true },
+        { id: 4, name: 'Customer Service', description: 'Customer support and assistance', employeeCount: 6, location: 'Location A', isActive: true },
+        { id: 5, name: 'Operations', description: 'Daily operations and logistics', employeeCount: 10, location: 'Location B', isActive: true }
     ]);
 
     const [showModal, setShowModal] = useState(false);
@@ -16,11 +16,12 @@ const Departments = () => {
         name: '',
         description: '',
         employeeCount: 0,
+        location: 'Location A',
         isActive: true
     });
 
     const handleAdd = () => {
-        setFormData({ name: '', description: '', employeeCount: 0, isActive: true });
+        setFormData({ name: '', description: '', employeeCount: 0, location: 'Location A', isActive: true });
         setEditingDepartment(null);
         setShowModal(true);
     };
@@ -30,6 +31,7 @@ const Departments = () => {
             name: dept.name,
             description: dept.description,
             employeeCount: dept.employeeCount,
+            location: dept.location || 'Location A',
             isActive: dept.isActive
         });
         setEditingDepartment(dept.id);
@@ -62,12 +64,12 @@ const Departments = () => {
         }
 
         setShowModal(false);
-        setFormData({ name: '', description: '', employeeCount: 0, isActive: true });
+        setFormData({ name: '', description: '', employeeCount: 0, location: 'Location A', isActive: true });
     };
 
     const handleCancel = () => {
         setShowModal(false);
-        setFormData({ name: '', description: '', employeeCount: 0, isActive: true });
+        setFormData({ name: '', description: '', employeeCount: 0, location: 'Location A', isActive: true });
         setEditingDepartment(null);
     };
 
@@ -103,12 +105,17 @@ const Departments = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-800">{dept.name}</h3>
-                                    <span className={`inline-block px-2 py-1 text-xs rounded-full ${dept.isActive
+                                    <div className="flex space-x-1 mt-1">
+                                        <span className={`inline-block px-2 py-1 text-xs rounded-full ${dept.isActive
                                             ? 'bg-green-100 text-green-800'
                                             : 'bg-gray-100 text-gray-800'
-                                        }`}>
-                                        {dept.isActive ? 'Active' : 'Inactive'}
-                                    </span>
+                                            }`}>
+                                            {dept.isActive ? 'Active' : 'Inactive'}
+                                        </span>
+                                        <span className="inline-block px-2 py-1 text-xs rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                                            {dept.location || 'Location A'}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -198,6 +205,21 @@ const Departments = () => {
                                         min="0"
                                         placeholder="0"
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Location
+                                    </label>
+                                    <select
+                                        value={formData.location}
+                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                                    >
+                                        <option value="Location A">Location A</option>
+                                        <option value="Location B">Location B</option>
+                                        <option value="Location C">Location C</option>
+                                    </select>
                                 </div>
 
                                 <div className="flex items-center">

@@ -88,7 +88,7 @@ const PaymentReport = () => {
     let content = "";
     let filename = `payment_report_${new Date().toISOString().slice(0, 10)}`;
     let mimeType = "";
-    const header = "S.No,Vehicle Number,Entry Time,Exit Time,Duration,Amount Paid (USD),Payment Status,Payment Mode,Collected By\n";
+    const header = "S.No,Vehicle Number,Department,Location,Entry Time,Exit Time,Duration,Amount Paid (USD),Payment Status,Payment Mode,Collected By\n";
     const dataToExport = filteredData.map(v => {
       let duration = '-';
       if (v.entryTime) {
@@ -97,7 +97,7 @@ const PaymentReport = () => {
         const diffMs = exit - entry;
         duration = `${Math.floor(diffMs / 36e5)}h ${Math.floor((diffMs % 36e5) / 6e4)}m`;
       }
-      return [v.serialNumber, v.vehicleNumber, v.entryTime, v.exitTime || '-', duration, v.paymentAmount, v.paymentStatus, v.paymentMode, v.collectedBy];
+      return [v.serialNumber, v.vehicleNumber, v.department || 'N/A', v.location || 'N/A', v.entryTime, v.exitTime || '-', duration, v.paymentAmount, v.paymentStatus, v.paymentMode, v.collectedBy];
     });
 
     if (format === 'pdf') {
@@ -220,6 +220,7 @@ const PaymentReport = () => {
                   <div className="flex items-center">Vehicle Number{sortField === 'vehicleNumber' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('entryTime')}>
                   <div className="flex items-center">Entry Time{sortField === 'entryTime' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
@@ -255,6 +256,7 @@ const PaymentReport = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.serialNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">{v.vehicleNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{v.department || 'N/A'}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{v.location || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDateTime(v.entryTime)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDateTime(v.exitTime)}</td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">{v.paymentAmount === '-' ? '-' : `$${v.paymentAmount}`}</td>

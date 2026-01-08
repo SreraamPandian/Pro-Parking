@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showOverdueAlertModal, setShowOverdueAlertModal] = useState(false);
   const [showPaperRefillPopup, setShowPaperRefillPopup] = useState(false); // New state for paper refill popup
+  const [selectedLocation, setSelectedLocation] = useState('All');
 
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -25,6 +26,35 @@ const Dashboard = () => {
     setShowPaperRefillPopup(true); // Show the dedicated popup
   };
 
+  const getFilteredStats = () => {
+    if (!dashboardData) return {};
+
+    if (selectedLocation === 'All') {
+      return {
+        availableSlots: dashboardData.availableSlots,
+        currentVehicles: dashboardData.currentVehicles,
+        enteredToday: dashboardData.enteredToday,
+        exitedToday: dashboardData.exitedToday
+      };
+    }
+
+    const zone = dashboardData.parkingZones.find(z => z.name === selectedLocation);
+    if (zone) {
+      // Mocking logic: Scale down global stats roughly based on zone size vs total size
+      // In a real app, this would be aggregated from DB queries
+      const ratio = zone.total / dashboardData.parkingZones.reduce((acc, z) => acc + z.total, 0);
+      return {
+        availableSlots: zone.total - zone.occupied,
+        currentVehicles: zone.occupied,
+        enteredToday: Math.floor(dashboardData.enteredToday * ratio),
+        exitedToday: Math.floor(dashboardData.exitedToday * ratio)
+      };
+    }
+    return {};
+  };
+
+  const filteredStats = getFilteredStats();
+
   if (loading || !dashboardData) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -35,37 +65,51 @@ const Dashboard = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-gray-600">Parking Management Overview</p>
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          <p className="text-gray-600">Parking Management Overview</p>
+        </div>
+        <div className="relative">
+          <select
+            className="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-blue focus:border-primary-blue sm:text-sm rounded-md"
+            value={selectedLocation}
+            onChange={(e) => setSelectedLocation(e.target.value)}
+          >
+            <option value="All">All Locations</option>
+            {dashboardData.parkingZones.map(zone => (
+              <option key={zone.id} value={zone.name}>{zone.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div className="md:col-span-2 lg:col-span-2">
           <StatCard
             title="Available Parking Slots"
-            value={dashboardData.availableSlots}
+            value={filteredStats.availableSlots}
             icon={<ParkingCircle size={32} className="text-white" />}
             color="bg-primary-blue"
-            isAlert={dashboardData.availableSlots < 10}
+            isAlert={filteredStats.availableSlots < 10}
           />
         </div>
         <div className="md:col-span-2 lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard
             title="Current Vehicles"
-            value={dashboardData.currentVehicles}
+            value={filteredStats.currentVehicles}
             icon={<Car size={24} className="text-white" />}
             color="bg-primary-blue"
           />
           <StatCard
             title="Vehicles Entered Today"
-            value={dashboardData.enteredToday}
+            value={filteredStats.enteredToday}
             icon={<LogIn size={24} className="text-white" />}
             color="bg-green-500"
           />
           <StatCard
             title="Vehicles Exited Today"
-            value={dashboardData.exitedToday}
+            value={filteredStats.exitedToday}
             icon={<LogOut size={24} className="text-white" />}
             color="bg-orange-500"
           />

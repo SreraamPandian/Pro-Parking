@@ -26,6 +26,7 @@ const AddUser = () => {
       id: 'sample1',
       userName: 'Operator Kiosk',
       role: 'Operations',
+      location: 'Location A', // Added location
       permissions: {
         'Kiosk Management': { view: true, edit: true },
         'Live Parking': { view: true, edit: false }
@@ -35,6 +36,7 @@ const AddUser = () => {
       id: 'sample2',
       userName: 'Reporting Staff',
       role: 'Administration',
+      location: 'Location B', // Added location
       permissions: {
         'Reports': { view: true, edit: false },
         'Payment Reports': { view: true, edit: false }
@@ -44,6 +46,7 @@ const AddUser = () => {
       id: 'sample3',
       userName: 'Parking Supervisor',
       role: 'Operations',
+      location: 'Location C', // Added location
       permissions: {
         'Dashboard': { view: true, edit: true },
         'Live Parking': { view: true, edit: true },
@@ -64,6 +67,7 @@ const AddUser = () => {
     userName: '',
     password: '',
     role: '',
+    location: 'Location A', // Added location to form state
     permissions: initializePermissions(),
   });
 
@@ -136,7 +140,7 @@ const AddUser = () => {
   };
 
   const resetForm = () => {
-    setFormData({ userName: '', password: '', role: '', permissions: initializePermissions() });
+    setFormData({ userName: '', password: '', role: '', location: 'Location A', permissions: initializePermissions() });
     setIsEditing(false);
     setCurrentUser(null);
     setShowCreateRole(false);
@@ -153,6 +157,7 @@ const AddUser = () => {
         userName: userToEdit.userName || '',
         password: '',
         role: userToEdit.role || '',
+        location: userToEdit.location || 'Location A', // Load location
         permissions: userPermissions,
       });
     } else {
@@ -174,6 +179,7 @@ const AddUser = () => {
         ...currentUser,
         userName: formData.userName,
         role: formData.role,
+        location: formData.location, // Update location
         permissions: formData.permissions,
         ...(formData.password && { password: formData.password })
       };
@@ -184,6 +190,7 @@ const AddUser = () => {
         userName: formData.userName,
         password: formData.password,
         role: formData.role,
+        location: formData.location, // Save location
         permissions: formData.permissions,
       };
       setUsers(prevUsers => [...prevUsers, newUser]);
@@ -227,6 +234,7 @@ const AddUser = () => {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permissions</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -250,6 +258,9 @@ const AddUser = () => {
                   <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                     {user.role || 'No Role'}
                   </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {user.location || 'Location A'}
                 </td>
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-900">{getPermissionCount(user)} modules</div>
@@ -343,6 +354,24 @@ const AddUser = () => {
                       <option key={dept.id} value={dept.name}>{dept.name}</option>
                     ))}
                     <option value="__create_new__">+ Create New Role</option>
+                  </select>
+                </div>
+
+                {/* Location Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location *
+                  </label>
+                  <select
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                    required
+                  >
+                    <option value="Location A">Location A</option>
+                    <option value="Location B">Location B</option>
+                    <option value="Location C">Location C</option>
                   </select>
                 </div>
 

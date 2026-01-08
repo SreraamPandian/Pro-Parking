@@ -12,6 +12,7 @@ const Pricing = () => {
     vehicleType: '4-Wheeler', // Default to 4-Wheeler and only option
     name: '',
     department: 'All', // Default department
+    location: 'Location A', // Default location
     description: '',
     isActive: true,
     tiers: [
@@ -25,6 +26,7 @@ const Pricing = () => {
       vehicleType: '4-Wheeler', // Always 4-Wheeler
       name: item.name,
       department: item.department || 'All',
+      location: item.location || 'Location A',
       description: item.description,
       isActive: item.isActive,
       tiers: [...item.tiers]
@@ -42,6 +44,7 @@ const Pricing = () => {
       vehicleType: '4-Wheeler', // Default to 4-Wheeler
       name: '',
       department: 'All',
+      location: 'Location A', // Default location
       description: '',
       isActive: true,
       tiers: [
@@ -138,6 +141,7 @@ const Pricing = () => {
         <p>Vehicle No : RNO 1234</p>
         <p>Entry Time : {entryTime}</p>
         <p>Exit Time  : {exitTime}</p>
+        <p>Location   : Location A</p>
         <p>Duration   : 2h 0m</p>
         <hr className="border-dashed border-black my-1" />
         <div className="flex justify-between">
@@ -229,6 +233,19 @@ const Pricing = () => {
                   <option value="Customer Service">Customer Service</option>
                   <option value="Operations">Operations</option>
                   <option value="Visitor">Visitor</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <select
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                >
+                  <option value="Location A">Location A</option>
+                  <option value="Location B">Location B</option>
+                  <option value="Location C">Location C</option>
                 </select>
               </div>
 
@@ -394,6 +411,9 @@ const Pricing = () => {
                     Department
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Location
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Base Price
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -418,6 +438,9 @@ const Pricing = () => {
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
                           {item.department || 'All'}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {item.location || 'Location A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-gray-900 font-medium">

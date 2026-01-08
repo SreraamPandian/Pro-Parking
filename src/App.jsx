@@ -87,7 +87,15 @@ function App() {
 
   const [vehiclesData, setVehiclesData] = useState(() => {
     const savedVehicles = localStorage.getItem('appVehiclesData');
-    return savedVehicles ? JSON.parse(savedVehicles) : initialMockVehicleData;
+    if (savedVehicles) {
+      const parsed = JSON.parse(savedVehicles);
+      // Check if data is stale (missing location field)
+      if (parsed.length > 0 && !parsed[0].location) {
+        return initialMockVehicleData;
+      }
+      return parsed;
+    }
+    return initialMockVehicleData;
   });
 
   useEffect(() => { localStorage.setItem('isAdminAuthenticated', isAdminAuthenticated); }, [isAdminAuthenticated]);

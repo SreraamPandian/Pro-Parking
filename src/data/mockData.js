@@ -3,15 +3,23 @@ export const mockDashboardData = {
   currentVehicles: 127,
   enteredToday: 243,
   exitedToday: 116,
-  availableSlots: 73,
+  availableSlots: 165,
   vehicleFlow: {
     entries: [5, 8, 3, 2, 1, 4, 12, 25, 32, 18, 15, 10, 14, 18, 22, 19, 12, 8, 5, 4, 2, 1, 2, 1],
     exits: [1, 2, 1, 0, 0, 1, 3, 8, 15, 12, 10, 8, 12, 15, 10, 8, 5, 3, 2, 1, 0, 0, 0, 0]
   },
   parkingZones: [
     {
-      id: '1', name: 'Main Parking Zone', total: 200, occupied: 127, isFull: false,
+      id: '1', name: 'Location A', total: 100, occupied: 40, isFull: false,
       department: 'Administration'
+    },
+    {
+      id: '2', name: 'Location B', total: 150, occupied: 20, isFull: false,
+      department: 'General'
+    },
+    {
+      id: '3', name: 'Location C', total: 80, occupied: 65, isFull: true,
+      department: 'Visitors'
     }
   ]
 };
@@ -19,12 +27,14 @@ export const mockDashboardData = {
 // Helper to generate mock vehicles
 const generateMockVehicles = () => {
   const departments = ['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor'];
+  const locations = ['Location A', 'Location B', 'Location C'];
   let vehicles = [];
   let idCounter = 1;
 
   departments.forEach(dept => {
-    // 10 Live Parking (Inside)
-    for (let i = 0; i < 10; i++) {
+    // 30 Live Parking (Inside)
+    for (let i = 0; i < 30; i++) {
+      const randomLocation = locations[Math.floor(Math.random() * locations.length)];
       vehicles.push({
         id: String(idCounter++),
         vehicleNumber: `${dept.substring(0, 2).toUpperCase()}${i}0 ${Math.floor(Math.random() * 900) + 100}`,
@@ -32,12 +42,14 @@ const generateMockVehicles = () => {
         exitTime: null, // Inside
         type: dept === 'Visitor' ? 'Visitor' : 'Staff',
         department: dept,
+        location: randomLocation,
         vehicleImage: 'https://placehold.co/400x300/333/white?text=Vehicle+Image',
         plateImage: `https://placehold.co/300x100/333/white?text=${dept.substring(0, 3).toUpperCase()}`
       });
     }
-    // 10 Reports (Exited)
-    for (let i = 0; i < 10; i++) {
+    // 20 Reports (Exited)
+    for (let i = 0; i < 20; i++) {
+      const randomLocation = locations[Math.floor(Math.random() * locations.length)];
       vehicles.push({
         id: String(idCounter++),
         vehicleNumber: `${dept.substring(0, 2).toUpperCase()}${i}1 ${Math.floor(Math.random() * 900) + 100}`,
@@ -45,6 +57,7 @@ const generateMockVehicles = () => {
         exitTime: '2025-05-13T17:00:00', // Exited
         type: dept === 'Visitor' ? 'Visitor' : 'Staff',
         department: dept,
+        location: randomLocation,
         paymentMethod: ['Card', 'Cash', 'Waiver', 'Apple Pay', 'Google Pay'][Math.floor(Math.random() * 5)],
         paymentAmount: (Math.random() * 15 + 1).toFixed(2), // Random $1.00 - $16.00
         paymentProcessedTime: '2025-05-13T16:55:00',
@@ -96,6 +109,7 @@ export const mockStaffPassData = [
     id: '1',
     staffName: 'Mr. Ahmed Al Balushi',
     department: 'Administration',
+    location: 'Location A',
     vehicles: [
       { id: 'v1_1', number: 'AA11 BBB', type: 'Car' },
       { id: 'v1_2', number: 'CC22 DDD', type: 'Bike' }
@@ -109,6 +123,7 @@ export const mockStaffPassData = [
     id: '2',
     staffName: 'Ms. Fatima Al Harthy',
     department: 'Nursing',
+    location: 'Location B',
     vehicles: [
       { id: 'v2_1', number: 'EE33 FFF', type: 'Car' }
     ],
@@ -121,6 +136,7 @@ export const mockStaffPassData = [
     id: '3',
     staffName: 'Mr. Khalid Al Said',
     department: 'Maintenance',
+    location: 'Location C',
     vehicles: [
       { id: 'v3_1', number: 'GG44 HHH', type: 'Bike' }
     ],
@@ -133,6 +149,7 @@ export const mockStaffPassData = [
     id: '4',
     staffName: 'Mrs. Aisha Al Jabri',
     department: 'IT Support',
+    location: 'Location A',
     vehicles: [
       { id: 'v4_1', number: 'II55 JJJ', type: 'Car' },
       { id: 'v4_2', number: 'XV12 ZZZ', type: 'Car' },
@@ -142,6 +159,32 @@ export const mockStaffPassData = [
     validUntil: '2026-01-01',
     isActive: true,
     mobileNumber: '(555) 456-7890'
+  }
+];
+
+// Mock data for doctor passes (Added)
+export const mockDoctorData = [
+  {
+    id: 'doc1',
+    name: 'Dr. Sarah Al-Lawati',
+    department: 'Cardiology',
+    location: 'Location A',
+    vehicleNumber: 'DR 101',
+    vehicleType: 'Car',
+    validFrom: '2025-01-01',
+    validUntil: '2025-12-31',
+    isActive: true
+  },
+  {
+    id: 'doc2',
+    name: 'Dr. Mohammed Al-Hasni',
+    department: 'Neurology',
+    location: 'Location B',
+    vehicleNumber: 'DR 202',
+    vehicleType: 'Car',
+    validFrom: '2025-02-01',
+    validUntil: '2025-08-01',
+    isActive: true
   }
 ];
 
@@ -168,6 +211,7 @@ export const mockTieredPricingData = [
     vehicleType: '4-Wheeler',
     name: 'Standard Car Parking',
     department: 'All',
+    location: 'Location A',
     description: 'Regular pricing for visitor cars with progressive rates',
     isActive: true,
     tiers: [
@@ -182,6 +226,7 @@ export const mockTieredPricingData = [
     vehicleType: '4-Wheeler',
     name: 'Premium Car Parking',
     department: 'All',
+    location: 'Location B',
     description: 'Covered parking with slightly higher rates',
     isActive: true,
     tiers: [
@@ -193,16 +238,38 @@ export const mockTieredPricingData = [
 ];
 
 // Mock data for slot management
-export const mockSlotData = {
-  id: '1',
-  name: 'Main Parking Zone',
-  totalSlots: 200,
-  availableSlots: 73,
-  reservedSlots: 50,
-  occupiedSlots: 77,
-  status: 'active',
-  isNearlyFull: false
-};
+export const mockSlotData = [
+  {
+    id: '1',
+    name: 'Location A',
+    totalSlots: 100,
+    availableSlots: 40,
+    reservedSlots: 20,
+    occupiedSlots: 40,
+    status: 'active',
+    isNearlyFull: false
+  },
+  {
+    id: '2',
+    name: 'Location B',
+    totalSlots: 150,
+    availableSlots: 120,
+    reservedSlots: 10,
+    occupiedSlots: 20,
+    status: 'active',
+    isNearlyFull: false
+  },
+  {
+    id: '3',
+    name: 'Location C',
+    totalSlots: 80,
+    availableSlots: 5,
+    reservedSlots: 10,
+    occupiedSlots: 65,
+    status: 'active',
+    isNearlyFull: true
+  }
+];
 
 // List of available modules for permissions
 export const availableAppModules = [

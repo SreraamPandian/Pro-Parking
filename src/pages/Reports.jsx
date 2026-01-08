@@ -80,7 +80,7 @@ const Reports = () => {
     let filename = `vehicle_report_${new Date().toISOString().slice(0, 10)}`;
     let mimeType = "";
 
-    const header = "Vehicle Number,Entry Time,Exit Time,Type,Status,Duration,Payment Method,Payment Amount (USD),Waiver ID,Waiver Reason\n";
+    const header = "Vehicle Number,Department,Location,Entry Time,Exit Time,Type,Status,Duration,Payment Method,Payment Amount (USD),Waiver ID,Waiver Reason\n";
 
     const dataToExport = filteredData.map(vehicle => {
       let duration = '-';
@@ -100,6 +100,8 @@ const Reports = () => {
 
       return [
         vehicle.vehicleNumber,
+        vehicle.department || 'N/A',
+        vehicle.location || 'N/A',
         vehicle.entryTime,
         vehicle.exitTime || '',
         vehicle.type,
@@ -278,6 +280,7 @@ const Reports = () => {
                   <div className="flex items-center">Vehicle Number{sortField === 'vehicleNumber' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('entryTime')}>
                   <div className="flex items-center">Entry Time{sortField === 'entryTime' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
@@ -324,6 +327,7 @@ const Reports = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{vehicle.location || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <Clock size={16} className="mr-2 text-gray-500" />

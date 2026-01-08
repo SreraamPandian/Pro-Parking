@@ -98,7 +98,7 @@ const DoctorPassViewer = () => {
                 onClick={() => setSelectedDoctor(doctor)}
               >
                 <div className="font-medium">{doctor.name}</div>
-                <div className="text-sm text-gray-500">{doctor.vehicleNumber} • {doctor.department}</div>
+                <div className="text-sm text-gray-500">{doctor.vehicleNumber} • {doctor.department} • {doctor.location || 'Location A'}</div>
                 <div className={`text-xs mt-1 inline-block px-2 py-1 rounded-full ${getStatusClass(doctor.validUntil)}`}>
                   {getStatusText(doctor.validUntil)}
                 </div>
@@ -164,6 +164,10 @@ const DoctorPassViewer = () => {
                       <div>
                         <p className="text-sm text-gray-500">Department</p>
                         <p className="font-medium">{selectedDoctor.department}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Location</p>
+                        <p className="font-medium">{selectedDoctor.location || 'Location A'}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Vehicle Number</p>
