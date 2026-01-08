@@ -20,7 +20,6 @@ const VehicleDetails = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [waiverRemarks, setWaiverRemarks] = useState('');
   const [addFormState, setAddFormState] = useState({ vehicleNumber: '', entryTime: '', type: 'Visitor', department: 'Visitor', plateImage: '/assets/plates/AB12XYZ.png', location: 'Location A' }); // Added location
-  const [slotData, setSlotData] = useState(mockSlotData);
   const receiptRef = useRef(null);
   const [showSampleEntryTicketModal, setShowSampleEntryTicketModal] = useState(false); // New state for entry ticket modal
   const entryTicketRef = useRef(null); // Ref for printing entry ticket
@@ -257,6 +256,42 @@ const VehicleDetails = () => {
     }
   };
 
+  const getDisplaySlotStats = () => {
+    const now = new Date();
+    const todayString = now.toISOString().split('T')[0];
+
+    // Get base counts from mockSlotData (Total and Reserved)
+    let baseTotal = 0;
+    let baseReserved = 0;
+
+    if (locationFilter === 'All') {
+      baseTotal = mockSlotData.reduce((acc, curr) => acc + curr.totalSlots, 0);
+      baseReserved = mockSlotData.reduce((acc, curr) => acc + curr.reservedSlots, 0);
+    } else {
+      const zone = mockSlotData.find(z => z.name === locationFilter);
+      if (zone) {
+        baseTotal = zone.totalSlots;
+        baseReserved = zone.reservedSlots;
+      }
+    }
+
+    // Get live counts from vehiclesData (Occupied)
+    const locationVehicles = locationFilter === 'All'
+      ? vehiclesData
+      : vehiclesData.filter(v => v.location === locationFilter);
+
+    const occupiedSlots = locationVehicles.filter(v => !v.exitTime).length;
+    const availableSlots = baseTotal - baseReserved - occupiedSlots;
+
+    return {
+      totalSlots: baseTotal,
+      availableSlots: Math.max(0, availableSlots),
+      reservedSlots: baseReserved,
+      occupiedSlots: occupiedSlots
+    };
+  };
+
+  const currentSlotStats = getDisplaySlotStats();
 
   return (
     <div className="p-6">
@@ -279,12 +314,12 @@ const VehicleDetails = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-6 no-print">
-        <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-semibold">Parking Slot Status</h3></div>
+        <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-semibold text-gray-800 flex items-center"><ParkingSquare size={20} className="mr-2 text-primary-blue" /> Parking Slot Status ({locationFilter})</h3></div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <div className="bg-blue-50 p-3 rounded-md"><p className="text-sm text-primary-blue mb-1">Total Slots</p><p className="text-xl font-bold text-primary-blue">{slotData.totalSlots}</p></div>
-          <div className="bg-green-50 p-3 rounded-md"><p className="text-sm text-green-500 mb-1">Available</p><p className="text-xl font-bold text-green-700">{slotData.availableSlots}</p></div>
-          <div className="bg-yellow-50 p-3 rounded-md"><p className="text-sm text-yellow-500 mb-1">Reserved</p><p className="text-xl font-bold text-yellow-700">{slotData.reservedSlots}</p></div>
-          <div className="bg-red-50 p-3 rounded-md"><p className="text-sm text-primary-red mb-1">Occupied</p><p className="text-xl font-bold text-primary-red">{slotData.occupiedSlots}</p></div>
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100"><p className="text-xs font-semibold text-primary-blue mb-1 uppercase tracking-wider">Total Slots</p><p className="text-2xl font-bold text-primary-blue">{currentSlotStats.totalSlots}</p></div>
+          <div className="bg-green-50 p-4 rounded-lg border border-green-100"><p className="text-xs font-semibold text-green-600 mb-1 uppercase tracking-wider">Available</p><p className="text-2xl font-bold text-green-700">{currentSlotStats.availableSlots}</p></div>
+          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-100"><p className="text-xs font-semibold text-yellow-600 mb-1 uppercase tracking-wider">Reserved</p><p className="text-2xl font-bold text-yellow-700">{currentSlotStats.reservedSlots}</p></div>
+          <div className="bg-red-50 p-4 rounded-lg border border-red-100"><p className="text-xs font-semibold text-primary-red mb-1 uppercase tracking-wider">Occupied</p><p className="text-2xl font-bold text-primary-red">{currentSlotStats.occupiedSlots}</p></div>
         </div>
       </div>
 

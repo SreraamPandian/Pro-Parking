@@ -1,24 +1,26 @@
 // Mock data for dashboard
 export const mockDashboardData = {
-  currentVehicles: 127,
+  currentVehicles: 125, // Sum of occupied in mockSlotData (40+20+65)
   enteredToday: 243,
   exitedToday: 116,
-  availableSlots: 165,
+  availableSlots: 165, // Sum of available in mockSlotData (40+120+5)
+  totalSlots: 330, // Sum of total in mockSlotData (100+150+80)
+  reservedSlots: 40, // Sum of reserved in mockSlotData (20+10+10)
   vehicleFlow: {
     entries: [5, 8, 3, 2, 1, 4, 12, 25, 32, 18, 15, 10, 14, 18, 22, 19, 12, 8, 5, 4, 2, 1, 2, 1],
     exits: [1, 2, 1, 0, 0, 1, 3, 8, 15, 12, 10, 8, 12, 15, 10, 8, 5, 3, 2, 1, 0, 0, 0, 0]
   },
   parkingZones: [
     {
-      id: '1', name: 'Location A', total: 100, occupied: 40, isFull: false,
+      id: '1', name: 'Location A', totalSlots: 100, occupiedSlots: 40, availableSlots: 40, reservedSlots: 20, isFull: false,
       department: 'Administration'
     },
     {
-      id: '2', name: 'Location B', total: 150, occupied: 20, isFull: false,
+      id: '2', name: 'Location B', totalSlots: 150, occupiedSlots: 20, availableSlots: 120, reservedSlots: 10, isFull: false,
       department: 'General'
     },
     {
-      id: '3', name: 'Location C', total: 80, occupied: 65, isFull: true,
+      id: '3', name: 'Location C', totalSlots: 80, occupiedSlots: 65, availableSlots: 5, reservedSlots: 10, isFull: true,
       department: 'Visitors'
     }
   ]

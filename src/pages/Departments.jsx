@@ -216,6 +216,7 @@ const Departments = () => {
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                                     >
+                                        <option value="All Locations">All Locations</option>
                                         <option value="Location A">Location A</option>
                                         <option value="Location B">Location B</option>
                                         <option value="Location C">Location C</option>

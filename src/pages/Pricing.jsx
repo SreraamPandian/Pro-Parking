@@ -248,6 +248,7 @@ const Pricing = () => {
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 >
+                  <option value="All Locations">All Locations</option>
                   <option value="Location A">Location A</option>
                   <option value="Location B">Location B</option>
                   <option value="Location C">Location C</option>
