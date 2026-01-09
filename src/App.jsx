@@ -20,6 +20,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import Departments from './pages/Departments';
 import Booking from './pages/Booking';
+import BookingReports from './pages/BookingReports';
 import { mockVehicleData as initialMockVehicleData } from './data/mockData';
 
 const AdminLayout = ({ onLogout, vehiclesData, updateVehiclesData, notifications, onMarkNotificationAsRead, onMarkAllNotificationsAsRead, onClearAllNotifications, addNotification }) => (
@@ -219,6 +220,7 @@ function App() {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/slots" element={<SlotManagement />} />
           <Route path="/bookings" element={<Booking />} />
+          <Route path="/booking-reports" element={<BookingReports />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/payment-report" element={<PaymentReport />} />
           <Route path="/add-user" element={<AddUser />} />

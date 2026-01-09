@@ -31,6 +31,7 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
     { path: '/bookings', icon: <Calendar size={20} />, label: 'Booking' },
     { path: '/reports', icon: <FileText size={20} />, label: 'Reports' },
     { path: '/payment-report', icon: <Receipt size={20} />, label: 'Payment Reports' },
+    { path: '/booking-reports', icon: <FileText size={20} />, label: 'Booking Reports' },
     { path: '/pricing', icon: <DollarSign size={20} />, label: 'Pricing' },
     { path: '/passes', icon: <CreditCard size={20} />, label: 'Passes' },
     { path: '/device-config', icon: <HardDrive size={20} />, label: 'Device Config' }, // Updated

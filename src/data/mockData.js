@@ -280,6 +280,7 @@ export const availableAppModules = [
   'Slot Management',
   'Reports',
   'Payment Reports',
+  'Booking Reports',
   'Pricing',
   'Passes',
   'Device Configuration', // Renamed
