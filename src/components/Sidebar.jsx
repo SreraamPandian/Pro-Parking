@@ -15,7 +15,8 @@ import {
   Bell,
   ChevronsUpDown, // Icon for Boom Barrier
   HardDrive, // Icon for Device Configuration
-  Building2 // Icon for Departments
+  Building2, // Icon for Departments
+  Calendar
 } from 'lucide-react';
 import NotificationModal from './NotificationModal';
 
@@ -27,6 +28,7 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
     { path: '/', icon: <Home size={20} />, label: 'Dashboard' },
     { path: '/vehicles', icon: <Car size={20} />, label: 'Live Parking' },
     { path: '/slots', icon: <ParkingSquare size={20} />, label: 'Location Management' },
+    { path: '/bookings', icon: <Calendar size={20} />, label: 'Booking' },
     { path: '/reports', icon: <FileText size={20} />, label: 'Reports' },
     { path: '/payment-report', icon: <Receipt size={20} />, label: 'Payment Reports' },
     { path: '/pricing', icon: <DollarSign size={20} />, label: 'Pricing' },

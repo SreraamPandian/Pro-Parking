@@ -294,3 +294,66 @@ export const mockBarrierData = [
   { id: 'barrier_entry_1', name: 'Main Entrance Barrier', location: 'North Gate', status: 'closed', autoCloseTime: null },
   { id: 'barrier_exit_1', name: 'Main Exit Barrier', location: 'North Gate', status: 'closed', autoCloseTime: null },
 ];
+// List of hospital departments
+// List of hospital departments
+export const hospitalDepartments = ['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor'];
+
+// Mock data for bookings
+export const mockBookingData = [
+  {
+    id: 'bk1',
+    name: 'John Doe',
+    location: 'Location A',
+    department: 'Administration',
+    vehicleNumbers: ['AA 1234'],
+    mobileNumber: '(987) 654-3210',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-10T10:00:00',
+    duration: '2 hours',
+    status: 'Booked',
+    type: 'Visitor',
+    plateImage: 'https://placehold.co/300x100/333/white?text=AA1234'
+  },
+  {
+    id: 'bk2',
+    name: 'Jane Smith',
+    location: 'Location B',
+    department: 'Security',
+    vehicleNumbers: ['BB 5678', 'CC 9012'],
+    mobileNumber: '(912) 345-6780',
+    numberOfVehicles: 2,
+    dateTime: '2026-01-10T11:30:00',
+    duration: '4 hours',
+    status: 'Booked',
+    type: 'Staff',
+    plateImage: 'https://placehold.co/300x100/333/white?text=BB5678'
+  },
+  {
+    id: 'bk3',
+    name: 'Robert Brown',
+    location: 'Location C',
+    department: 'Visitor',
+    vehicleNumbers: ['DD 3456'],
+    mobileNumber: '(900) 012-3456',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-11T09:15:00',
+    duration: '1 hour',
+    status: 'Cancelled',
+    type: 'Visitor',
+    plateImage: 'https://placehold.co/300x100/333/white?text=DD3456'
+  },
+  {
+    id: 'bk4',
+    name: 'Michael Wilson',
+    location: 'Location A',
+    department: 'Security',
+    vehicleNumbers: ['EE 5566', 'FF 7788', 'GG 9900'],
+    mobileNumber: '(988) 877-6655',
+    numberOfVehicles: 3,
+    dateTime: '2026-01-11T14:45:00',
+    duration: '6 hours',
+    status: 'Booked',
+    type: 'Staff',
+    plateImage: 'https://placehold.co/300x100/333/white?text=EE5566'
+  }
+];
