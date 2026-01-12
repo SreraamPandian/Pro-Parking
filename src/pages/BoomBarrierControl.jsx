@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpCircle, Loader2, ShieldCheck, ShieldAlert, Timer, MapPin, Filter } from 'lucide-react'; // Removed ChevronsUpDown
-import { mockBarrierData as initialBarrierData, mockDashboardData } from '../data/mockData';
+import { mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { motion } from 'framer-motion';
+import { useData } from '../context/DataContext';
 
 const BoomBarrierControl = () => {
-  const [barriers, setBarriers] = useState(
-    initialBarrierData.filter(b => b.name.includes("Main Entrance Barrier") || b.name.includes("Main Exit Barrier"))
-  );
+  const { barriers, setBarriers } = useData();
   const [timers, setTimers] = useState({});
   const [locationFilter, setLocationFilter] = useState([]);
 

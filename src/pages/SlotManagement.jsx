@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Edit, AlertTriangle, Check, X, Plus } from 'lucide-react';
-import { mockSlotData } from '../data/mockData';
+import { Plus, Edit, AlertTriangle, Check, X } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 const SlotManagement = () => {
-  const [locations, setLocations] = useState(mockSlotData);
+  const { slots: locations, setSlots: setLocations } = useData();
   const [showModal, setShowModal] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
   const [isAdding, setIsAdding] = useState(false);

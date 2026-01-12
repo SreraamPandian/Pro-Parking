@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Plus, Trash, Video, X, Save, Film } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 const KioskManagement = () => {
-  const [videos, setVideos] = useState([]);
+  const { kioskVideos: videos, setKioskVideos: setVideos } = useData();
   const [showFormModal, setShowFormModal] = useState(false);
   const [currentVideo, setCurrentVideo] = useState(null); // For editing, not used yet
   const [formData, setFormData] = useState({

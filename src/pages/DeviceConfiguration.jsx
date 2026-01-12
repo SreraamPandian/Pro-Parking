@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Edit, Trash, Server, Wifi, Network, TerminalSquare, ToggleLeft, ToggleRight, HardDrive, MonitorPlay as KioskIcon, CreditCard as PaymentTerminalIcon, Camera as ANPRCameraIcon, ChevronsUpDown as BoomBarrierIcon, X } from 'lucide-react';
-import { mockDeviceData as initialDeviceData, availableDeviceTypes as allDeviceTypes } from '../data/mockData';
+import { availableDeviceTypes as allDeviceTypes } from '../data/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useData } from '../context/DataContext';
 
 const DeviceConfiguration = () => {
-  const [devices, setDevices] = useState(initialDeviceData);
+  const { devices, setDevices } = useData();
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showModal, setShowModal] = useState(false);
 

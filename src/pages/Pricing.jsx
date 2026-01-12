@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash, Save, X, Clock, ChevronDown, ChevronUp, Eye, Printer, MapPin } from 'lucide-react';
-import { mockTieredPricingData, mockDashboardData } from '../data/mockData';
+import { mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { useData } from '../context/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Pricing = () => {
-  const [pricingData, setPricingData] = useState(mockTieredPricingData.filter(p => p.vehicleType === '4-Wheeler'));
+  const { pricingData, setPricingData } = useData();
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState(null);

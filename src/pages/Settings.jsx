@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import { Save, User, Mail, Phone, Building, Lock, LogOut as LogOutIcon, LogIn as LogInIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useData } from '../context/DataContext';
 
 const Settings = ({ onLogout, onUser1Login }) => { // Added onUser1Login prop
   const navigate = useNavigate();
-  const [accountData, setAccountData] = useState({
-    name: 'Life Line Admin',
-    email: 'admin@lifeline.com',
-    phone: '(555) 123-4567',
-    organization: 'Pro-Parking System',
-    position: 'Parking Administrator'
-  });
+  const { accountSettings: accountData, setAccountSettings: setAccountData } = useData();
   const [changePassword, setChangePassword] = useState({
     currentPassword: '',
     newPassword: '',

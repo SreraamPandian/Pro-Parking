@@ -2,15 +2,10 @@ import React, { useState } from 'react';
 import { Plus, Edit, Trash, Building2, X, MapPin } from 'lucide-react';
 import { mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { useData } from '../context/DataContext';
 
 const Departments = () => {
-    const [departments, setDepartments] = useState([
-        { id: 1, name: 'Administration', description: 'Administrative and management staff', employeeCount: 12, location: ['Location A'], isActive: true },
-        { id: 2, name: 'Security', description: 'Security and surveillance personnel', employeeCount: 8, location: ['Location B'], isActive: true },
-        { id: 3, name: 'Maintenance', description: 'Facility maintenance and technical staff', employeeCount: 15, location: ['Location C'], isActive: true },
-        { id: 4, name: 'Customer Service', description: 'Customer support and assistance', employeeCount: 6, location: ['Location A'], isActive: true },
-        { id: 5, name: 'Operations', description: 'Daily operations and logistics', employeeCount: 10, location: ['Location B'], isActive: true }
-    ]);
+    const { departments, setDepartments } = useData();
 
     const [showModal, setShowModal] = useState(false);
     const [editingDepartment, setEditingDepartment] = useState(null);

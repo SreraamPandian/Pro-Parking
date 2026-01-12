@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Plus, Search, Filter, Calendar, Clock, Car, X, Eye, Phone, MapPin, ParkingSquare, ChevronRight, ChevronLeft, CreditCard, CheckCircle2, User, ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { hospitalDepartments, mockBookingData, mockSlotData } from '../data/mockData';
+import { hospitalDepartments, mockSlotData } from '../data/mockData';
+import { useData } from '../context/DataContext';
 
 // Reusable Multi-Select Dropdown Component
 const MultiSelectDropdown = ({ options, selected, onChange, placeholder, icon: Icon, label }) => {
@@ -153,7 +154,7 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, icon: I
 };
 
 const Booking = () => {
-    const [bookings, setBookings] = useState(mockBookingData);
+    const { bookings, setBookings } = useData();
 
     // Filter State
     const [selectedDepts, setSelectedDepts] = useState([]);

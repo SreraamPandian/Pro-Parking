@@ -2,16 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash, UserCircle, KeyRound, X, Save, ChevronDown, MapPin, Search, Filter, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 import { availableAppModules, mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { useData } from '../context/DataContext';
 
 const AddUser = () => {
-  // Initial departments/roles
-  const [departments, setDepartments] = useState([
-    { id: 1, name: 'Administration', description: 'Administrative and management staff', employeeCount: 12, isActive: true },
-    { id: 2, name: 'Security', description: 'Security and surveillance personnel', employeeCount: 8, isActive: true },
-    { id: 3, name: 'Maintenance', description: 'Facility maintenance and technical staff', employeeCount: 15, isActive: true },
-    { id: 4, name: 'Customer Service', description: 'Customer support and assistance', employeeCount: 6, isActive: true },
-    { id: 5, name: 'Operations', description: 'Daily operations and logistics', employeeCount: 10, isActive: true }
-  ]);
+  const { users, setUsers, departments, setDepartments } = useData();
 
   // Initialize permissions object for all modules
   const initializePermissions = () => {
@@ -21,43 +15,6 @@ const AddUser = () => {
     });
     return perms;
   };
-
-  const initialUsers = [
-    {
-      id: 'sample1',
-      userName: 'Operator Kiosk',
-      role: 'Operations',
-      location: 'Location A', // Added location
-      permissions: {
-        'Kiosk Management': { view: true, edit: true },
-        'Live Parking': { view: true, edit: false }
-      }
-    },
-    {
-      id: 'sample2',
-      userName: 'Reporting Staff',
-      role: 'Administration',
-      location: 'Location B', // Added location
-      permissions: {
-        'Reports': { view: true, edit: false },
-        'Payment Reports': { view: true, edit: false }
-      }
-    },
-    {
-      id: 'sample3',
-      userName: 'Parking Supervisor',
-      role: 'Operations',
-      location: 'Location C', // Added location
-      permissions: {
-        'Dashboard': { view: true, edit: true },
-        'Live Parking': { view: true, edit: true },
-        'Slot Management': { view: true, edit: true },
-        'Add User': { view: true, edit: false }
-      }
-    },
-  ];
-
-  const [users, setUsers] = useState(initialUsers);
   const [activeTab, setActiveTab] = useState('users'); // 'users' or 'roles'
   const [locationFilter, setLocationFilter] = useState([]); // Filter for the users table
   const [searchTerm, setSearchTerm] = useState(''); // Search for the users table

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, Edit, Trash, Printer, Calendar, User, XCircle, Car as CarIcon, ToggleLeft, ToggleRight, Settings2, X, ClipboardList, MapPin, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
-import { mockStaffPassData, mockDashboardData } from '../data/mockData';
+import { mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { useData } from '../context/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Passes = () => {
-  const [staffPasses, setStaffPasses] = useState(mockStaffPassData);
+  const { staffPasses, setStaffPasses, waiverReasons, setWaiverReasons } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedStaffPass, setSelectedStaffPass] = useState(null);
@@ -29,16 +30,9 @@ const Passes = () => {
   });
 
   const [showWaiverReasonModal, setShowWaiverReasonModal] = useState(false);
-  const [waiverReasons, setWaiverReasons] = useState(() => {
-    const savedReasons = localStorage.getItem('lifeLineParkingWaiverReasons');
-    return savedReasons ? JSON.parse(savedReasons) : ['Official Duty', 'Emergency Staff', 'Invited Guest'];
-  });
+  // waiverReasons managed in DataContext now
   const [newWaiverReasonInput, setNewWaiverReasonInput] = useState('');
   const [waiverReasonError, setWaiverReasonError] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('lifeLineParkingWaiverReasons', JSON.stringify(waiverReasons));
-  }, [waiverReasons]);
 
   const filteredStaffPasses = staffPasses.filter(pass =>
     (departmentFilter.length === 0 || departmentFilter.includes(pass.department)) &&

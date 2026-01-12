@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useOutletContext as useAppOutletContextOriginal } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import { useData } from './context/DataContext';
 import User1Header from './components/User1Header';
 import Dashboard from './pages/Dashboard';
 import VehicleDetails from './pages/VehicleDetails';
@@ -63,6 +64,7 @@ export const useApp = () => useAppOutletContextOriginal();
 
 
 function App() {
+  const { clearAllData } = useData();
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => localStorage.getItem('isAdminAuthenticated') === 'true');
   const [isUser1Authenticated, setIsUser1Authenticated] = useState(() => localStorage.getItem('isUser1Authenticated') === 'true');
 
@@ -185,9 +187,9 @@ function App() {
 
 
   const handleAdminLogin = () => { setIsAdminAuthenticated(true); setIsUser1Authenticated(false); localStorage.removeItem('isUser1Authenticated'); };
-  const handleAdminLogout = () => { setIsAdminAuthenticated(false); localStorage.removeItem('isAdminAuthenticated'); };
+  const handleAdminLogout = () => { setIsAdminAuthenticated(false); localStorage.removeItem('isAdminAuthenticated'); clearAllData(); };
   const handleUser1Login = () => { setIsUser1Authenticated(true); setIsAdminAuthenticated(false); localStorage.removeItem('isAdminAuthenticated'); };
-  const handleUser1Logout = () => { setIsUser1Authenticated(false); localStorage.removeItem('isUser1Authenticated'); };
+  const handleUser1Logout = () => { setIsUser1Authenticated(false); localStorage.removeItem('isUser1Authenticated'); clearAllData(); };
 
   return (
     <Router>
