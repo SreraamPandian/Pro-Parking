@@ -14,7 +14,7 @@ const Pricing = () => {
     vehicleType: '4-Wheeler', // Default to 4-Wheeler and only option
     name: '',
     department: 'All', // Default department
-    location: 'Location A', // Default location
+    location: ['Location A'], // Default location array
     description: '',
     isActive: true,
     tiers: [
@@ -28,7 +28,7 @@ const Pricing = () => {
       vehicleType: '4-Wheeler', // Always 4-Wheeler
       name: item.name,
       department: item.department || 'All',
-      location: item.location || 'Location A',
+      location: Array.isArray(item.location) ? item.location : [item.location || 'Location A'],
       description: item.description,
       isActive: item.isActive,
       tiers: [...item.tiers]
@@ -46,7 +46,7 @@ const Pricing = () => {
       vehicleType: '4-Wheeler', // Default to 4-Wheeler
       name: '',
       department: 'All',
-      location: 'Location A', // Default location
+      location: ['Location A'], // Default location array
       description: '',
       isActive: true,
       tiers: [
@@ -89,7 +89,8 @@ const Pricing = () => {
 
   const filteredPricing = pricingData.filter(item => {
     if (locationFilter.length === 0) return true;
-    return locationFilter.includes(item.location || 'Location A');
+    const itemLocations = Array.isArray(item.location) ? item.location : [item.location || 'Location A'];
+    return itemLocations.some(loc => locationFilter.includes(loc));
   });
 
   const addTier = () => {
@@ -138,7 +139,7 @@ const Pricing = () => {
             className="w-16 h-auto mx-auto mb-1"
           />
           <p className="font-bold">PRO-PARKING</p>
-          <p>Salalah, Oman</p>
+          <p>Salalah, USA</p>
         </div>
         <hr className="border-dashed border-black my-1" />
         <p>Receipt No : RCPT-{Math.floor(Math.random() * 90000) + 10000}</p>
@@ -247,10 +248,9 @@ const Pricing = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <MultiSelectDropdown
                   options={mockDashboardData.parkingZones.map(z => z.name)}
-                  selected={formData.location ? [formData.location] : []}
-                  onChange={(val) => setFormData({ ...formData, location: val[0] || '' })}
-                  singleSelect={true}
-                  placeholder="Select Location"
+                  selected={formData.location}
+                  onChange={(val) => setFormData({ ...formData, location: val })}
+                  placeholder="Select Locations"
                   icon={MapPin}
                 />
               </div>
@@ -468,7 +468,7 @@ const Pricing = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {item.location || 'Location A'}
+                          {Array.isArray(item.location) ? item.location.join(', ') : (item.location || 'Location A')}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-gray-900 font-medium">

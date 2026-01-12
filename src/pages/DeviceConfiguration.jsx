@@ -222,16 +222,11 @@ const DeviceConfiguration = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
                       value={formData.deviceType}
                       onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
-                      disabled={availableTypesForNewDevice.length === 0 && !selectedDevice}
                     >
-                      {availableTypesForNewDevice.length === 0 && !selectedDevice ? (
-                        <option value="">All types configured</option>
-                      ) : (
-                        availableTypesForNewDevice.map(type => <option key={type} value={type}>{type}</option>)
-                      )}
+                      <option value="Genetec">Genetec</option>
+                      <option value="T2 Flex">T2 Flex</option>
                     </select>
                   )}
-                  {!selectedDevice && availableTypesForNewDevice.length === 0 && <p className="text-xs text-red-500 mt-1">All device types are already configured.</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">IP Address</label>
@@ -268,7 +263,7 @@ const DeviceConfiguration = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 };
 

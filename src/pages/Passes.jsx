@@ -20,7 +20,7 @@ const Passes = () => {
     staffName: '',
     type: 'Staff',
     department: '',
-    location: 'Location A', // Default location
+    location: ['Location A'], // Default location array
     vehicles: [initialVehicle],
     validFrom: '',
     validUntil: '',
@@ -87,7 +87,7 @@ const Passes = () => {
 
   const handleAddPass = () => {
     setSelectedStaffPass(null);
-    setFormData({ staffName: '', type: 'Staff', department: 'Administration', location: 'Location A', vehicles: [{ id: Date.now(), number: '', type: 'Car' }], validFrom: '', validUntil: '', mobileNumber: '', isActive: true });
+    setFormData({ staffName: '', type: 'Staff', department: 'Administration', location: ['Location A'], vehicles: [{ id: Date.now(), number: '', type: 'Car' }], validFrom: '', validUntil: '', mobileNumber: '', isActive: true });
     setShowForm(true);
   };
 
@@ -103,7 +103,7 @@ const Passes = () => {
       staffName: pass.staffName,
       type: pass.type || 'Staff', // Default to Staff for existing records
       department: pass.department,
-      location: pass.location || 'Location A',
+      location: Array.isArray(pass.location) ? pass.location : [pass.location || 'Location A'],
       vehicles: vehiclesWithIds,
       validFrom: pass.validFrom,
       validUntil: pass.validUntil,
@@ -294,7 +294,7 @@ const Passes = () => {
                   <div>
                     <div className="font-medium">{pass.staffName}</div>
                     <div className="text-sm text-gray-500">
-                      {pass.vehicles && pass.vehicles.length > 0 ? pass.vehicles.map(v => v.number).join(', ') : 'No vehicle'} • {pass.department} • {pass.location || 'Location A'}
+                      {pass.vehicles && pass.vehicles.length > 0 ? pass.vehicles.map(v => v.number).join(', ') : 'No vehicle'} • {pass.department} • {Array.isArray(pass.location) ? pass.location.join(', ') : (pass.location || 'Location A')}
                     </div>
                   </div>
                   <span className={`px-2 py-0.5 text-xs rounded-full ${pass.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-primary-red'}`}>
@@ -395,7 +395,7 @@ const Passes = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div><p className="text-sm text-gray-500">Staff Name</p><p className="font-medium">{selectedStaffPass.staffName}</p></div>
                       <div><p className="text-sm text-gray-500">Department</p><p className="font-medium">{selectedStaffPass.department}</p></div>
-                      <div><p className="text-sm text-gray-500">Location</p><p className="font-medium">{selectedStaffPass.location || 'Location A'}</p></div>
+                      <div><p className="text-sm text-gray-500">Location</p><p className="font-medium">{Array.isArray(selectedStaffPass.location) ? selectedStaffPass.location.join(', ') : (selectedStaffPass.location || 'Location A')}</p></div>
                       <div><p className="text-sm text-gray-500">Mobile Number</p><p className="font-medium">{selectedStaffPass.mobileNumber || 'Not provided'}</p></div>
                       <div><p className="text-sm text-gray-500">Valid Until</p><p className="font-medium">{formatDate(selectedStaffPass.validUntil)}</p></div>
                     </div>
@@ -471,7 +471,7 @@ const Passes = () => {
                         setFormData({ ...formData, type: newType, department: newType === 'Visitor' ? 'Visitor' : 'Administration' });
                       }}
                     >
-                      <option value="Staff">Staff</option>
+                      <option value="Faculty / Staff">Faculty / Staff</option>
                       <option value="Visitor">Visitor</option>
                     </select>
                   </div>
@@ -499,16 +499,13 @@ const Passes = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                    <select
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    >
-                      <option value="All Locations">All Locations</option>
-                      <option value="Location A">Location A</option>
-                      <option value="Location B">Location B</option>
-                      <option value="Location C">Location C</option>
-                    </select>
+                    <MultiSelectDropdown
+                      options={mockDashboardData.parkingZones.map(z => z.name)}
+                      selected={formData.location}
+                      onChange={(val) => setFormData({ ...formData, location: val })}
+                      placeholder="Select Locations"
+                      icon={MapPin}
+                    />
                   </div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => { const value = e.target.value.replace(/\D/g, ''); if (value.length <= 10) setFormData({ ...formData, mobileNumber: value }); }} placeholder="e.g. 9876543210 (7-10 digits)" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid From</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validFrom} onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })} required /></div>
@@ -611,7 +608,7 @@ const Passes = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 };
 

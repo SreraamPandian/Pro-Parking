@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpCircle, Loader2, ShieldCheck, ShieldAlert, Timer } from 'lucide-react'; // Removed ChevronsUpDown
-import { mockBarrierData as initialBarrierData } from '../data/mockData';
+import { ArrowUpCircle, Loader2, ShieldCheck, ShieldAlert, Timer, MapPin, Filter } from 'lucide-react'; // Removed ChevronsUpDown
+import { mockBarrierData as initialBarrierData, mockDashboardData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { motion } from 'framer-motion';
 
 const BoomBarrierControl = () => {
@@ -8,6 +9,11 @@ const BoomBarrierControl = () => {
     initialBarrierData.filter(b => b.name.includes("Main Entrance Barrier") || b.name.includes("Main Exit Barrier"))
   );
   const [timers, setTimers] = useState({});
+  const [locationFilter, setLocationFilter] = useState([]);
+
+  const filteredBarriers = barriers.filter(barrier =>
+    locationFilter.length === 0 || locationFilter.includes(barrier.location)
+  );
 
   useEffect(() => {
     const activeTimers = {};
@@ -80,10 +86,21 @@ const BoomBarrierControl = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Boom Barrier Control</h1>
         <p className="text-gray-600 mt-1">Remotely operate and monitor parking boom barriers.</p>
+        <div className="mt-4 flex items-center justify-end">
+          <div className="w-64">
+            <MultiSelectDropdown
+              options={mockDashboardData.parkingZones.map(z => z.name)}
+              selected={locationFilter}
+              onChange={setLocationFilter}
+              placeholder="Filter by Location"
+              icon={MapPin}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {barriers.map((barrier) => {
+        {filteredBarriers.map((barrier) => {
           const statusInfo = getStatusInfo(barrier.status);
           const isOperating = barrier.status === 'opening' || barrier.status === 'closing';
           const isOpen = barrier.status === 'open';

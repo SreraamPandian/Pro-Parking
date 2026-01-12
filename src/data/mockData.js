@@ -32,16 +32,20 @@ export const mockDashboardData = {
 const generateMockVehicles = () => {
   const departments = ['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor'];
   const locations = ['Location A', 'Location B', 'Location C'];
+  const names = ["James Smith", "Maria Garcia", "Robert Johnson", "Sarah Williams", "Michael Brown", "David Miller", "Jennifer Davis", "William Wilson"];
   let vehicles = [];
   let idCounter = 1;
 
   departments.forEach(dept => {
     // 30 Live Parking (Inside)
     for (let i = 0; i < 30; i++) {
+      const randomName = names[Math.floor(Math.random() * names.length)];
       const randomLocation = locations[Math.floor(Math.random() * locations.length)];
       const vehicleNumber = `${dept.substring(0, 2).toUpperCase()}${i}0 ${Math.floor(Math.random() * 900) + 100}`;
       vehicles.push({
         id: String(idCounter++),
+        name: randomName,
+        profileImage: "https://placehold.co/100x100?text=" + randomName.charAt(0),
         vehicleNumber,
         entryTime: '2025-05-14T10:00:00', // Recent
         exitTime: null, // Inside
@@ -54,10 +58,13 @@ const generateMockVehicles = () => {
     }
     // 20 Reports (Exited)
     for (let i = 0; i < 20; i++) {
+      const randomName = names[Math.floor(Math.random() * names.length)];
       const randomLocation = locations[Math.floor(Math.random() * locations.length)];
       const vehicleNumber = `${dept.substring(0, 2).toUpperCase()}${i}1 ${Math.floor(Math.random() * 900) + 100}`;
       vehicles.push({
         id: String(idCounter++),
+        name: randomName,
+        profileImage: "https://placehold.co/100x100?text=" + randomName.charAt(0),
         vehicleNumber,
         entryTime: '2025-05-13T08:00:00',
         exitTime: '2025-05-13T17:00:00', // Exited

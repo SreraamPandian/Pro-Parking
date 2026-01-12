@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash, Building2, X } from 'lucide-react';
+import { Plus, Edit, Trash, Building2, X, MapPin } from 'lucide-react';
+import { mockDashboardData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 
 const Departments = () => {
     const [departments, setDepartments] = useState([
-        { id: 1, name: 'Administration', description: 'Administrative and management staff', employeeCount: 12, location: 'Location A', isActive: true },
-        { id: 2, name: 'Security', description: 'Security and surveillance personnel', employeeCount: 8, location: 'Location B', isActive: true },
-        { id: 3, name: 'Maintenance', description: 'Facility maintenance and technical staff', employeeCount: 15, location: 'Location C', isActive: true },
-        { id: 4, name: 'Customer Service', description: 'Customer support and assistance', employeeCount: 6, location: 'Location A', isActive: true },
-        { id: 5, name: 'Operations', description: 'Daily operations and logistics', employeeCount: 10, location: 'Location B', isActive: true }
+        { id: 1, name: 'Administration', description: 'Administrative and management staff', employeeCount: 12, location: ['Location A'], isActive: true },
+        { id: 2, name: 'Security', description: 'Security and surveillance personnel', employeeCount: 8, location: ['Location B'], isActive: true },
+        { id: 3, name: 'Maintenance', description: 'Facility maintenance and technical staff', employeeCount: 15, location: ['Location C'], isActive: true },
+        { id: 4, name: 'Customer Service', description: 'Customer support and assistance', employeeCount: 6, location: ['Location A'], isActive: true },
+        { id: 5, name: 'Operations', description: 'Daily operations and logistics', employeeCount: 10, location: ['Location B'], isActive: true }
     ]);
 
     const [showModal, setShowModal] = useState(false);
@@ -16,12 +18,12 @@ const Departments = () => {
         name: '',
         description: '',
         employeeCount: 0,
-        location: 'Location A',
+        location: ['Location A'],
         isActive: true
     });
 
     const handleAdd = () => {
-        setFormData({ name: '', description: '', employeeCount: 0, location: 'Location A', isActive: true });
+        setFormData({ name: '', description: '', employeeCount: 0, location: ['Location A'], isActive: true });
         setEditingDepartment(null);
         setShowModal(true);
     };
@@ -31,7 +33,7 @@ const Departments = () => {
             name: dept.name,
             description: dept.description,
             employeeCount: dept.employeeCount,
-            location: dept.location || 'Location A',
+            location: Array.isArray(dept.location) ? dept.location : [dept.location || 'Location A'],
             isActive: dept.isActive
         });
         setEditingDepartment(dept.id);
@@ -64,12 +66,12 @@ const Departments = () => {
         }
 
         setShowModal(false);
-        setFormData({ name: '', description: '', employeeCount: 0, location: 'Location A', isActive: true });
+        setFormData({ name: '', description: '', employeeCount: 0, location: ['Location A'], isActive: true });
     };
 
     const handleCancel = () => {
         setShowModal(false);
-        setFormData({ name: '', description: '', employeeCount: 0, location: 'Location A', isActive: true });
+        setFormData({ name: '', description: '', employeeCount: 0, location: ['Location A'], isActive: true });
         setEditingDepartment(null);
     };
 
@@ -113,7 +115,7 @@ const Departments = () => {
                                             {dept.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                         <span className="inline-block px-2 py-1 text-xs rounded-full bg-blue-50 text-blue-700 border border-blue-100">
-                                            {dept.location || 'Location A'}
+                                            {Array.isArray(dept.location) ? dept.location.join(', ') : (dept.location || 'Location A')}
                                         </span>
                                     </div>
                                 </div>
@@ -211,16 +213,13 @@ const Departments = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Location
                                     </label>
-                                    <select
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
-                                    >
-                                        <option value="All Locations">All Locations</option>
-                                        <option value="Location A">Location A</option>
-                                        <option value="Location B">Location B</option>
-                                        <option value="Location C">Location C</option>
-                                    </select>
+                                    <MultiSelectDropdown
+                                        options={mockDashboardData.parkingZones.map(z => z.name)}
+                                        selected={formData.location}
+                                        onChange={(val) => setFormData({ ...formData, location: val })}
+                                        placeholder="Select Locations"
+                                        icon={MapPin}
+                                    />
                                 </div>
 
                                 <div className="flex items-center">

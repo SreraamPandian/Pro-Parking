@@ -84,7 +84,7 @@ const Reports = () => {
     let filename = `vehicle_report_${new Date().toISOString().slice(0, 10)}`;
     let mimeType = "";
 
-    const header = "Vehicle Number,Department,Location,Entry Time,Exit Time,Type,Status,Duration,Payment Method,Payment Amount (USD),Waiver ID,Waiver Reason\n";
+    const header = "Vehicle Number,Driver,Department,Location,Entry Time,Exit Time,Type,Status,Duration,Payment Method,Payment Amount (USD),Waiver ID,Waiver Reason\n";
 
     const dataToExport = filteredData.map(vehicle => {
       let duration = '-';
@@ -104,6 +104,7 @@ const Reports = () => {
 
       return [
         vehicle.vehicleNumber,
+        vehicle.name || 'Unknown',
         vehicle.department || 'N/A',
         vehicle.location || 'N/A',
         vehicle.entryTime,
@@ -293,6 +294,7 @@ const Reports = () => {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('vehicleNumber')}>
                   <div className="flex items-center">Vehicle Number{sortField === 'vehicleNumber' && <span className="ml-1">{sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}</span>}</div>
                 </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Driver</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('entryTime')}>
@@ -338,6 +340,18 @@ const Reports = () => {
                       <div className="flex items-center">
                         <Car size={16} className="mr-2 text-gray-500" />
                         <span className="font-medium">{vehicle.vehicleNumber}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        {vehicle.profileImage ? (
+                          <img src={vehicle.profileImage} alt={vehicle.name} className="w-8 h-8 rounded-full mr-2 object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2 text-gray-500 text-xs">N/A</div>
+                        )}
+                        <div className="text-sm">
+                          <div className="font-medium text-gray-900">{vehicle.name || 'Unknown'}</div>
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td>
