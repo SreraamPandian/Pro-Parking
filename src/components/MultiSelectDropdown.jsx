@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, Check, Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MultiSelectDropdown = ({ options, selected, onChange, placeholder, icon: Icon, label }) => {
+const MultiSelectDropdown = ({ options, selected, onChange, placeholder, icon: Icon, label, singleSelect }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const dropdownRef = useRef(null);
@@ -34,11 +34,16 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, icon: I
     }, [options, searchTerm]);
 
     const toggleOption = (option) => {
-        const isSelected = selected.includes(option);
-        if (isSelected) {
-            onChange(selected.filter(item => item !== option));
+        if (singleSelect) {
+            onChange([option]);
+            setIsOpen(false);
         } else {
-            onChange([...selected, option]);
+            const isSelected = selected.includes(option);
+            if (isSelected) {
+                onChange(selected.filter(item => item !== option));
+            } else {
+                onChange([...selected, option]);
+            }
         }
     };
 

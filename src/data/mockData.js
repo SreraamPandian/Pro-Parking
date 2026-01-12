@@ -443,6 +443,45 @@ export const mockBookingData = [
     duration: '3 hours',
     status: 'Booked',
     type: 'Visitor',
-    plateImage: generateLicensePlateImage('MM 1234')
+  }
+];
+
+// Mock data for user management
+export const mockUserData = [
+  {
+    id: 'u1',
+    name: 'Sriram Kumar',
+    username: 'sriram',
+    email: 'sriram@example.com',
+    role: 'admin',
+    deviceId: 'DEV-8877',
+    deviceName: 'Admin iPhone',
+    isActive: true,
+    gateAssignment: 'all',
+    lastLogin: '2026-01-12 10:30'
+  },
+  {
+    id: 'u2',
+    name: 'Operator One',
+    username: 'operator1',
+    email: 'op1@example.com',
+    role: 'operator',
+    deviceId: 'DEV-4433',
+    deviceName: 'Gate Tablet 01',
+    isActive: true,
+    gateAssignment: 'entrance',
+    lastLogin: '2026-01-12 08:15'
+  },
+  {
+    id: 'u3',
+    name: 'Security Chief',
+    username: 'security',
+    email: 'sec@example.com',
+    role: 'security',
+    deviceId: 'DEV-2211',
+    deviceName: 'Security Handheld',
+    isActive: true,
+    gateAssignment: 'all',
+    lastLogin: '2026-01-11 22:00'
   }
 ];

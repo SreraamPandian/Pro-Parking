@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Plus, Edit, Trash, UserCircle, KeyRound, X, Save, ChevronDown, MapPin, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit, Trash, UserCircle, KeyRound, X, Save, ChevronDown, MapPin, Search, Filter, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 import { availableAppModules, mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 
@@ -67,11 +67,15 @@ const AddUser = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [newRoleData, setNewRoleData] = useState({ name: '', description: '' });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
   const [formData, setFormData] = useState({
     userName: '',
     password: '',
     role: '',
-    location: 'Location A', // Added location to form state
+    locations: ['Location A'], // Changed to locations (plural)
     permissions: initializePermissions(),
   });
 

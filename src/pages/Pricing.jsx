@@ -249,6 +249,7 @@ const Pricing = () => {
                   options={mockDashboardData.parkingZones.map(z => z.name)}
                   selected={formData.location ? [formData.location] : []}
                   onChange={(val) => setFormData({ ...formData, location: val[0] || '' })}
+                  singleSelect={true}
                   placeholder="Select Location"
                   icon={MapPin}
                 />
@@ -452,7 +453,7 @@ const Pricing = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredPricingData.map((item) => (
+                  {filteredPricing.map((item) => (
                     <React.Fragment key={item.id}>
                       <tr className={`hover:bg-gray-50 ${expandedId === item.id ? 'bg-blue-50' : ''}`}>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -551,7 +552,7 @@ const Pricing = () => {
                 </tbody>
               </table>
 
-              {filteredPricingData.length === 0 && (
+              {filteredPricing.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   No pricing data available for 4-Wheeler vehicles. Click "Add Pricing" to create new pricing rules.
                 </div>
