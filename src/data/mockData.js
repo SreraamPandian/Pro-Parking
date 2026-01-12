@@ -1,3 +1,5 @@
+import { generateLicensePlateImage } from '../utils/licensePlateHelper';
+
 // Mock data for dashboard
 export const mockDashboardData = {
   currentVehicles: 125, // Sum of occupied in mockSlotData (40+20+65)
@@ -37,24 +39,26 @@ const generateMockVehicles = () => {
     // 30 Live Parking (Inside)
     for (let i = 0; i < 30; i++) {
       const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+      const vehicleNumber = `${dept.substring(0, 2).toUpperCase()}${i}0 ${Math.floor(Math.random() * 900) + 100}`;
       vehicles.push({
         id: String(idCounter++),
-        vehicleNumber: `${dept.substring(0, 2).toUpperCase()}${i}0 ${Math.floor(Math.random() * 900) + 100}`,
+        vehicleNumber,
         entryTime: '2025-05-14T10:00:00', // Recent
         exitTime: null, // Inside
         type: dept === 'Visitor' ? 'Visitor' : 'Staff',
         department: dept,
         location: randomLocation,
         vehicleImage: 'https://placehold.co/400x300/333/white?text=Vehicle+Image',
-        plateImage: `https://placehold.co/300x100/333/white?text=${dept.substring(0, 3).toUpperCase()}`
+        plateImage: generateLicensePlateImage(vehicleNumber)
       });
     }
     // 20 Reports (Exited)
     for (let i = 0; i < 20; i++) {
       const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+      const vehicleNumber = `${dept.substring(0, 2).toUpperCase()}${i}1 ${Math.floor(Math.random() * 900) + 100}`;
       vehicles.push({
         id: String(idCounter++),
-        vehicleNumber: `${dept.substring(0, 2).toUpperCase()}${i}1 ${Math.floor(Math.random() * 900) + 100}`,
+        vehicleNumber,
         entryTime: '2025-05-13T08:00:00',
         exitTime: '2025-05-13T17:00:00', // Exited
         type: dept === 'Visitor' ? 'Visitor' : 'Staff',
@@ -64,7 +68,7 @@ const generateMockVehicles = () => {
         paymentAmount: (Math.random() * 15 + 1).toFixed(2), // Random $1.00 - $16.00
         paymentProcessedTime: '2025-05-13T16:55:00',
         vehicleImage: 'https://placehold.co/400x300/333/white?text=Vehicle+Image',
-        plateImage: `https://placehold.co/300x100/333/white?text=${dept.substring(0, 3).toUpperCase()}`
+        plateImage: generateLicensePlateImage(vehicleNumber)
       });
     }
   });
@@ -109,7 +113,7 @@ export const mockDeviceData = [
 export const mockStaffPassData = [
   {
     id: '1',
-    staffName: 'Mr. Ahmed Al Balushi',
+    staffName: 'John Doe',
     department: 'Administration',
     location: 'Location A',
     vehicles: [
@@ -119,12 +123,12 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2025-12-31',
     isActive: true,
-    mobileNumber: '(555) 123-4567'
+    mobileNumber: '9876543210'
   },
   {
     id: '2',
-    staffName: 'Ms. Fatima Al Harthy',
-    department: 'Nursing',
+    staffName: 'Jane Smith',
+    department: 'Security',
     location: 'Location B',
     vehicles: [
       { id: 'v2_1', number: 'EE33 FFF', type: 'Car' }
@@ -132,11 +136,11 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2025-05-15', // Expiring soon
     isActive: true,
-    mobileNumber: '(555) 234-5678'
+    mobileNumber: '9876543211'
   },
   {
     id: '3',
-    staffName: 'Mr. Khalid Al Said',
+    staffName: 'Robert Brown',
     department: 'Maintenance',
     location: 'Location C',
     vehicles: [
@@ -145,12 +149,12 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2025-04-30', // Expired
     isActive: false,
-    mobileNumber: '(555) 345-6789'
+    mobileNumber: '9876543212'
   },
   {
     id: '4',
-    staffName: 'Mrs. Aisha Al Jabri',
-    department: 'IT Support',
+    staffName: 'Michael Wilson',
+    department: 'Operations',
     location: 'Location A',
     vehicles: [
       { id: 'v4_1', number: 'II55 JJJ', type: 'Car' },
@@ -160,7 +164,7 @@ export const mockStaffPassData = [
     validFrom: '2025-01-01',
     validUntil: '2026-01-01',
     isActive: true,
-    mobileNumber: '(555) 456-7890'
+    mobileNumber: '9876543213'
   }
 ];
 
@@ -307,13 +311,13 @@ export const mockBookingData = [
     location: 'Location A',
     department: 'Administration',
     vehicleNumbers: ['AA 1234'],
-    mobileNumber: '(987) 654-3210',
+    mobileNumber: '9123456780',
     numberOfVehicles: 1,
     dateTime: '2026-01-10T10:00:00',
     duration: '2 hours',
     status: 'Booked',
     type: 'Visitor',
-    plateImage: 'https://placehold.co/300x100/333/white?text=AA1234'
+    plateImage: generateLicensePlateImage('AA 1234')
   },
   {
     id: 'bk2',
@@ -321,13 +325,13 @@ export const mockBookingData = [
     location: 'Location B',
     department: 'Security',
     vehicleNumbers: ['BB 5678', 'CC 9012'],
-    mobileNumber: '(912) 345-6780',
+    mobileNumber: '9123456781',
     numberOfVehicles: 2,
     dateTime: '2026-01-10T11:30:00',
     duration: '4 hours',
     status: 'Booked',
     type: 'Staff',
-    plateImage: 'https://placehold.co/300x100/333/white?text=BB5678'
+    plateImage: generateLicensePlateImage('BB 5678')
   },
   {
     id: 'bk3',
@@ -335,13 +339,13 @@ export const mockBookingData = [
     location: 'Location C',
     department: 'Visitor',
     vehicleNumbers: ['DD 3456'],
-    mobileNumber: '(900) 012-3456',
+    mobileNumber: '9123456782',
     numberOfVehicles: 1,
     dateTime: '2026-01-11T09:15:00',
     duration: '1 hour',
     status: 'Cancelled',
     type: 'Visitor',
-    plateImage: 'https://placehold.co/300x100/333/white?text=DD3456'
+    plateImage: generateLicensePlateImage('DD 3456')
   },
   {
     id: 'bk4',
@@ -349,12 +353,96 @@ export const mockBookingData = [
     location: 'Location A',
     department: 'Security',
     vehicleNumbers: ['EE 5566', 'FF 7788', 'GG 9900'],
-    mobileNumber: '(988) 877-6655',
+    mobileNumber: '9123456783',
     numberOfVehicles: 3,
     dateTime: '2026-01-11T14:45:00',
     duration: '6 hours',
     status: 'Booked',
     type: 'Staff',
-    plateImage: 'https://placehold.co/300x100/333/white?text=EE5566'
+    plateImage: generateLicensePlateImage('EE 5566')
+  },
+  {
+    id: 'bk5',
+    name: 'Sarah Johnson',
+    location: 'Location B',
+    department: 'Maintenance',
+    vehicleNumbers: ['HH 1122'],
+    mobileNumber: '9123456784',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-12T08:30:00',
+    duration: '3 hours',
+    status: 'Booked',
+    type: 'Staff',
+    plateImage: generateLicensePlateImage('HH 1122')
+  },
+  {
+    id: 'bk6',
+    name: 'David Martinez',
+    location: 'Location A',
+    department: 'Maintenance',
+    vehicleNumbers: ['II 3344'],
+    mobileNumber: '9123456785',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-12T10:00:00',
+    duration: '2 hours',
+    status: 'Booked',
+    type: 'Visitor',
+    plateImage: generateLicensePlateImage('II 3344')
+  },
+  {
+    id: 'bk7',
+    name: 'Emily Davis',
+    location: 'Location C',
+    department: 'Customer Service',
+    vehicleNumbers: ['JJ 5566'],
+    mobileNumber: '9123456786',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-12T13:15:00',
+    duration: '4 hours',
+    status: 'Booked',
+    type: 'Staff',
+    plateImage: generateLicensePlateImage('JJ 5566')
+  },
+  {
+    id: 'bk8',
+    name: 'James Anderson',
+    location: 'Location B',
+    department: 'Customer Service',
+    vehicleNumbers: ['KK 7788'],
+    mobileNumber: '9123456787',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-12T15:00:00',
+    duration: '1 hour',
+    status: 'Booked',
+    type: 'Visitor',
+    plateImage: generateLicensePlateImage('KK 7788')
+  },
+  {
+    id: 'bk9',
+    name: 'Patricia Taylor',
+    location: 'Location A',
+    department: 'Operations',
+    vehicleNumbers: ['LL 9900'],
+    mobileNumber: '9123456788',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-13T09:00:00',
+    duration: '5 hours',
+    status: 'Booked',
+    type: 'Staff',
+    plateImage: generateLicensePlateImage('LL 9900')
+  },
+  {
+    id: 'bk10',
+    name: 'Christopher Lee',
+    location: 'Location C',
+    department: 'Operations',
+    vehicleNumbers: ['MM 1234'],
+    mobileNumber: '9123456789',
+    numberOfVehicles: 1,
+    dateTime: '2026-01-13T11:30:00',
+    duration: '3 hours',
+    status: 'Booked',
+    type: 'Visitor',
+    plateImage: generateLicensePlateImage('MM 1234')
   }
 ];

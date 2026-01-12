@@ -1,12 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { Download, Calendar, FileText, Filter, Search, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, MapPin, Clock, Printer, X, CreditCard, User, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { mockBookingData, hospitalDepartments, mockSlotData } from '../data/mockData';
+import { mockBookingData, hospitalDepartments, mockSlotData, mockDashboardData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 
 const BookingReports = () => {
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [departmentFilter, setDepartmentFilter] = useState('All');
-    const [locationFilter, setLocationFilter] = useState('All');
+    const [locationFilter, setLocationFilter] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortField, setSortField] = useState('dateTime');
     const [sortDirection, setSortDirection] = useState('desc');
@@ -28,7 +29,7 @@ const BookingReports = () => {
             if (departmentFilter !== 'All' && booking.department !== departmentFilter) return false;
 
             // Location filter
-            if (locationFilter !== 'All' && booking.location !== locationFilter) return false;
+            if (locationFilter.length > 0 && !locationFilter.includes(booking.location)) return false;
 
             // Date range filter
             if (dateRange.start && dateRange.end) {
@@ -183,16 +184,15 @@ const BookingReports = () => {
                     </div>
 
                     {/* Location */}
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Location</label>
-                        <select
-                            className="w-full mt-2 px-5 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary-blue/10 outline-none font-bold text-gray-700 appearance-none cursor-pointer"
-                            value={locationFilter}
-                            onChange={(e) => setLocationFilter(e.target.value)}
-                        >
-                            <option value="All">All Locations</option>
-                            {mockSlotData.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
-                        </select>
+                    <div className="w-full space-y-2">
+                        <MultiSelectDropdown
+                            options={mockDashboardData.parkingZones.map(z => z.name)}
+                            selected={locationFilter}
+                            onChange={setLocationFilter}
+                            placeholder="All Locations"
+                            label="Location"
+                            icon={MapPin}
+                        />
                     </div>
                 </div>
             </div>

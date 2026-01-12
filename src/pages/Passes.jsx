@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, Edit, Trash, Printer, Calendar, User, XCircle, Car as CarIcon, ToggleLeft, ToggleRight, Settings2, X, ClipboardList } from 'lucide-react';
-import { mockStaffPassData } from '../data/mockData';
+import { Search, Plus, Edit, Trash, Printer, Calendar, User, XCircle, Car as CarIcon, ToggleLeft, ToggleRight, Settings2, X, ClipboardList, MapPin, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { mockStaffPassData, mockDashboardData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Passes = () => {
@@ -8,8 +9,10 @@ const Passes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedStaffPass, setSelectedStaffPass] = useState(null);
-  const [departmentFilter, setDepartmentFilter] = useState('All');
-  const [locationFilter, setLocationFilter] = useState('All');
+  const [departmentFilter, setDepartmentFilter] = useState([]);
+  const [locationFilter, setLocationFilter] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const passDetailsRef = useRef(null);
 
   const initialVehicle = { id: Date.now(), number: '', type: 'Car' };
@@ -38,12 +41,23 @@ const Passes = () => {
   }, [waiverReasons]);
 
   const filteredStaffPasses = staffPasses.filter(pass =>
-    (departmentFilter === 'All' || pass.department === departmentFilter) &&
-    (locationFilter === 'All' || (pass.location || 'Location A') === locationFilter) &&
+    (departmentFilter.length === 0 || departmentFilter.includes(pass.department)) &&
+    (locationFilter.length === 0 || locationFilter.includes(pass.location || 'Location A')) &&
     (pass.staffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (pass.vehicles && pass.vehicles.some(v => v.number.toLowerCase().includes(searchTerm.toLowerCase()))) ||
       pass.department.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const totalPages = Math.ceil(filteredStaffPasses.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredStaffPasses.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, departmentFilter, locationFilter]);
 
   const handleAddVehicleToForm = () => {
     if (formData.vehicles.length < 3) {
@@ -114,6 +128,15 @@ const Passes = () => {
       return;
     }
     const updatedFormData = { ...formData, vehicles: filledVehicles };
+
+    if (formData.mobileNumber) {
+      const cleanPhone = formData.mobileNumber.replace(/\D/g, '');
+      if (cleanPhone.length < 7 || cleanPhone.length > 10) {
+        alert("Mobile number must be between 7 and 10 digits.");
+        return;
+      }
+      formData.mobileNumber = cleanPhone;
+    }
 
     if (selectedStaffPass) {
       setStaffPasses(staffPasses.map(pass => pass.id === selectedStaffPass.id ? { ...pass, ...updatedFormData } : pass));
@@ -243,37 +266,29 @@ const Passes = () => {
               <input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="Search by staff name or vehicle..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
 
-            <div className="relative">
-              <select
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white text-gray-700"
-                value={departmentFilter}
-                onChange={(e) => setDepartmentFilter(e.target.value)}
-              >
-                <option value="All">All Departments</option>
-                <option value="Administration">Administration</option>
-                <option value="Security">Security</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Customer Service">Customer Service</option>
-                <option value="Operations">Operations</option>
-                <option value="Visitor">Visitor</option>
-              </select>
+            <div className="w-full mb-3">
+              <MultiSelectDropdown
+                options={['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations', 'Visitor']}
+                selected={departmentFilter}
+                onChange={setDepartmentFilter}
+                placeholder="All Departments"
+                icon={Filter}
+              />
             </div>
 
-            <div className="relative mt-3">
-              <select
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white text-gray-700"
-                value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
-              >
-                <option value="All">All Locations</option>
-                <option value="Location A">Location A</option>
-                <option value="Location B">Location B</option>
-                <option value="Location C">Location C</option>
-              </select>
+            <div className="w-full">
+              <MultiSelectDropdown
+                options={mockDashboardData.parkingZones.map(z => z.name)}
+                selected={locationFilter}
+                onChange={setLocationFilter}
+                placeholder="All Locations"
+                icon={MapPin}
+              />
             </div>
           </div>
-          <div className="space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto">
-            {filteredStaffPasses.map((pass) => (
+
+          <div className="space-y-2 max-h-[calc(100vh-350px)] overflow-y-auto mb-4">
+            {currentItems.map((pass) => (
               <div key={pass.id} className={`p-3 border rounded-md cursor-pointer ${selectedStaffPass?.id === pass.id ? 'border-primary-blue bg-blue-50' : 'border-gray-200 hover:bg-gray-50'}`} onClick={() => viewPassDetails(pass)}>
                 <div className="flex justify-between items-start">
                   <div>
@@ -291,6 +306,51 @@ const Passes = () => {
             ))}
             {filteredStaffPasses.length === 0 && (<div className="text-center py-8 text-gray-500">No passes found.</div>)}
           </div>
+
+          {/* Pagination UI */}
+          {filteredStaffPasses.length > itemsPerPage && (
+            <div className="py-3 flex items-center justify-between border-t border-gray-100 no-print">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  Next
+                </button>
+              </div>
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <p className="text-xs text-gray-700">
+                  <span className="font-medium">{indexOfFirstItem + 1}</span>-
+                  <span className="font-medium">{Math.min(indexOfLastItem, filteredStaffPasses.length)}</span> of{' '}
+                  <span className="font-medium">{filteredStaffPasses.length}</span>
+                </p>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`relative inline-flex items-center px-1 py-1 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className={`relative inline-flex items-center px-1 py-1 rounded-r-md border border-gray-300 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
@@ -450,7 +510,7 @@ const Passes = () => {
                       <option value="Location C">Location C</option>
                     </select>
                   </div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })} placeholder="e.g. (555) 123-4567" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => { const value = e.target.value.replace(/\D/g, ''); if (value.length <= 10) setFormData({ ...formData, mobileNumber: value }); }} placeholder="e.g. 9876543210 (7-10 digits)" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid From</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validFrom} onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })} required /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Valid Until</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.validUntil} onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })} required /></div>
                   <div>

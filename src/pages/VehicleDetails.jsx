@@ -1,15 +1,17 @@
 import React, { useState, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Search, Filter, Calendar, Clock, Car, X, Eye, Plus, QrCode, Check, Printer, CreditCard, DollarSign, FileText, Ticket, Wallet, ShieldCheck, Smartphone, ParkingSquare } from 'lucide-react'; // Added Smartphone icon
-import { mockSlotData, mockTieredPricingData } from '../data/mockData';
+import { Search, Filter, Calendar, Clock, Car, X, Eye, Plus, QrCode, Check, Printer, CreditCard, DollarSign, FileText, Ticket, Wallet, ShieldCheck, Smartphone, ParkingSquare, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'; // Added Smartphone and MapPin
+import { mockSlotData, mockTieredPricingData, mockDashboardData, mockBookingData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { motion, AnimatePresence } from 'framer-motion'; // For modal animation
+import { generateLicensePlateImage } from '../utils/licensePlateHelper';
 
 const VehicleDetails = () => {
   const { vehiclesData, updateVehiclesData } = useOutletContext();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('All');
-  const [locationFilter, setLocationFilter] = useState('All'); // New state
+  const [locationFilter, setLocationFilter] = useState([]); // Changed to array
   const [selectedVehicleForPreview, setSelectedVehicleForPreview] = useState(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showAddFormModal, setShowAddFormModal] = useState(false);
@@ -19,19 +21,31 @@ const VehicleDetails = () => {
   const [paymentStep, setPaymentStep] = useState('initial');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [waiverRemarks, setWaiverRemarks] = useState('');
+  const [waiverType, setWaiverType] = useState('department'); // 'department' or 'other'
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedVisitor, setSelectedVisitor] = useState('');
   const [addFormState, setAddFormState] = useState({ vehicleNumber: '', entryTime: '', type: 'Visitor', department: 'Visitor', plateImage: '/assets/plates/AB12XYZ.png', location: 'Location A' }); // Added location
   const receiptRef = useRef(null);
   const [showSampleEntryTicketModal, setShowSampleEntryTicketModal] = useState(false); // New state for entry ticket modal
   const entryTicketRef = useRef(null); // Ref for printing entry ticket
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const vehiclesInsideParking = vehiclesData.filter(vehicle => !vehicle.exitTime);
 
   const filteredVehiclesToDisplay = vehiclesInsideParking.filter(vehicle => {
     if (searchTerm && !vehicle.vehicleNumber.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     if (departmentFilter !== 'All' && vehicle.department !== departmentFilter) return false;
-    if (locationFilter !== 'All' && vehicle.location !== locationFilter) return false; // Location filter logic
+    if (locationFilter.length > 0 && !locationFilter.includes(vehicle.location || 'Location A')) return false; // Updated logic
     return true;
   });
+
+  const totalPages = Math.ceil(filteredVehiclesToDisplay.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredVehiclesToDisplay.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const getTypeBadge = (type) => {
     const colors = { 'Staff': 'bg-blue-100 text-primary-blue', 'Visitor': 'bg-yellow-100 text-yellow-800' };
@@ -51,7 +65,7 @@ const VehicleDetails = () => {
     setShowAddFormModal(true);
   };
 
-  const handleScanTicket = () => {
+  const handleScanTicket = (vehicle = null) => {
     setShowScanModal(true);
     setPaymentStep('initial');
     setScannedVehicleData(null);
@@ -59,10 +73,10 @@ const VehicleDetails = () => {
     setTimeout(() => {
       const insideVehicles = vehiclesData.filter(v => !v.exitTime);
       if (insideVehicles.length > 0) {
-        const randomVehicle = insideVehicles[Math.floor(Math.random() * insideVehicles.length)];
+        const vehicleToProcess = vehicle || insideVehicles[Math.floor(Math.random() * insideVehicles.length)];
         setScannedVehicleData({
-          ...randomVehicle,
-          calculatedFee: calculateParkingFee(randomVehicle),
+          ...vehicleToProcess,
+          calculatedFee: calculateParkingFee(vehicleToProcess),
           paymentTime: new Date().toISOString()
         });
         setPaymentStep('methodOrWaiverSelection');
@@ -71,6 +85,21 @@ const VehicleDetails = () => {
         setShowScanModal(false);
       }
     }, 1500);
+  };
+
+  const handleWaiverClick = (vehicle) => {
+    const calculatedFee = calculateParkingFee(vehicle);
+    setScannedVehicleData({
+      ...vehicle,
+      calculatedFee,
+      paymentTime: new Date().toISOString()
+    });
+    setWaiverType('department');
+    setSelectedDepartment('');
+    setSelectedVisitor('');
+    setWaiverRemarks('');
+    setPaymentStep('waiverReasonInput');
+    setShowScanModal(true);
   };
 
   const calculateParkingFee = (vehicle) => {
@@ -157,14 +186,58 @@ const VehicleDetails = () => {
       alert("Please enter a reason for the waiver.");
       return;
     }
-    const exitTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
+
+    // Validate department visitor selection
+    if (waiverType === 'department' && (!selectedDepartment || !selectedVisitor)) {
+      alert("Please select both department and visitor for Department Visitor waiver.");
+      return;
+    }
+
+    const exitTime = new Date().toISOString();
+
+    // Create booking record from vehicle data
+    const newBooking = {
+      id: `bk-waiver-${Date.now()}`,
+      name: waiverType === 'department' ? selectedVisitor : 'Other Visitor',
+      location: scannedVehicleData.location || 'Location A',
+      department: waiverType === 'department' ? selectedDepartment : 'Visitor',
+      vehicleNumbers: [scannedVehicleData.vehicleNumber],
+      mobileNumber: '0000000000',
+      numberOfVehicles: 1,
+      dateTime: scannedVehicleData.entryTime,
+      duration: (() => {
+        const entry = new Date(scannedVehicleData.entryTime);
+        const exit = new Date(exitTime);
+        const diffMs = exit - entry;
+        const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        return `${diffHrs}h ${diffMins}m`;
+      })(),
+      status: 'Waived',
+      type: waiverType === 'department' ? 'Department Visitor' : 'Other Visitor',
+      plateImage: scannedVehicleData.plateImage,
+      waiverReason: waiverRemarks.trim(),
+      waiverType: waiverType,
+      entryTime: scannedVehicleData.entryTime,
+      exitTime: exitTime
+    };
+
+    // Add to booking data (in a real app, this would be an API call)
+    mockBookingData.push(newBooking);
+    console.log('Booking created:', newBooking);
+
+    // Update vehicle data with waiver info
     const waiverData = {
       exitTime: exitTime,
       paymentMethod: 'Waiver',
-      paymentAmount: '0.000',
+      paymentAmount: '0.00',
       waiverReason: waiverRemarks.trim(),
+      waiverType: waiverType,
+      waiverDepartment: waiverType === 'department' ? selectedDepartment : null,
+      waiverVisitor: waiverType === 'department' ? selectedVisitor : null,
       paymentTime: new Date().toISOString()
     };
+
     setScannedVehicleData(prev => ({ ...prev, ...waiverData }));
     processVehicleExitAndUpdateGlobal(scannedVehicleData.id, waiverData);
   };
@@ -174,7 +247,8 @@ const VehicleDetails = () => {
     const newVehicleEntry = {
       id: Date.now().toString(),
       ...addFormState,
-      vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
+      plateImage: generateLicensePlateImage(addFormState.vehicleNumber),
+      vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
       exitTime: null,
       paymentProcessedTime: null
     };
@@ -264,21 +338,19 @@ const VehicleDetails = () => {
     let baseTotal = 0;
     let baseReserved = 0;
 
-    if (locationFilter === 'All') {
+    if (locationFilter.length === 0) {
       baseTotal = mockSlotData.reduce((acc, curr) => acc + curr.totalSlots, 0);
       baseReserved = mockSlotData.reduce((acc, curr) => acc + curr.reservedSlots, 0);
     } else {
-      const zone = mockSlotData.find(z => z.name === locationFilter);
-      if (zone) {
-        baseTotal = zone.totalSlots;
-        baseReserved = zone.reservedSlots;
-      }
+      const selectedZones = mockSlotData.filter(z => locationFilter.includes(z.name));
+      baseTotal = selectedZones.reduce((acc, curr) => acc + curr.totalSlots, 0);
+      baseReserved = selectedZones.reduce((acc, curr) => acc + curr.reservedSlots, 0);
     }
 
     // Get live counts from vehiclesData (Occupied)
-    const locationVehicles = locationFilter === 'All'
-      ? vehiclesData
-      : vehiclesData.filter(v => v.location === locationFilter);
+    const locationVehicles = (locationFilter.length === 0)
+      ? vehiclesInsideParking
+      : vehiclesInsideParking.filter(v => locationFilter.includes(v.location || 'Location A'));
 
     const occupiedSlots = locationVehicles.filter(v => !v.exitTime).length;
     const availableSlots = baseTotal - baseReserved - occupiedSlots;
@@ -314,7 +386,7 @@ const VehicleDetails = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-6 no-print">
-        <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-semibold text-gray-800 flex items-center"><ParkingSquare size={20} className="mr-2 text-primary-blue" /> Parking Slot Status ({locationFilter})</h3></div>
+        <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-semibold text-gray-800 flex items-center"><ParkingSquare size={20} className="mr-2 text-primary-blue" /> Parking Slot Status ({locationFilter.length === 0 ? 'All Locations' : locationFilter.join(', ')})</h3></div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-100"><p className="text-xs font-semibold text-primary-blue mb-1 uppercase tracking-wider">Total Slots</p><p className="text-2xl font-bold text-primary-blue">{currentSlotStats.totalSlots}</p></div>
           <div className="bg-green-50 p-4 rounded-lg border border-green-100"><p className="text-xs font-semibold text-green-600 mb-1 uppercase tracking-wider">Available</p><p className="text-2xl font-bold text-green-700">{currentSlotStats.availableSlots}</p></div>
@@ -327,22 +399,14 @@ const VehicleDetails = () => {
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="relative flex-grow"><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search size={18} className="text-gray-400" /></div><input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" placeholder="Search by vehicle number..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div>
 
-          <div className="w-full md:w-48">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <ParkingSquare size={18} className="text-gray-400" />
-              </div>
-              <select
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue appearance-none"
-                value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
-              >
-                <option value="All">All Locations</option>
-                <option value="Location A">Location A</option>
-                <option value="Location B">Location B</option>
-                <option value="Location C">Location C</option>
-              </select>
-            </div>
+          <div className="w-64">
+            <MultiSelectDropdown
+              options={mockDashboardData.parkingZones.map(z => z.name)}
+              selected={locationFilter}
+              onChange={setLocationFilter}
+              placeholder="All Locations"
+              icon={MapPin}
+            />
           </div>
 
           <div className="w-full md:w-64">
@@ -366,7 +430,136 @@ const VehicleDetails = () => {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto"><table className="min-w-full divide-y divide-gray-200"><thead className="bg-gray-50"><tr><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle Number</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Time</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider no-print">Location</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ANPR Image</th><th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th></tr></thead><tbody className="bg-white divide-y divide-gray-200">{filteredVehiclesToDisplay.map((vehicle) => (<tr key={vehicle.id} className="hover:bg-gray-50"><td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Car size={16} className="mr-2 text-gray-500" /><span className="font-medium">{vehicle.vehicleNumber}</span></div></td><td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td><td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Clock size={16} className="mr-2 text-gray-500" /><span>{formatDateTimeForDisplay(vehicle.entryTime)}</span></div></td><td className="px-6 py-4 whitespace-nowrap">{getTypeBadge(vehicle.type)}</td><td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 no-print">{vehicle.location || '-'}</td><td className="px-6 py-4 whitespace-nowrap"><div className="w-32 h-12 bg-gray-100 rounded overflow-hidden"><img src={vehicle.plateImage} alt={`License plate ${vehicle.vehicleNumber}`} className="w-full h-full object-cover" /></div></td><td className="px-6 py-4 whitespace-nowrap"><button className="flex items-center text-primary-blue hover:text-blue-700 focus:outline-none focus:ring-1 focus:ring-primary-blue" onClick={() => handlePreview(vehicle)}><Eye size={16} className="mr-1" />Preview</button></td></tr>))}</tbody></table>{filteredVehiclesToDisplay.length === 0 && <div className="text-center py-8 text-gray-500">No vehicles currently inside parking or matching search.</div>}</div>
+        <div>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle Number</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entry Time</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider no-print">Location</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ANPR Image</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {currentItems.map((vehicle) => {
+                // Determine row background for specific vehicles only
+                const getRowClass = () => {
+                  // Use vehicle ID to determine status - only highlight specific vehicles
+                  const idNum = parseInt(vehicle.id.replace(/\D/g, '')) || 0;
+
+                  // Reserved (sandal/yellow) - for specific IDs (e.g., every 5th vehicle)
+                  if (idNum % 5 === 0 && vehicle.type === 'Staff') {
+                    return 'bg-yellow-50 hover:bg-yellow-100 border-l-4 border-yellow-400';
+                  }
+
+                  // Occupied (red) - for specific IDs (e.g., every 7th vehicle that's a Visitor)
+                  if (idNum % 7 === 0 && vehicle.type === 'Visitor') {
+                    return 'bg-red-50 hover:bg-red-100 border-l-4 border-red-400';
+                  }
+
+                  // Default - no highlighting
+                  return 'hover:bg-gray-50';
+                };
+
+                return (
+                  <tr key={vehicle.id} className={getRowClass()}>
+                    <td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Car size={16} className="mr-2 text-gray-500" /><span className="font-medium">{vehicle.vehicleNumber}</span></div></td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{vehicle.department || 'N/A'}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap"><div className="flex items-center"><Clock size={16} className="mr-2 text-gray-500" /><span>{formatDateTimeForDisplay(vehicle.entryTime)}</span></div></td>
+                    <td className="px-6 py-4 whitespace-nowrap">{getTypeBadge(vehicle.type)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 no-print">{vehicle.location || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap"><div className="w-40 h-10 bg-gray-100 rounded overflow-hidden shadow-sm border border-gray-200"><img src={vehicle.plateImage} alt={`License plate ${vehicle.vehicleNumber}`} className="w-full h-full object-contain" /></div></td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          className="px-3 py-1.5 bg-primary-red text-white text-xs font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-red transition-colors"
+                          onClick={() => handleScanTicket(vehicle)}
+                        >
+                          Pay Now
+                        </button>
+                        <button
+                          className="p-1.5 bg-primary-blue text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue transition-colors"
+                          onClick={() => handleWaiverClick(vehicle)}
+                          title="Apply Waiver"
+                        >
+                          <ShieldCheck size={16} />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap"><button className="flex items-center text-primary-blue hover:text-blue-700 focus:outline-none focus:ring-1 focus:ring-primary-blue" onClick={() => handlePreview(vehicle)}><Eye size={16} className="mr-1" />Preview</button></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {filteredVehiclesToDisplay.length === 0 && <div className="text-center py-8 text-gray-500">No vehicles currently inside parking or matching search.</div>}
+        </div>
+
+        {/* Pagination UI */}
+        {filteredVehiclesToDisplay.length > itemsPerPage && (
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-200 bg-white rounded-b-lg no-print">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to <span className="font-medium">{Math.min(indexOfLastItem, filteredVehiclesToDisplay.length)}</span> of{' '}
+                  <span className="font-medium">{filteredVehiclesToDisplay.length}</span> results
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeft size={20} />
+                  </button>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i + 1}
+                      onClick={() => paginate(i + 1)}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === i + 1
+                        ? 'z-10 bg-primary-blue border-primary-blue text-white'
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                        }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRight size={20} />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
 
@@ -526,7 +719,116 @@ const VehicleDetails = () => {
               </div>
             )}
 
-            {paymentStep === 'waiverReasonInput' && scannedVehicleData && (<div className="py-4"> <h4 className="font-medium text-gray-800 mb-2">Waiver Reason/Remarks</h4> <textarea value={waiverRemarks} onChange={(e) => setWaiverRemarks(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" rows="3" placeholder="Enter reason for waiving the parking fee..." /> <div className="mt-6 flex justify-end"> <button className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-blue" onClick={handleConfirmWaiver}>Confirm Waiver</button> </div> </div>)}
+
+            {paymentStep === 'waiverReasonInput' && scannedVehicleData && (
+              <div className="py-4">
+                <h4 className="font-medium text-gray-800 mb-4">Apply Waiver</h4>
+
+                {/* Waiver Type Selection */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Waiver Type</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setWaiverType('department')}
+                      className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${waiverType === 'department'
+                        ? 'border-primary-blue bg-blue-50 text-primary-blue'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                        }`}
+                    >
+                      Department Visitor
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setWaiverType('other')}
+                      className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${waiverType === 'other'
+                        ? 'border-primary-blue bg-blue-50 text-primary-blue'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                        }`}
+                    >
+                      Other Visitor
+                    </button>
+                  </div>
+                </div>
+
+                {/* Department Visitor Fields */}
+                {waiverType === 'department' && (
+                  <>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                      <select
+                        value={selectedDepartment}
+                        onChange={(e) => {
+                          setSelectedDepartment(e.target.value);
+                          setSelectedVisitor('');
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                      >
+                        <option value="">Select Department</option>
+                        {['Administration', 'Security', 'Maintenance', 'Customer Service', 'Operations'].map(dept => (
+                          <option key={dept} value={dept}>{dept}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {selectedDepartment && (
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Visitor Name</label>
+                        <select
+                          value={selectedVisitor}
+                          onChange={(e) => setSelectedVisitor(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                        >
+                          <option value="">Select Visitor</option>
+                          {mockBookingData
+                            .filter(booking => booking.department === selectedDepartment)
+                            .map(booking => (
+                              <option key={booking.id} value={booking.name}>{booking.name}</option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Remarks */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Remarks / Reason</label>
+                  <textarea
+                    value={waiverRemarks}
+                    onChange={(e) => setWaiverRemarks(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue"
+                    rows="3"
+                    placeholder="Enter reason for waiving the parking fee..."
+                  />
+                </div>
+
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue"
+                    onClick={() => {
+                      setShowScanModal(false);
+                      setPaymentStep('initial');
+                      setWaiverRemarks('');
+                      setSelectedDepartment('');
+                      setSelectedVisitor('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-blue disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleConfirmWaiver}
+                    disabled={
+                      !waiverRemarks.trim() ||
+                      (waiverType === 'department' && (!selectedDepartment || !selectedVisitor))
+                    }
+                  >
+                    Confirm Waiver & Close Booking
+                  </button>
+                </div>
+              </div>
+            )}
             {paymentStep === 'receipt' && scannedVehicleData && (<div className="py-4"> <div className={`w-full p-4 rounded-lg mb-4 flex items-center ${scannedVehicleData.paymentMethod === 'Waiver' ? 'bg-blue-50' : 'bg-green-50'}`}> <div className={`${scannedVehicleData.paymentMethod === 'Waiver' ? 'bg-blue-100' : 'bg-green-100'} rounded-full p-2 mr-3`}><Check size={20} className={`${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-primary-blue' : 'text-green-600'}`} /></div> <div><h4 className={`font-medium ${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-primary-blue' : 'text-green-800'}`}>{scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Applied Successfully!' : 'Payment Successful!'}</h4><p className={`text-sm ${scannedVehicleData.paymentMethod === 'Waiver' ? 'text-blue-600' : 'text-green-600'}`}>Receipt generated below.</p></div> </div> <div ref={receiptRef} className="border border-gray-300 p-4 rounded-md bg-white"> <div className="text-center mb-4"> <img src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" alt="Pro-Parking Logo" className="w-20 h-auto mx-auto mb-2" /> <h3 className="text-lg font-semibold text-primary-blue">Pro-Parking - {scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Confirmation' : 'Payment Receipt'}</h3> <p className="text-xs text-gray-500">ID: {scannedVehicleData.paymentMethod === 'Waiver' ? 'WAIV-' : 'RCPT-'}{Date.now()}</p> </div> <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3"> <div><strong className="text-gray-600">Vehicle Number:</strong> {scannedVehicleData.vehicleNumber}</div> <div><strong className="text-gray-600">Department:</strong> {scannedVehicleData.department || 'Visitor'}</div> <div><strong className="text-gray-600">Location:</strong> {scannedVehicleData.location || 'N/A'}</div> <div><strong className="text-gray-600">Payment Mode:</strong> {scannedVehicleData.paymentMethod?.toUpperCase()}</div> <div><strong className="text-gray-600">Entry Time:</strong> {formatDateTimeForDisplay(scannedVehicleData.entryTime)}</div> <div><strong className="text-gray-600">Exit Time:</strong> {formatDateTimeForDisplay(scannedVehicleData.exitTime)}</div> <div><strong className="text-gray-600">Duration:</strong> {(() => { const entryTime = new Date(scannedVehicleData.entryTime); const exitTime = new Date(scannedVehicleData.exitTime); const diffMs = exitTime - entryTime; const diffHrs = Math.floor(diffMs / (1000 * 60 * 60)); const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)); return `${diffHrs}h ${diffMins}m`; })()}</div> <div><strong className="text-gray-600">{scannedVehicleData.paymentMethod === 'Waiver' ? 'Waiver Time:' : 'Payment Time:'}</strong> {formatDateTimeForDisplay(scannedVehicleData.paymentTime)}</div> </div> {scannedVehicleData.paymentMethod === 'Waiver' && scannedVehicleData.waiverReason && (<div className="text-sm mb-3"><strong className="text-gray-600">Waiver Reason:</strong> {scannedVehicleData.waiverReason}</div>)} <div className="border-t border-gray-200 pt-3 mt-3"> <div className="flex justify-between items-center text-lg font-bold"> <span className="text-gray-700">{scannedVehicleData.paymentMethod === 'Waiver' ? 'Fee Waived:' : 'Total Amount Paid:'}</span> <span className="text-primary-red">${scannedVehicleData.paymentAmount}</span> </div> </div> <p className="text-xs text-gray-500 mt-4 text-center">Thank you for using Pro-Parking. Drive Safe!</p> </div> <div className="mt-6 flex justify-end space-x-3"> <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-blue" onClick={handlePrintReceipt}><Printer size={16} className="mr-1.5" />Print</button> <button className="px-4 py-2 bg-primary-red text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-red" onClick={() => { setShowScanModal(false); setScannedVehicleData(null); setPaymentStep('initial'); setWaiverRemarks(''); }}>Close</button> </div> </div>)}
           </div>
         </div>

@@ -25,7 +25,7 @@ const NotificationModal = ({ isOpen, onClose, notifications, onMarkAsRead, onMar
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[100] p-4"
-      onClick={onClose} 
+      onClick={onClose}
     >
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -33,7 +33,7 @@ const NotificationModal = ({ isOpen, onClose, notifications, onMarkAsRead, onMar
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.2 }}
         className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
           <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
@@ -62,9 +62,8 @@ const NotificationModal = ({ isOpen, onClose, notifications, onMarkAsRead, onMar
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }}
-                    className={`flex items-start p-3 rounded-md border ${
-                      notification.read ? `bg-gray-50 ${borderColor}` : `${bgColor} ${borderColor} shadow-sm` 
-                    }`}
+                    className={`flex items-start p-3 rounded-md border ${notification.read ? `bg-gray-50 ${borderColor}` : `${bgColor} ${borderColor} shadow-sm`
+                      }`}
                   >
                     <div className={`flex-shrink-0 pt-1 mr-3 ${color}`}>
                       {icon}

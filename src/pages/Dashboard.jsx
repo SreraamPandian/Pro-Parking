@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Car, LogIn, LogOut, ParkingCircle, DollarSign, Clock, AlertTriangle, X, Printer, Info, Navigation, MapPin } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import VehicleFlowChart from '../components/VehicleFlowChart';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { mockDashboardData } from '../data/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
 // Removed: import { useApp } from '../App'; // No longer needed for addNotification here
@@ -13,7 +14,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showOverdueAlertModal, setShowOverdueAlertModal] = useState(false);
   const [showPaperRefillPopup, setShowPaperRefillPopup] = useState(false); // New state for paper refill popup
-  const [selectedLocation, setSelectedLocation] = useState('All');
+  const [selectedLocations, setSelectedLocations] = useState([]);
 
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -34,9 +35,9 @@ const Dashboard = () => {
     const todayString = now.toISOString().split('T')[0];
 
     // Filter vehicles by location if needed
-    const locationVehicles = selectedLocation === 'All'
+    const locationVehicles = (selectedLocations.length === 0)
       ? vehiclesData
-      : vehiclesData.filter(v => v.location === selectedLocation);
+      : vehiclesData.filter(v => selectedLocations.includes(v.location));
 
     // Calculate dynamic stats from real vehiclesData
     const currentVehicles = locationVehicles.filter(v => !v.exitTime).length;
@@ -44,7 +45,7 @@ const Dashboard = () => {
     const exitedToday = locationVehicles.filter(v => v.exitTime && v.exitTime.startsWith(todayString)).length;
 
     // Get slot stats from updated mockDashboardData.parkingZones
-    if (selectedLocation === 'All') {
+    if (selectedLocations.length === 0) {
       const available = dashboardData.totalSlots - dashboardData.reservedSlots - currentVehicles;
       return {
         totalSlots: dashboardData.totalSlots,
@@ -56,22 +57,36 @@ const Dashboard = () => {
       };
     }
 
-    const zone = dashboardData.parkingZones.find(z => z.name === selectedLocation);
-    if (zone) {
-      const available = zone.totalSlots - zone.reservedSlots - currentVehicles;
+    // Aggregate stats for multiple selected locations
+    const selectedZones = dashboardData.parkingZones.filter(z => selectedLocations.includes(z.name));
+    if (selectedZones.length > 0) {
+      const totalSlots = selectedZones.reduce((acc, z) => acc + z.totalSlots, 0);
+      const reservedSlots = selectedZones.reduce((acc, z) => acc + z.reservedSlots, 0);
+      const available = totalSlots - reservedSlots - currentVehicles;
       return {
-        totalSlots: zone.totalSlots,
+        totalSlots,
         availableSlots: Math.max(0, available),
-        reservedSlots: zone.reservedSlots,
+        reservedSlots,
         currentVehicles,
         enteredToday,
         exitedToday
       };
     }
-    return {};
+
+    return { totalSlots: 0, availableSlots: 0, reservedSlots: 0, currentVehicles: 0, enteredToday: 0, exitedToday: 0 };
   };
 
   const filteredStats = getFilteredStats();
+
+  const getActiveZoneDisplay = () => {
+    if (selectedLocations.length === 0) {
+      return 'All Parking Areas';
+    } else if (selectedLocations.length === 1) {
+      return selectedLocations[0];
+    } else {
+      return `${selectedLocations.length} Locations Selected`;
+    }
+  };
 
   if (loading || !dashboardData) {
     return (
@@ -91,17 +106,14 @@ const Dashboard = () => {
         <div className="flex items-center bg-white px-4 py-2 border-2 border-primary-blue border-opacity-30 rounded-lg shadow-sm">
           <ParkingCircle size={18} className="text-primary-blue mr-2" />
           <span className="text-sm font-semibold text-gray-700 mr-3">Filter by Location:</span>
-          <div className="relative">
-            <select
-              className="block w-48 pl-3 pr-10 py-1.5 text-base border-gray-300 bg-blue-50 focus:outline-none focus:ring-primary-blue focus:border-primary-blue sm:text-sm rounded-md font-medium text-primary-blue cursor-pointer"
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-            >
-              <option value="All">All Locations</option>
-              {dashboardData.parkingZones.map(zone => (
-                <option key={zone.id} value={zone.name}>{zone.name}</option>
-              ))}
-            </select>
+          <div className="w-64">
+            <MultiSelectDropdown
+              options={dashboardData?.parkingZones.map(zone => zone.name) || []}
+              selected={selectedLocations}
+              onChange={setSelectedLocations}
+              placeholder="All Locations"
+              icon={MapPin}
+            />
           </div>
         </div>
       </div>
@@ -152,7 +164,7 @@ const Dashboard = () => {
         <div className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between border-l-4 border-primary-blue">
           <div>
             <h3 className="text-gray-500 text-sm font-medium">Active Zone</h3>
-            <p className="text-xl font-bold text-gray-800">{selectedLocation === 'All' ? 'All Parking Areas' : selectedLocation}</p>
+            <p className="text-xl font-bold text-gray-800">{getActiveZoneDisplay()}</p>
           </div>
           <div className="p-3 bg-blue-50 rounded-full text-primary-blue">
             <Navigation size={24} />

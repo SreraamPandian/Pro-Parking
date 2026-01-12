@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash, Save, X, Clock, ChevronDown, ChevronUp, Eye, Printer } from 'lucide-react';
-import { mockTieredPricingData } from '../data/mockData';
+import { Plus, Edit, Trash, Save, X, Clock, ChevronDown, ChevronUp, Eye, Printer, MapPin } from 'lucide-react';
+import { mockTieredPricingData, mockDashboardData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Pricing = () => {
@@ -8,7 +9,7 @@ const Pricing = () => {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
-  const [locationFilter, setLocationFilter] = useState('All');
+  const [locationFilter, setLocationFilter] = useState([]);
   const [formData, setFormData] = useState({
     vehicleType: '4-Wheeler', // Default to 4-Wheeler and only option
     name: '',
@@ -86,9 +87,10 @@ const Pricing = () => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  const filteredPricingData = pricingData.filter(item =>
-    locationFilter === 'All' || (item.location || 'Location A') === locationFilter
-  );
+  const filteredPricing = pricingData.filter(item => {
+    if (locationFilter.length === 0) return true;
+    return locationFilter.includes(item.location || 'Location A');
+  });
 
   const addTier = () => {
     const lastTier = formData.tiers[formData.tiers.length - 1];
@@ -243,16 +245,13 @@ const Pricing = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                >
-                  <option value="All Locations">All Locations</option>
-                  <option value="Location A">Location A</option>
-                  <option value="Location B">Location B</option>
-                  <option value="Location C">Location C</option>
-                </select>
+                <MultiSelectDropdown
+                  options={mockDashboardData.parkingZones.map(z => z.name)}
+                  selected={formData.location ? [formData.location] : []}
+                  onChange={(val) => setFormData({ ...formData, location: val[0] || '' })}
+                  placeholder="Select Location"
+                  icon={MapPin}
+                />
               </div>
 
               <div>
@@ -405,22 +404,19 @@ const Pricing = () => {
         <>
           <div className="bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
             <label className="text-sm font-medium text-gray-700 mr-3">Filter by Location:</label>
-            <div className="relative">
-              <select
-                className="block w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-white text-gray-700"
-                value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
-              >
-                <option value="All">All Locations</option>
-                <option value="Location A">Location A</option>
-                <option value="Location B">Location B</option>
-                <option value="Location C">Location C</option>
-              </select>
+            <div className="w-64">
+              <MultiSelectDropdown
+                options={mockDashboardData.parkingZones.map(z => z.name)}
+                selected={locationFilter}
+                onChange={setLocationFilter}
+                placeholder="All Locations"
+                icon={MapPin}
+              />
             </div>
-            {locationFilter !== 'All' && (
+            {locationFilter.length > 0 && (
               <button
-                onClick={() => setLocationFilter('All')}
-                className="ml-4 text-sm text-primary-blue hover:underline"
+                onClick={() => setLocationFilter([])}
+                className="ml-4 text-sm text-primary-blue hover:underline font-semibold"
               >
                 Clear Filter
               </button>

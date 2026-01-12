@@ -171,7 +171,7 @@ const Booking = () => {
 
     const [formData, setFormData] = useState({
         names: [],
-        location: 'All Locations',
+        locations: [],
         departments: [],
         dateTime: '',
         duration: '1 hour',
@@ -230,7 +230,7 @@ const Booking = () => {
     const handleOpenForm = () => {
         setFormData({
             names: [],
-            location: 'All Locations',
+            locations: [],
             departments: [],
             dateTime: new Date().toISOString().slice(0, 16),
             duration: '1 hour',
@@ -250,15 +250,15 @@ const Booking = () => {
             const dept = existingBooking ? existingBooking.department : (formData.departments[0] || 'Visitor');
 
             return {
-                id: `bk${Date.now()}-${index}`,
-                name,
-                location: formData.location,
+                id: `B${Date.now()}${index}`,
+                name: name,
                 department: dept,
-                status: 'Booked',
-                type: dept,
+                location: formData.locations.length > 0 ? formData.locations.join(', ') : 'All Locations',
                 dateTime: formData.dateTime,
                 duration: formData.duration,
                 numberOfVehicles: formData.numberOfVehicles,
+                status: 'Booked',
+                type: dept,
                 vehicleNumbers: [],
                 mobileNumber: 'N/A',
                 plateImage: 'https://placehold.co/300x100/f3f4f6/666?text=RESERVED'
@@ -437,39 +437,37 @@ const Booking = () => {
                             <form onSubmit={handleBookNow} className="p-8">
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <MultiSelectDropdown
-                                            label="Department"
-                                            options={hospitalDepartments}
-                                            selected={formData.departments}
-                                            onChange={(val) => setFormData({ ...formData, departments: val, names: [] })}
-                                            placeholder="Select Departments"
-                                            icon={Filter}
-                                        />
-
-                                        <MultiSelectDropdown
-                                            label="Visitor"
-                                            options={formAvailableNames}
-                                            selected={formData.names}
-                                            onChange={(val) => setFormData({ ...formData, names: val })}
-                                            placeholder="Select Visitors"
-                                            icon={User}
-                                        />
+                                        <div className="space-y-1.5">
+                                            <label className="block text-sm font-medium text-gray-700">Department</label>
+                                            <MultiSelectDropdown
+                                                options={hospitalDepartments}
+                                                selected={formData.departments}
+                                                onChange={(val) => setFormData({ ...formData, departments: val, names: [] })}
+                                                placeholder="Select Departments"
+                                                icon={Filter}
+                                            />
+                                        </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="block text-sm font-medium text-gray-700 font-sans tracking-tight">Locations</label>
-                                            <div className="relative">
-                                                <MapPin size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                <select
-                                                    name="location"
-                                                    className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-blue/10 focus:border-primary-blue text-sm appearance-none cursor-pointer transition-all"
-                                                    value={formData.location}
-                                                    onChange={handleInputChange}
-                                                >
-                                                    <option value="All Locations">All Locations</option>
-                                                    {mockSlotData.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
-                                                </select>
-                                                <ChevronDown size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                                            </div>
+                                            <label className="block text-sm font-medium text-gray-700">Visitor</label>
+                                            <MultiSelectDropdown
+                                                options={formAvailableNames}
+                                                selected={formData.names}
+                                                onChange={(val) => setFormData({ ...formData, names: val })}
+                                                placeholder="Select Visitors"
+                                                icon={User}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1.5">
+                                            <label className="block text-sm font-medium text-gray-700">Locations</label>
+                                            <MultiSelectDropdown
+                                                options={mockSlotData.map(l => l.name)}
+                                                selected={formData.locations}
+                                                onChange={(val) => setFormData({ ...formData, locations: val })}
+                                                placeholder="Select Locations"
+                                                icon={MapPin}
+                                            />
                                         </div>
 
                                         <div className="space-y-1.5">
@@ -552,9 +550,9 @@ const Booking = () => {
                     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[500] flex items-center justify-center p-4 text-center">
                         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white rounded-[40px] w-full max-w-md overflow-hidden shadow-2xl overflow-y-auto max-h-[90vh]">
                             <div className="p-10">
-                                <div className="w-full aspect-[3/1.2] bg-gray-50 rounded-3xl overflow-hidden border-4 border-gray-50 mb-10 shadow-inner group relative">
-                                    <img src={selectedBooking.plateImage} alt="Plate" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                                <div className="w-full aspect-[4/1] bg-gray-50 rounded-3xl overflow-hidden border-4 border-gray-50 mb-10 shadow-inner group relative">
+                                    <img src={selectedBooking.plateImage} alt="Plate" className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
                                 </div>
                                 <div className="text-left space-y-5">
                                     {[

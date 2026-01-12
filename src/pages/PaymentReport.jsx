@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Calendar, FileText, Filter, Search, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Printer, CreditCard, DollarSign } from 'lucide-react';
+import { Download, Calendar, FileText, Filter, Search, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Printer, CreditCard, DollarSign, MapPin } from 'lucide-react';
+import { mockDashboardData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { useOutletContext } from 'react-router-dom';
 
 const PaymentReport = () => {
@@ -11,7 +13,7 @@ const PaymentReport = () => {
   const [paymentModeFilter, setPaymentModeFilter] = useState('all');
   const [staffFilter, setStaffFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
-  const [locationFilter, setLocationFilter] = useState('All'); // Changed 'all' to 'All'
+  const [locationFilter, setLocationFilter] = useState([]);
   const [sortField, setSortField] = useState('entryTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [showFilters, setShowFilters] = useState(false);
@@ -48,7 +50,7 @@ const PaymentReport = () => {
     if (paymentModeFilter !== 'all' && vehicle.paymentMode !== paymentModeFilter) return false;
     if (staffFilter !== 'all' && vehicle.collectedBy !== staffFilter) return false;
     if (departmentFilter !== 'all' && (vehicle.department || 'Visitor') !== departmentFilter) return false;
-    if (locationFilter !== 'All' && (vehicle.location || 'Location A') !== locationFilter) return false;
+    if (locationFilter.length > 0 && !locationFilter.includes(vehicle.location || 'Location A')) return false;
     if (dateRange.start && dateRange.end) {
       const entryDate = new Date(vehicle.entryTime);
       const startDate = new Date(dateRange.start);
@@ -197,17 +199,39 @@ const PaymentReport = () => {
               ].map(filter => (
                 <div key={filter.label}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{filter.label}</label>
-                  {filter.type === 'text' ?
-                    <input type="text" className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" placeholder={filter.placeholder} value={filter.value} onChange={(e) => filter.setter(e.target.value)} />
-                    :
-                    <select className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue" value={filter.value} onChange={(e) => filter.setter(e.target.value)}>
-                      {filter.options.map(opt => <option key={opt} value={opt}>{opt === 'all' || opt === 'All' ? filter.allLabel : opt}</option>)}
+                  {filter.label === 'Location' ? (
+                    <MultiSelectDropdown
+                      options={mockDashboardData.parkingZones.map(z => z.name)}
+                      selected={locationFilter}
+                      onChange={setLocationFilter}
+                      placeholder="All Locations"
+                      icon={MapPin}
+                    />
+                  ) : filter.type === 'text' ? (
+                    <input
+                      type="text"
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue"
+                      placeholder={filter.placeholder}
+                      value={filter.value}
+                      onChange={(e) => filter.setter(e.target.value)}
+                    />
+                  ) : (
+                    <select
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue bg-white font-medium"
+                      value={filter.value}
+                      onChange={(e) => filter.setter(e.target.value)}
+                    >
+                      {filter.options.map(opt => (
+                        <option key={opt} value={opt}>
+                          {opt === 'all' || opt === 'All' ? filter.allLabel : opt}
+                        </option>
+                      ))}
                     </select>
-                  }
+                  )}
                 </div>
               ))}
               <div className="flex items-end">
-                <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setVehicleNumberFilter(''); setPaymentStatusFilter('all'); setPaymentModeFilter('all'); setStaffFilter('all'); setDepartmentFilter('all'); setLocationFilter('All'); }}>Reset Filters</button>
+                <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setVehicleNumberFilter(''); setPaymentStatusFilter('all'); setPaymentModeFilter('all'); setStaffFilter('all'); setDepartmentFilter('all'); setLocationFilter([]); }}>Reset Filters</button>
               </div>
             </div>
           </div>
@@ -302,7 +326,7 @@ const PaymentReport = () => {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -91,8 +91,10 @@ function App() {
     const savedVehicles = localStorage.getItem('appVehiclesData');
     if (savedVehicles) {
       const parsed = JSON.parse(savedVehicles);
-      // Check if data is stale (missing location field)
-      if (parsed.length > 0 && !parsed[0].location) {
+      // Check if data is stale (missing location field, old placeholders, or old SVG version)
+      const isStale = !parsed[0].location ||
+        (parsed[0].plateImage && (parsed[0].plateImage.includes('placehold.co') || !parsed[0].plateImage.includes('OMN')));
+      if (parsed.length > 0 && isStale) {
         return initialMockVehicleData;
       }
       return parsed;

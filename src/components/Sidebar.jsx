@@ -37,7 +37,7 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
     { path: '/device-config', icon: <HardDrive size={20} />, label: 'Device Config' }, // Updated
     { path: '/kiosk-management', icon: <MonitorPlay size={20} />, label: 'Kiosk Management' },
     { path: '/boom-barrier-control', icon: <ChevronsUpDown size={20} />, label: 'Boom Barrier Control' },
-    { path: '/add-user', icon: <UserPlus size={20} />, label: 'Add User' },
+    { path: '/add-user', icon: <UserPlus size={20} />, label: 'User Management' },
     { path: '/departments', icon: <Building2 size={20} />, label: 'Departments' },
     { path: '/settings', icon: <SettingsIcon size={20} />, label: 'Settings' }
   ];

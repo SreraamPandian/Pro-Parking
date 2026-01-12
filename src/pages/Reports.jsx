@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Calendar, FileText, Filter, Search, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Car, Clock } from 'lucide-react';
+import { Download, Calendar, FileText, Filter, Search, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Car, Clock, MapPin } from 'lucide-react';
+import { mockDashboardData } from '../data/mockData';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { useOutletContext } from 'react-router-dom'; // Import useOutletContext
 
 const Reports = () => {
@@ -7,7 +9,7 @@ const Reports = () => {
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('All');
-  const [locationFilter, setLocationFilter] = useState('All');
+  const [locationFilter, setLocationFilter] = useState([]);
   const [sortField, setSortField] = useState('entryTime');
   const [sortDirection, setSortDirection] = useState('desc');
 
@@ -39,7 +41,7 @@ const Reports = () => {
       if (entryDate < startDate || entryDate > endDate) return false;
     }
     if (departmentFilter !== 'All' && vehicle.department !== departmentFilter) return false;
-    if (locationFilter !== 'All' && (vehicle.location || 'Location A') !== locationFilter) return false;
+    if (locationFilter.length > 0 && !locationFilter.includes(vehicle.location || 'Location A')) return false;
     return true;
   }).sort((a, b) => {
     let valueA, valueB;
@@ -254,20 +256,17 @@ const Reports = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-              <select
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue bg-white"
-                value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
-              >
-                <option value="All">All Locations</option>
-                <option value="Location A">Location A</option>
-                <option value="Location B">Location B</option>
-                <option value="Location C">Location C</option>
-              </select>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Location</label>
+              <MultiSelectDropdown
+                options={mockDashboardData.parkingZones.map(z => z.name)}
+                selected={locationFilter}
+                onChange={setLocationFilter}
+                placeholder="All Locations"
+                icon={MapPin}
+              />
             </div>
             <div className="flex items-end">
-              <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setDepartmentFilter('All'); setLocationFilter('All'); }}>
+              <button className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-blue" onClick={() => { setDateRange({ start: '', end: '' }); setSearchTerm(''); setDepartmentFilter('All'); setLocationFilter([]); }}>
                 <Filter size={18} className="mr-2" />
                 Reset Filters
               </button>
