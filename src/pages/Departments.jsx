@@ -214,6 +214,7 @@ const Departments = () => {
                                         onChange={(val) => setFormData({ ...formData, location: val })}
                                         placeholder="Select Locations"
                                         icon={MapPin}
+                                        label="Location"
                                     />
                                 </div>
 

@@ -245,6 +245,7 @@ const AddUser = () => {
                 onChange={setLocationFilter}
                 placeholder="All Locations"
                 icon={MapPin}
+                label="Location"
               />
             </div>
           </div>
@@ -454,6 +455,7 @@ const AddUser = () => {
                       onChange={(val) => setFormData({ ...formData, locations: val })}
                       placeholder="Select Locations"
                       icon={MapPin}
+                      label="Location"
                     />
                   </div>
 

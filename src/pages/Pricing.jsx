@@ -253,6 +253,7 @@ const Pricing = () => {
                   onChange={(val) => setFormData({ ...formData, location: val })}
                   placeholder="Select Locations"
                   icon={MapPin}
+                  label="Location"
                 />
               </div>
 
@@ -413,6 +414,7 @@ const Pricing = () => {
                 onChange={setLocationFilter}
                 placeholder="All Locations"
                 icon={MapPin}
+                label="Location"
               />
             </div>
             {locationFilter.length > 0 && (

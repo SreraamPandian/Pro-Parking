@@ -113,6 +113,7 @@ const Dashboard = () => {
               onChange={setSelectedLocations}
               placeholder="All Locations"
               icon={MapPin}
+              label="Location"
             />
           </div>
         </div>

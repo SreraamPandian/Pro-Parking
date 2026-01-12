@@ -264,6 +264,7 @@ const Reports = () => {
                 onChange={setLocationFilter}
                 placeholder="All Locations"
                 icon={MapPin}
+                label="Location"
               />
             </div>
             <div className="flex items-end">

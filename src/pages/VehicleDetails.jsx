@@ -406,6 +406,7 @@ const VehicleDetails = () => {
               onChange={setLocationFilter}
               placeholder="All Locations"
               icon={MapPin}
+              label="Location"
             />
           </div>
 

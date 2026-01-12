@@ -267,6 +267,7 @@ const Passes = () => {
                 onChange={setDepartmentFilter}
                 placeholder="All Departments"
                 icon={Filter}
+                label="Department"
               />
             </div>
 
@@ -277,6 +278,7 @@ const Passes = () => {
                 onChange={setLocationFilter}
                 placeholder="All Locations"
                 icon={MapPin}
+                label="Location"
               />
             </div>
           </div>
@@ -499,6 +501,7 @@ const Passes = () => {
                       onChange={(val) => setFormData({ ...formData, location: val })}
                       placeholder="Select Locations"
                       icon={MapPin}
+                      label="Location"
                     />
                   </div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue" value={formData.mobileNumber} onChange={(e) => { const value = e.target.value.replace(/\D/g, ''); if (value.length <= 10) setFormData({ ...formData, mobileNumber: value }); }} placeholder="e.g. 9876543210 (7-10 digits)" /></div>

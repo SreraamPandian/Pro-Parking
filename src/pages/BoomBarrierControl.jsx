@@ -93,6 +93,7 @@ const BoomBarrierControl = () => {
               onChange={setLocationFilter}
               placeholder="Filter by Location"
               icon={MapPin}
+              label="Location"
             />
           </div>
         </div>

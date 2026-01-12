@@ -206,6 +206,7 @@ const PaymentReport = () => {
                       onChange={setLocationFilter}
                       placeholder="All Locations"
                       icon={MapPin}
+                      label="Location"
                     />
                   ) : filter.type === 'text' ? (
                     <input

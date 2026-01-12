@@ -69,7 +69,7 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, icon: I
                     {Icon && <Icon size={16} className={`${isOpen ? 'text-primary-blue' : 'text-gray-400'} mr-2.5 flex-shrink-0`} />}
                     <span className={`text-sm truncate font-medium ${selected.length > 0 ? 'text-gray-800' : 'text-gray-400'}`}>
                         {selected.length === 0 ? placeholder :
-                            isAllSelected ? `All ${label}s` :
+                            isAllSelected ? (label ? `All ${label}s` : 'All Selected') :
                                 selected.length === 1 ? selected[0] :
                                     `${selected.length} Selected`}
                     </span>
