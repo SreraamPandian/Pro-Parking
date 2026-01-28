@@ -19,6 +19,7 @@ import {
   Calendar
 } from 'lucide-react';
 import NotificationModal from './NotificationModal';
+import logo from '../assets/logo.png';
 
 const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onClearAll }) => {
   const navigate = useNavigate();
@@ -57,9 +58,9 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
         <div className="p-4 border-b flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img
-              src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+              src={logo}
               alt="Pro-Parking Logo"
-              className="w-10 h-auto"
+              className="w-16 h-auto"
             />
             <h1 className="text-lg font-bold text-primary-blue">Pro - Parking</h1>
           </div>

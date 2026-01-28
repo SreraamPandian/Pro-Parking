@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const LoginPage = ({ onLogin }) => {
   const [username, setUsername] = useState('admin');
@@ -30,7 +31,7 @@ const LoginPage = ({ onLogin }) => {
       <div className="w-full max-w-md p-8 space-y-8 bg-white shadow-xl rounded-lg">
         <div className="flex flex-col items-center">
           <img
-            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+            src={logo}
             alt="Pro-Parking Logo"
             className="w-32 h-auto mb-6"
           />

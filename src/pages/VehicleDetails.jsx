@@ -5,6 +5,7 @@ import { mockSlotData, mockTieredPricingData, mockDashboardData, mockBookingData
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { motion, AnimatePresence } from 'framer-motion'; // For modal animation
 import { generateLicensePlateImage } from '../utils/licensePlateHelper';
+import logo from '../assets/logo.png';
 
 const VehicleDetails = () => {
   const { vehiclesData, updateVehiclesData } = useOutletContext();
@@ -281,7 +282,7 @@ const VehicleDetails = () => {
 
   const SampleEntryTicketContent = () => (
     <div className="flex flex-col items-center text-center p-2 border-2 border-dashed border-gray-300 rounded-md bg-white">
-      <img src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" alt="Pro-Parking Logo" className="w-16 h-auto mb-2" />
+      <img src={logo} alt="Pro-Parking Logo" className="w-16 h-auto mb-2" />
       <h3 className="text-lg font-bold text-gray-800">Pro-Parking</h3>
       <p className="text-xs text-gray-500 mb-2">ENTRY TICKET</p>
 

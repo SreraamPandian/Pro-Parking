@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, ParkingCircle } from 'lucide-react'; // Using ParkingCircle as relevant icon
+import logo from '../assets/logo.png';
 
 const User1LoginPage = ({ onUser1Login }) => {
   const [username, setUsername] = useState('user1'); // Default User1 username
@@ -24,7 +25,7 @@ const User1LoginPage = ({ onUser1Login }) => {
       <div className="w-full max-w-md p-8 space-y-8 bg-white shadow-xl rounded-lg">
         <div className="flex flex-col items-center">
           <img
-            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+            src={logo}
             alt="Pro-Parking Logo"
             className="w-32 h-auto mb-6"
           />

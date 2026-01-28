@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Car, LogIn } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const User1Header = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const User1Header = ({ onLogout }) => {
           {/* Left side: Logo and Module Name */}
           <div className="flex items-center">
             <img
-              src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+              src={logo}
               alt="Pro-Parking Logo"
               className="w-8 h-auto mr-3"
             />

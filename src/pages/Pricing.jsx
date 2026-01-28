@@ -4,6 +4,7 @@ import { mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { useData } from '../context/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import logo from '../assets/logo.png';
 
 const Pricing = () => {
   const { pricingData, setPricingData } = useData();
@@ -135,7 +136,7 @@ const Pricing = () => {
       <div className="font-mono text-xs text-black bg-white p-4 max-w-xs mx-auto border border-dashed border-black">
         <div className="text-center mb-2">
           <img
-            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+            src={logo}
             alt="Pro-Parking Logo"
             className="w-16 h-auto mx-auto mb-1"
           />

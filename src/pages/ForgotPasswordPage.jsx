@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, User, ArrowLeft } from 'lucide-react'; // Added User icon
+import logo from '../assets/logo.png';
 
 const ForgotPasswordPage = () => {
   const [identifier, setIdentifier] = useState(''); // Changed from email to identifier
@@ -34,7 +35,7 @@ const ForgotPasswordPage = () => {
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-xl rounded-lg">
         <div className="flex flex-col items-center">
           <img
-            src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png"
+            src={logo}
             alt="Pro-Parking Logo"
             className="w-24 h-auto mb-4"
           />

@@ -4,6 +4,7 @@ import { mockDashboardData } from '../data/mockData';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { useData } from '../context/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import logo from '../assets/logo.png';
 
 const Passes = () => {
   const { staffPasses, setStaffPasses, waiverReasons, setWaiverReasons } = useData();
@@ -378,7 +379,7 @@ const Passes = () => {
                   <div className="flex-1">
                     <div className="text-center md:text-left mb-4">
                       <div className="flex items-center justify-center md:justify-start mb-2">
-                        <img src="https://img-wrapper.vercel.app/image?url=https://i.ibb.co/K9fK5dK/Life-Line-Logo.png" alt="Pro-Parking Logo" className="w-10 h-auto mr-2" />
+                        <img src={logo} alt="Pro-Parking Logo" className="w-10 h-auto mr-2" />
                         <h2 className="text-xl font-bold text-primary-blue">Pro-Parking Staff Pass</h2>
                       </div>
                       <div className="flex items-center justify-center md:justify-start space-x-2">
