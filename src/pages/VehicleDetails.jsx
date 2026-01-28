@@ -249,7 +249,7 @@ const VehicleDetails = () => {
       id: Date.now().toString(),
       ...addFormState,
       plateImage: generateLicensePlateImage(addFormState.vehicleNumber),
-      vehicleImage: 'https://img-wrapper.vercel.app/image?url=https://placehold.co/400x300/333/white?text=Vehicle+Image',
+      vehicleImage: logo,
       exitTime: null,
       paymentProcessedTime: null
     };
