@@ -21,24 +21,30 @@ const generateHeatmapData = (scale = 1) => {
 };
 
 const MOCK = {
-    Monthly: { heatData: generateHeatmapData(1),   peak: '09:00', peakLoc: 'Location B', avgOccupancy: '67%', totalVehicles: '57.6K', peakDay: 'Wednesday',
-        locA: { vehicles: 26525, occupancy: '62%' }, locB: { vehicles: 21047, occupancy: '82%' } },
-    Weekly:  { heatData: generateHeatmapData(0.7), peak: '08:30', peakLoc: 'Location A', avgOccupancy: '54%', totalVehicles: '14.2K', peakDay: 'Thursday',
-        locA: { vehicles: 6631,  occupancy: '55%' }, locB: { vehicles: 5262,  occupancy: '74%' } },
-    Yearly:  { heatData: generateHeatmapData(1.3), peak: '09:15', peakLoc: 'Location B', avgOccupancy: '72%', totalVehicles: '689K',  peakDay: 'Wednesday',
-        locA: { vehicles: 317540, occupancy: '68%' }, locB: { vehicles: 252560, occupancy: '87%' } },
+    Monthly: {
+        heatData: generateHeatmapData(1), peak: '09:00', peakLoc: 'Location B', avgOccupancy: '67%', totalVehicles: '57.6K', peakDay: 'Wednesday',
+        locA: { vehicles: 26, occupancy: '62%' }, locB: { vehicles: 21, occupancy: '82%' }
+    },
+    Weekly: {
+        heatData: generateHeatmapData(0.7), peak: '08:30', peakLoc: 'Location A', avgOccupancy: '54%', totalVehicles: '14.2K', peakDay: 'Thursday',
+        locA: { vehicles: 66, occupancy: '55%' }, locB: { vehicles: 52, occupancy: '74%' }
+    },
+    Yearly: {
+        heatData: generateHeatmapData(1.3), peak: '09:15', peakLoc: 'Location B', avgOccupancy: '72%', totalVehicles: '689K', peakDay: 'Wednesday',
+        locA: { vehicles: 31, occupancy: '68%' }, locB: { vehicles: 25, occupancy: '87%' }
+    },
 };
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const dayOccupancy = {
     Monthly: [72, 68, 85, 82, 78, 45, 30],
-    Weekly:  [60, 55, 70, 75, 65, 40, 25],
-    Yearly:  [78, 74, 88, 85, 80, 50, 35],
+    Weekly: [60, 55, 70, 75, 65, 40, 25],
+    Yearly: [78, 74, 88, 85, 80, 50, 35],
 };
 
 const locationCapacity = [
-    { label: 'Location A', total: 620, entryPoints: ['Gate 1', 'Gate 2', 'Gate 3'] },
-    { label: 'Location B', total: 500, entryPoints: ['Gate 4', 'Gate 5'] },
+    { label: 'Location A', total: 620, entryPoints: ['Gate 1'] },
+    { label: 'Location B', total: 500, entryPoints: ['Gate 2'] },
 ];
 
 // ─────────────────────────────────────────────────────────────────
@@ -75,9 +81,9 @@ const StatCard = ({ icon: Icon, label, value, sub, color = 'text-[#004EA8]' }) =
 // Main Page
 // ─────────────────────────────────────────────────────────────────
 const HeatMap = () => {
-    const [period, setPeriod]     = useState('Monthly');
+    const [period, setPeriod] = useState('Monthly');
     const [dateFrom, setDateFrom] = useState('2026-01-01');
-    const [dateTo, setDateTo]     = useState('2026-03-08');
+    const [dateTo, setDateTo] = useState('2026-03-08');
 
     const current = MOCK[period];
 
@@ -180,10 +186,10 @@ const HeatMap = () => {
 
             {/* ── Stat row ────────────────────────────────────── */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard icon={Car}        label="Total Vehicles"   value={current.totalVehicles} sub={`Period: ${period}`}          color="text-[#004EA8]" />
-                <StatCard icon={TrendingUp} label="Avg Occupancy"    value={current.avgOccupancy}  sub="Both locations combined"       color="text-[#004EA8]" />
-                <StatCard icon={Clock}      label="Peak Hour"        value={current.peak}           sub={`Busiest on ${current.peakDay}`} color="text-[#EC1B22]" />
-                <StatCard icon={MapPin}     label="Busiest Location" value={current.peakLoc}        sub="Highest hourly avg"           color="text-[#EC1B22]" />
+                <StatCard icon={Car} label="Total Vehicles" value={current.totalVehicles} sub={`Period: ${period}`} color="text-[#004EA8]" />
+                <StatCard icon={TrendingUp} label="Avg Occupancy" value={current.avgOccupancy} sub="Both locations combined" color="text-[#004EA8]" />
+                <StatCard icon={Clock} label="Peak Hour" value={current.peak} sub={`Busiest on ${current.peakDay}`} color="text-[#EC1B22]" />
+                <StatCard icon={MapPin} label="Busiest Location" value={current.peakLoc} sub="Highest hourly avg" color="text-[#EC1B22]" />
             </div>
 
             {/* ── Main heatmap ─────────────────────────────────── */}
