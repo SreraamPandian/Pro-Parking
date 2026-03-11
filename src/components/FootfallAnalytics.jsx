@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { vehicleAnalyticsMockData as data } from '../data/footfallMockData';
-import { TrendingUp, TrendingDown, Clock, Filter, ChevronDown, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Clock, Filter, ChevronDown, Calendar, Car } from 'lucide-react';
+
 
 // ────────────────────────────────────────────────
 // Sub-components
@@ -22,51 +23,23 @@ const PeriodFilter = ({ value, onChange }) => (
     </div>
 );
 
-const TargetRing = ({ pct, color, trackColor }) => {
-    const r = 20;
-    const circ = 2 * Math.PI * r;
-    const filled = circ * (parseFloat(pct) / 100);
-    return (
-        <svg width="52" height="52" viewBox="0 0 48 48" className="-rotate-90">
-            <circle cx="24" cy="24" r={r} fill="none" stroke={trackColor} strokeWidth="5" />
-            <circle cx="24" cy="24" r={r} fill="none" stroke={color} strokeWidth="5"
-                strokeDasharray={`${filled} ${circ}`} strokeLinecap="round" />
-        </svg>
-    );
-};
-
-const MetricCard = ({ title, metric, period, color = '#004EA8', trackColor = '#DBEAFE', pctKey }) => {
-    const pm = data.periodMetrics[period];
-    const pct = parseFloat(pm[pctKey]) || 0;
+// Clean stat card replacing the dial-based MetricCard
+const MetricCard = ({ title, metric, period, color = '#004EA8', bgColor = '#EFF6FF', accentColor = '#DBEAFE' }) => {
     return (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-3">
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{title}</p>
-            <div className="flex items-center gap-4">
-                {/* Ring */}
-                <div className="relative flex-shrink-0">
-                    <TargetRing pct={pct} color={color} trackColor={trackColor} />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2.5"/>
-                            <circle cx="12" cy="12" r="5" stroke={color} strokeWidth="2.5"/>
-                            <circle cx="12" cy="12" r="2" fill={color}/>
-                        </svg>
-                    </div>
-                    {/* Pct badge */}
-                    <span className={`absolute -bottom-1 -right-1 text-[9px] font-black px-1.5 py-0.5 rounded-full`}
-                        style={{ background: trackColor, color }}>
-                        {pm[pctKey]}
-                    </span>
-                </div>
-                {/* Values */}
-                <div className="flex-1 min-w-0">
-                    <p className="text-2xl font-black tracking-tighter truncate" style={{ color }}>
-                        {metric.value}
-                    </p>
-                    <div className={`flex items-center gap-1 text-[10px] font-bold mt-0.5 ${metric.trendUp ? 'text-emerald-500' : 'text-[#EC1B22]'}`}>
-                        {metric.trendUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+            <div className="flex items-end justify-between">
+                <div>
+                    <p className="text-3xl font-black tracking-tighter" style={{ color }}>{metric.value}</p>
+                    <div className={`inline-flex items-center gap-1 text-[10px] font-bold mt-2 px-2 py-1 rounded-full`}
+                        style={{ backgroundColor: accentColor, color }}>
+                        {metric.trendUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                         {metric.trend} vs prev {period.toLowerCase().replace('ly', '')}
                     </div>
+                </div>
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: bgColor }}>
+                    <Car size={28} style={{ color }} />
                 </div>
             </div>
         </div>
@@ -147,7 +120,7 @@ const VehicleAnalytics = () => {
         tooltip: { trigger: 'axis' },
         xAxis: {
             type: 'category',
-            data: [period === 'Weekly' ? 'This Week' : period === 'Yearly' ? 'This Year' : 'This Month'],
+            data: ['Overview 2026'],
             axisLabel: { color: '#9CA3AF' }
         },
         yAxis: { type: 'value', show: false },
@@ -180,8 +153,14 @@ const VehicleAnalytics = () => {
 
     const donutOption = {
         series: [{
-            type: 'pie', radius: ['55%', '78%'], avoidLabelOverlap: false,
-            label: { show: false }, labelLine: { show: false },
+            type: 'pie', radius: ['50%', '72%'], avoidLabelOverlap: true,
+            label: {
+                show: true,
+                formatter: ({ name, value }) => `${name.replace('Location ', 'Loc ')}\n${value.toLocaleString()}`,
+                color: '#374151', fontSize: 10, fontWeight: 'bold',
+                lineHeight: 14
+            },
+            labelLine: { show: true, length: 8, length2: 8 },
             data: data.locationDistribution,
             color: data.locationDistribution.map(d => d.color)
         }]
@@ -219,16 +198,16 @@ const VehicleAnalytics = () => {
                     metric={pm.vehicleEntry}
                     period={period}
                     color="#004EA8"
-                    trackColor="#DBEAFE"
-                    pctKey="entryTarget"
+                    bgColor="#EFF6FF"
+                    accentColor="#DBEAFE"
                 />
                 <MetricCard
                     title="Vehicle Current Period"
                     metric={pm.vehicleCurrentMonth}
                     period={period}
                     color="#EC1B22"
-                    trackColor="#FEE2E2"
-                    pctKey="monthTarget"
+                    bgColor="#FEF2F2"
+                    accentColor="#FEE2E2"
                 />
                 <SimpleMetricCard
                     title="Avg Vehicle Entry"
