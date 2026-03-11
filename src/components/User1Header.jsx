@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Car, LogIn } from 'lucide-react';
-import logo from '../assets/logo.png';
+
 
 const User1Header = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -28,15 +28,12 @@ const User1Header = ({ onLogout }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Left side: Logo and Module Name */}
-          <div className="flex items-center">
-            <img
-              src={logo}
-              alt="Pro-Parking Logo"
-              className="w-8 h-auto mr-3"
-            />
+          <div className="flex items-center space-x-3">
+            <span className="text-xl font-black tracking-tight text-primary-blue">Pro<span className="text-primary-red">-</span>Parking</span>
+            <span className="text-gray-200">|</span>
             <div className="flex items-center text-primary-blue">
-              <Car size={20} className="mr-2" />
-              <span className="font-semibold text-lg">Live Parking</span>
+              <Car size={18} className="mr-1.5" />
+              <span className="font-semibold text-base">Live Parking</span>
             </div>
           </div>
 

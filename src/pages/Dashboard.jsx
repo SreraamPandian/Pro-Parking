@@ -6,6 +6,7 @@ import VehicleFlowChart from '../components/VehicleFlowChart';
 import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { mockDashboardData } from '../data/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
+import VehicleAnalytics from '../components/FootfallAnalytics';
 // Removed: import { useApp } from '../App'; // No longer needed for addNotification here
 
 const Dashboard = () => {
@@ -239,6 +240,14 @@ const Dashboard = () => {
           <Printer size={18} className="mr-2" />
           Simulate Paper Refill Alert
         </button>
+      </div>
+
+      <div className="mt-12 pt-12 border-t border-gray-200">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-800">Vehicle Analytics</h2>
+          <p className="text-gray-500 text-sm">Comprehensive visitor traffic and distribution reports</p>
+        </div>
+        <VehicleAnalytics />
       </div>
 
       {/* Overdue Alert Modal */}

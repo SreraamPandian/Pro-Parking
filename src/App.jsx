@@ -11,6 +11,7 @@ import Settings from './pages/Settings';
 import Pricing from './pages/Pricing';
 import SlotManagement from './pages/SlotManagement';
 import Reports from './pages/Reports';
+import HeatMap from './pages/HeatMap';
 import PaymentReport from './pages/PaymentReport';
 import LoginPage from './pages/LoginPage';
 import User1LoginPage from './pages/User1LoginPage';
@@ -226,6 +227,7 @@ function App() {
           <Route path="/bookings" element={<Booking />} />
           <Route path="/booking-reports" element={<BookingReports />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/heatmap" element={<HeatMap />} />
           <Route path="/payment-report" element={<PaymentReport />} />
           <Route path="/add-user" element={<AddUser />} />
           <Route path="/kiosk-management" element={<KioskManagement />} />

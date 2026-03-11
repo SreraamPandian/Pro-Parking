@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Home,
   Car,
-  Settings as SettingsIcon, // Renamed from Camera to SettingsIcon to avoid conflict
+  Settings as SettingsIcon,
   CreditCard,
   DollarSign,
   ParkingSquare,
@@ -13,13 +13,14 @@ import {
   LogOut,
   MonitorPlay,
   Bell,
-  ChevronsUpDown, // Icon for Boom Barrier
-  HardDrive, // Icon for Device Configuration
-  Building2, // Icon for Departments
-  Calendar
+  ChevronsUpDown,
+  HardDrive,
+  Building2,
+  Calendar,
+  MapPin
 } from 'lucide-react';
 import NotificationModal from './NotificationModal';
-import logo from '../assets/logo.png';
+
 
 const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onClearAll }) => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
     { path: '/slots', icon: <ParkingSquare size={20} />, label: 'Location Management' },
     { path: '/bookings', icon: <Calendar size={20} />, label: 'Booking' },
     { path: '/reports', icon: <FileText size={20} />, label: 'Reports' },
+    { path: '/heatmap', icon: <MapPin size={20} />, label: 'Heat Map' },
     { path: '/payment-report', icon: <Receipt size={20} />, label: 'Payment Reports' },
     { path: '/booking-reports', icon: <FileText size={20} />, label: 'Booking Reports' },
     { path: '/pricing', icon: <DollarSign size={20} />, label: 'Pricing' },
@@ -56,13 +58,8 @@ const Sidebar = ({ onLogout, notifications, onMarkAsRead, onMarkAllAsRead, onCle
     <>
       <div className="w-64 bg-white shadow-md h-full flex flex-col">
         <div className="p-4 border-b flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img
-              src={logo}
-              alt="Pro-Parking Logo"
-              className="w-16 h-auto"
-            />
-            <h1 className="text-lg font-bold text-primary-blue">Pro - Parking</h1>
+          <div className="flex items-center">
+            <h1 className="text-xl font-black tracking-tight text-primary-blue">Pro<span className="text-primary-red">-</span>Parking</h1>
           </div>
           <button
             onClick={() => setShowNotificationModal(true)}
